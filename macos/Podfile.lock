@@ -1,0 +1,161 @@
+PODS:
+  - agora_rtc_engine (0.0.1):
+    - AgoraIrisRTC_macOS (= 4.5.2-build.1)
+    - AgoraRtcEngine_macOS (= 4.5.2)
+    - FlutterMacOS
+  - AgoraInfra_macOS (1.2.13.1)
+  - AgoraIrisRTC_macOS (4.5.2-build.1)
+  - AgoraRtcEngine_macOS (4.5.2):
+    - AgoraRtcEngine_macOS/AIAEC (= 4.5.2)
+    - AgoraRtcEngine_macOS/AIAECLL (= 4.5.2)
+    - AgoraRtcEngine_macOS/AINS (= 4.5.2)
+    - AgoraRtcEngine_macOS/AINSLL (= 4.5.2)
+    - AgoraRtcEngine_macOS/AudioBeauty (= 4.5.2)
+    - AgoraRtcEngine_macOS/ClearVision (= 4.5.2)
+    - AgoraRtcEngine_macOS/ContentInspect (= 4.5.2)
+    - AgoraRtcEngine_macOS/FaceCapture (= 4.5.2)
+    - AgoraRtcEngine_macOS/FaceDetection (= 4.5.2)
+    - AgoraRtcEngine_macOS/LipSync (= 4.5.2)
+    - AgoraRtcEngine_macOS/RtcBasic (= 4.5.2)
+    - AgoraRtcEngine_macOS/ScreenCapture (= 4.5.2)
+    - AgoraRtcEngine_macOS/SpatialAudio (= 4.5.2)
+    - AgoraRtcEngine_macOS/VideoAv1CodecDec (= 4.5.2)
+    - AgoraRtcEngine_macOS/VideoAv1CodecEnc (= 4.5.2)
+    - AgoraRtcEngine_macOS/VideoCodecDec (= 4.5.2)
+    - AgoraRtcEngine_macOS/VideoCodecEnc (= 4.5.2)
+    - AgoraRtcEngine_macOS/VirtualBackground (= 4.5.2)
+    - AgoraRtcEngine_macOS/VQA (= 4.5.2)
+  - AgoraRtcEngine_macOS/AIAEC (4.5.2)
+  - AgoraRtcEngine_macOS/AIAECLL (4.5.2)
+  - AgoraRtcEngine_macOS/AINS (4.5.2)
+  - AgoraRtcEngine_macOS/AINSLL (4.5.2)
+  - AgoraRtcEngine_macOS/AudioBeauty (4.5.2)
+  - AgoraRtcEngine_macOS/ClearVision (4.5.2)
+  - AgoraRtcEngine_macOS/ContentInspect (4.5.2)
+  - AgoraRtcEngine_macOS/FaceCapture (4.5.2)
+  - AgoraRtcEngine_macOS/FaceDetection (4.5.2)
+  - AgoraRtcEngine_macOS/LipSync (4.5.2)
+  - AgoraRtcEngine_macOS/RtcBasic (4.5.2):
+    - AgoraInfra_macOS (= 1.2.13.1)
+  - AgoraRtcEngine_macOS/ScreenCapture (4.5.2)
+  - AgoraRtcEngine_macOS/SpatialAudio (4.5.2)
+  - AgoraRtcEngine_macOS/VideoAv1CodecDec (4.5.2)
+  - AgoraRtcEngine_macOS/VideoAv1CodecEnc (4.5.2)
+  - AgoraRtcEngine_macOS/VideoCodecDec (4.5.2)
+  - AgoraRtcEngine_macOS/VideoCodecEnc (4.5.2)
+  - AgoraRtcEngine_macOS/VirtualBackground (4.5.2)
+  - AgoraRtcEngine_macOS/VQA (4.5.2)
+  - connectivity_plus (0.0.1):
+    - FlutterMacOS
+  - device_info_plus (0.0.1):
+    - FlutterMacOS
+  - file_selector_macos (0.0.1):
+    - FlutterMacOS
+  - flutter_inappwebview_macos (0.0.1):
+    - FlutterMacOS
+    - OrderedSet (~> 6.0.3)
+  - FlutterMacOS (1.0.0)
+  - geolocator_apple (1.2.0):
+    - Flutter
+    - FlutterMacOS
+  - iris_method_channel (0.0.1):
+    - FlutterMacOS
+  - network_info_plus (0.0.1):
+    - FlutterMacOS
+  - OrderedSet (6.0.3)
+  - package_info_plus (0.0.1):
+    - FlutterMacOS
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - share_plus (0.0.1):
+    - FlutterMacOS
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
+  - url_launcher_macos (0.0.1):
+    - FlutterMacOS
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - agora_rtc_engine (from `Flutter/ephemeral/.symlinks/plugins/agora_rtc_engine/macos`)
+  - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
+  - device_info_plus (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos`)
+  - file_selector_macos (from `Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos`)
+  - flutter_inappwebview_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - geolocator_apple (from `Flutter/ephemeral/.symlinks/plugins/geolocator_apple/darwin`)
+  - iris_method_channel (from `Flutter/ephemeral/.symlinks/plugins/iris_method_channel/macos`)
+  - network_info_plus (from `Flutter/ephemeral/.symlinks/plugins/network_info_plus/macos`)
+  - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
+  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
+  - share_plus (from `Flutter/ephemeral/.symlinks/plugins/share_plus/macos`)
+  - sqflite_darwin (from `Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin`)
+  - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
+  - video_player_avfoundation (from `Flutter/ephemeral/.symlinks/plugins/video_player_avfoundation/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - AgoraInfra_macOS
+    - AgoraIrisRTC_macOS
+    - AgoraRtcEngine_macOS
+    - OrderedSet
+
+EXTERNAL SOURCES:
+  agora_rtc_engine:
+    :path: Flutter/ephemeral/.symlinks/plugins/agora_rtc_engine/macos
+  connectivity_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos
+  device_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos
+  file_selector_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos
+  flutter_inappwebview_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  geolocator_apple:
+    :path: Flutter/ephemeral/.symlinks/plugins/geolocator_apple/darwin
+  iris_method_channel:
+    :path: Flutter/ephemeral/.symlinks/plugins/iris_method_channel/macos
+  network_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/network_info_plus/macos
+  package_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
+  path_provider_foundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
+  share_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/share_plus/macos
+  sqflite_darwin:
+    :path: Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin
+  url_launcher_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
+  video_player_avfoundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/video_player_avfoundation/darwin
+
+SPEC CHECKSUMS:
+  agora_rtc_engine: abaef2f1d0c16537545574bd0e78eecd6e9f70c0
+  AgoraInfra_macOS: 9bc9cea2486446c87d3ee3e69325cdb45ecf99c2
+  AgoraIrisRTC_macOS: 46951eaa4cbf7973f9a7682839f0c71e39b4033b
+  AgoraRtcEngine_macOS: ca423379ffb023c12a267e9ce6234f90a431f4d2
+  connectivity_plus: 0a976dfd033b59192912fa3c6c7b54aab5093802
+  device_info_plus: ce1b7762849d3ec103d0e0517299f2db7ad60720
+  file_selector_macos: cc3858c981fe6889f364731200d6232dac1d812d
+  flutter_inappwebview_macos: bdf207b8f4ebd58e86ae06cd96b147de99a67c9b
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
+  iris_method_channel: 9e3741834643c53dc41ea01f3edab11c204788c4
+  network_info_plus: 2cb02d8435635eae13b3b79279681985121cf30c
+  OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
+  package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  share_plus: 1fa619de8392a4398bfaf176d441853922614e89
+  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+  url_launcher_macos: c82c93949963e55b228a30115bd219499a6fe404
+  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
+
+PODFILE CHECKSUM: 7eb978b976557c8c1cd717d8185ec483fd090a82
+
+COCOAPODS: 1.16.2
