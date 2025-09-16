@@ -71,14 +71,28 @@ class LoginController extends GetxController {
       // Example:
       final res = await BaseClient.post(
         api: EndPoint.sendOTP,
-        data: {"PhoneNumber": mobileNumberController.text},
+        data: {
+          "PhoneNumber": mobileNumberController.text,
+          "usertype": "Customer",
+        },
       );
       if (res != null && res.statusCode == 200 && res.data["Status"] == true) {
-        Get.toNamed(Routes.OTP_VERIFY, arguments: mobileNumberController.text);
-        SnackBarUiView.showSuccess(
-          message: res.data["Message"] ?? "",
-          icon: Icons.check_circle,
-        );
+        if (res.data["Type"] == "Registered") {
+          Get.toNamed(
+            Routes.OTP_VERIFY,
+            arguments: mobileNumberController.text,
+          );
+          SnackBarUiView.showSuccess(
+            message: res.data["Message"] ?? "",
+            icon: Icons.check_circle,
+          );
+        } else {
+          // Get.toNamed(Routes.SIGNUP, arguments: mobileNumberController.text);
+          SnackBarUiView.showSuccess(
+            message: res.data["Message"] ?? "",
+            icon: Icons.check_circle,
+          );
+        }
       } else {
         SnackBarUiView.showError(
           message: res.data["Message"] ?? "",

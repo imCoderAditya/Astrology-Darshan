@@ -358,13 +358,20 @@
 // ignore_for_file: deprecated_member_use, constant_identifier_names
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_token_generator/agora_token_generator.dart';
+import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
+import 'package:astrology/app/data/baseclient/base_client.dart';
+import 'package:astrology/app/data/endpoint/end_pont.dart';
+import 'package:astrology/app/data/models/gift/gift_model.dart';
+import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:astrology/components/snack_bar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -783,5 +790,89 @@ class LiveAstroController extends GetxController {
     } catch (e) {
       debugPrint('❌ Network test error: $e');
     }
+  }
+
+  Rxn<GiftModel> giftModel = Rxn<GiftModel>();
+  Future<void> fetchGift() async {
+    try {
+      final res = await BaseClient.get(api: EndPoint.getVirtualGifts);
+
+      if (res != null && res.statusCode == 200) {
+        giftModel.value = giftModelFromJson(json.encode(res.data));
+        LoggerUtils.debug("Response: ${json.encode(giftModel.value)}");
+      } else {
+        LoggerUtils.error("Error: ${res?.data}");
+      }
+    } catch (e) {
+      LoggerUtils.error("Error: $e");
+    } finally {
+      update();
+    }
+  }
+
+  // Given Below API send Gift for Astrologer
+
+  final userId = LocalStorageService.getUserId();
+
+  Future<void> sendLiveGift({int? liveSessionID, int? giftID}) async {
+    try {
+      final res = await BaseClient.post(
+        api: EndPoint.sendGift,
+        data: {
+          "LiveSessionID": liveSessionID,
+          "SenderID": userId,
+          "GiftID": giftID,
+        },
+      );
+      if (res != null && res.statusCode == 200) {
+        LoggerUtils.debug("Response: ${res.data}");
+        if (res.data["success"] == true) {
+          Get.back();
+          Get.snackbar(
+            '🎁 Gift Selected',
+            res.data["message"],
+            colorText: AppColors.white,
+            backgroundColor: AppColors.primaryColor.withValues(alpha: 0.5),
+            duration: const Duration(seconds: 2),
+            snackPosition: SnackPosition.TOP,
+            margin: EdgeInsets.all(16.w),
+            borderRadius: 12.r,
+          );
+        } else {
+          Get.snackbar(
+            'Failed',
+            res.data["message"],
+            colorText: AppColors.white,
+            backgroundColor: AppColors.red.withValues(alpha: 0.5),
+            duration: const Duration(seconds: 2),
+            snackPosition: SnackPosition.TOP,
+            margin: EdgeInsets.all(16.w),
+            borderRadius: 12.r,
+          );
+        }
+      } else {
+        Get.snackbar(
+          'Failed',
+          res.data["message"],
+          colorText: AppColors.white,
+          backgroundColor: AppColors.red.withValues(alpha: 0.5),
+          duration: const Duration(seconds: 2),
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.all(16.w),
+          borderRadius: 12.r,
+        );
+        LoggerUtils.error("Error: ${res?.data}");
+      }
+    } catch (e) {
+      LoggerUtils.error("Error: $e");
+    } finally {
+      update();
+    }
+  }
+
+  @override
+  void onInit() {
+    fetchGift();
+    super.onInit();
   }
 }

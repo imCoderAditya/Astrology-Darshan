@@ -3,6 +3,8 @@
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
+import 'package:astrology/app/routes/app_pages.dart';
+import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -68,8 +70,8 @@ class ProfileView extends StatelessWidget {
                                 child: CircleAvatar(
                                   radius:
                                       42, // Slightly smaller inner for border effect
-                                  backgroundImage:  NetworkImage(
-                                    profile?.profilePicture??"",
+                                  backgroundImage: NetworkImage(
+                                    profile?.profilePicture ?? "",
                                   ),
                                 ),
                               ),
@@ -78,7 +80,7 @@ class ProfileView extends StatelessWidget {
                         ),
                         const SizedBox(height: 12), // More spacing
                         Text(
-                          "${profile?.firstName ?? ""} ${profile?.lastName ?? ""} ${profile?.customerId??""}",
+                          "${profile?.firstName ?? ""} ${profile?.lastName ?? ""} ${profile?.customerId ?? ""}",
                           style: AppTextStyles.headlineMedium().copyWith(
                             color: AppColors.white,
                             shadows: [
@@ -522,16 +524,9 @@ void showAttractiveLogoutDialog(
               child: ElevatedButton(
                 onPressed: () {
                   Get.back(); // Close dialog
-                  Get.snackbar(
-                    "Logged Out",
-                    "You have been successfully logged out.",
-                    backgroundColor: AppColors.red,
-                    colorText: AppColors.white,
-                    snackPosition: SnackPosition.BOTTOM,
-                    duration: const Duration(
-                      seconds: 2,
-                    ), // Auto-dismiss after 2 seconds
-                  );
+                  LocalStorageService.logout().then((value) {
+                    Get.offAllNamed(Routes.LOGIN);
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.red, // Strong red for confirmation

@@ -54,4 +54,6 @@ class EndPoint {
   static const bookPuja = "Puja/BookPuja";
   static const myBooks = "Puja/MyBookings";
   static const updatePayment = "Puja/UpdatePaymentStatus";
+  static const getVirtualGifts = "Master/GetVirtualGifts";
+  static const sendGift = "LiveSession/SendGift";
 }

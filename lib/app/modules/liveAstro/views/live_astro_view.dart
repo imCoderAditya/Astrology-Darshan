@@ -3,9 +3,12 @@
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:astrology/app/core/config/theme/app_colors.dart';
+import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/data/models/astrologer/live_astrologer_model.dart';
 import 'package:astrology/app/modules/liveAstro/controllers/live_astro_controller.dart';
+import 'package:astrology/components/custom_cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -47,7 +50,8 @@ class ViewerView extends GetView<LiveAstroController> {
               _buildTopControls(),
 
               // Bottom Controls
-              _buildBottomControls(),
+              // _buildBottomControls(),
+              _buildTextField(),
 
               // Side Controls
               // _buildSideControls(),
@@ -64,6 +68,70 @@ class ViewerView extends GetView<LiveAstroController> {
           );
         });
       },
+    );
+  }
+
+  Widget _buildTextField() {
+    return Positioned(
+      bottom: 40.h,
+      left: 16.w,
+      right: 16.w,
+      child: Row(
+        children: [
+          // Chat Input Field
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Type a message...',
+                hintStyle: TextStyle(color: Colors.white54, fontSize: 14.sp),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.1),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 10.h,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24.r),
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24.r),
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24.r),
+                  borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                ),
+              ),
+              style: TextStyle(color: Colors.white, fontSize: 14.sp),
+            ),
+          ),
+          SizedBox(width: 10.w),
+
+          // Gift Icon Button
+          InkWell(
+            onTap: () {
+              giftBottomSheet();
+            },
+            borderRadius: BorderRadius.circular(20.r),
+            child: Container(
+              height: 40.h,
+              width: 40.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+                border: Border.all(color: AppColors.white.withOpacity(0.3)),
+              ),
+              child: const Icon(
+                Icons.card_giftcard_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -228,133 +296,34 @@ class ViewerView extends GetView<LiveAstroController> {
           //     icon: const Icon(Icons.share, color: Colors.white),
           //   ),
           // ),
+          Row(
+            children: [
+              _buildControlButton(
+                icon:
+                    controller.isAudioMuted.value
+                        ? Icons.volume_off
+                        : Icons.volume_up,
+                isActive: !controller.isAudioMuted.value,
+                onPressed: controller.toggleAudio,
+                tooltip:
+                    controller.isAudioMuted.value
+                        ? 'Unmute audio'
+                        : 'Mute audio',
+              ),
+              SizedBox(width: 10.w),
+              // Volume Control
+              _buildControlButton(
+                icon: Icons.tune,
+                isActive: true,
+                onPressed: () => _showAudioControlDialog(),
+                tooltip: 'Audio settings',
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
-
-  Widget _buildBottomControls() {
-    return Positioned(
-      bottom: 40,
-      left: 16,
-      right: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // Audio Toggle Button
-            _buildControlButton(
-              icon:
-                  controller.isAudioMuted.value
-                      ? Icons.volume_off
-                      : Icons.volume_up,
-              isActive: !controller.isAudioMuted.value,
-              onPressed: controller.toggleAudio,
-              tooltip:
-                  controller.isAudioMuted.value ? 'Unmute audio' : 'Mute audio',
-            ),
-
-            // Volume Control
-            _buildControlButton(
-              icon: Icons.tune,
-              isActive: true,
-              onPressed: () => _showAudioControlDialog(),
-              tooltip: 'Audio settings',
-            ),
-
-            // Leave Button
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.red.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                onPressed: () => _showLeaveDialog(),
-                icon: const Icon(
-                  Icons.exit_to_app,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                tooltip: 'Leave stream',
-              ),
-            ),
-
-            // Quality Settings
-            _buildControlButton(
-              icon: Icons.hd,
-              isActive: true,
-              onPressed: () => _showQualityDialog(),
-              tooltip: 'Video quality',
-            ),
-
-            // More options
-            _buildControlButton(
-              icon: Icons.more_vert,
-              isActive: true,
-              onPressed: () => _showMoreOptions(),
-              tooltip: 'More options',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget _buildSideControls() {
-  //   return Positioned(
-  //     right: 16,
-  //     top: 260,
-  //     child: Column(
-  //       children: [
-  //         // Chat button
-  //         _buildSideButton(
-  //           icon: Icons.chat,
-  //           onPressed: () => _showChatDialog(),
-  //           tooltip: 'Chat',
-  //         ),
-  //         const SizedBox(height: 12),
-
-  //         // Share button
-  //         _buildSideButton(
-  //           icon: Icons.share,
-  //           onPressed: controller.shareLive,
-  //           tooltip: 'Share',
-  //         ),
-  //         const SizedBox(height: 12),
-
-  //         // Report button
-  //         _buildSideButton(
-  //           icon: Icons.flag,
-  //           onPressed: () => _showReportDialog(),
-  //           tooltip: 'Report',
-  //         ),
-  //         const SizedBox(height: 12),
-
-  //         // Fullscreen button
-  //         _buildSideButton(
-  //           icon: Icons.fullscreen,
-  //           onPressed: () => _toggleFullscreen(),
-  //           tooltip: 'Fullscreen',
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildConnectionStatus() {
     return Positioned(
@@ -419,7 +388,7 @@ class ViewerView extends GetView<LiveAstroController> {
 
   Widget _buildHostInfo() {
     return Positioned(
-      bottom: 140.h,
+      bottom: 100.h,
       left: 16,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -459,18 +428,15 @@ class ViewerView extends GetView<LiveAstroController> {
     return Tooltip(
       message: tooltip,
       child: Container(
-        width: 48,
-        height: 48,
+        width: 35.w,
+        height: 35.h,
         decoration: BoxDecoration(
-          color:
-              isActive
-                  ? const Color(0xFF00D4FF)
-                  : Colors.white.withOpacity(0.2),
+          color: isActive ? Colors.transparent : Colors.white.withOpacity(0.2),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color:
                 isActive
-                    ? const Color(0xFF00D4FF)
+                    ? AppColors.primaryColor
                     : Colors.white.withOpacity(0.3),
           ),
         ),
@@ -485,33 +451,6 @@ class ViewerView extends GetView<LiveAstroController> {
       ),
     );
   }
-
-  // Widget _buildSideButton({
-  //   required IconData icon,
-  //   required VoidCallback onPressed,
-  //   required String tooltip,
-  //   bool isActive = false,
-  // }) {
-  //   return Tooltip(
-  //     message: tooltip,
-  //     child: Container(
-  //       width: 48,
-  //       height: 48,
-  //       decoration: BoxDecoration(
-  //         color:
-  //             isActive
-  //                 ? const Color(0xFF00D4FF)
-  //                 : Colors.black.withOpacity(0.6),
-  //         borderRadius: BorderRadius.circular(24),
-  //         border: Border.all(color: Colors.white.withOpacity(0.2)),
-  //       ),
-  //       child: IconButton(
-  //         onPressed: onPressed,
-  //         icon: Icon(icon, color: Colors.white, size: 20),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Color _getConnectionColor() {
     switch (controller.connectionState.value) {
@@ -633,7 +572,479 @@ class ViewerView extends GetView<LiveAstroController> {
     );
   }
 
-  void _showQualityDialog() {
+  void giftBottomSheet() {
+    Get.bottomSheet(
+      GetBuilder<LiveAstroController>(
+        init: LiveAstroController(),
+        builder: (controller) {
+          return Container(
+            height: Get.height * 0.9,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [const Color(0xFF1A1F3A), const Color(0xFF0F1426)],
+              ),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Handle and Header
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  child: Column(
+                    children: [
+                      // Sheet Handle
+                      GestureDetector(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Container(
+                          width: 50.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.primaryColor,
+                                AppColors.accentColor,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(2.r),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      // Header with animation
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(8.w),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: AppColors.headerGradientColors,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.card_giftcard_rounded,
+                              color: Colors.white,
+                              size: 24.sp,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Text(
+                            'Send a Divine Gift',
+                            style: AppTextStyles.headlineMedium().copyWith(
+                              color: Colors.white,
+                              fontSize: 20.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 8.h),
+
+                      Text(
+                        'Share blessings with your loved ones',
+                        style: AppTextStyles.body().copyWith(
+                          color: Colors.white70,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Grid Title
+                        Text(
+                          'Choose Your Gift',
+                          style: AppTextStyles.body().copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        // Gift Grid
+                        GridView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: controller.giftModel.value?.data?.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 16.w,
+                                mainAxisSpacing: 16.h,
+                                mainAxisExtent: 150.h,
+                              ),
+                          itemBuilder: (context, index) {
+                            final gift =
+                                controller.giftModel.value?.data?[index];
+                            return GestureDetector(
+                              onTap: () {
+                                // Add haptic feedback
+                                HapticFeedback.lightImpact();
+
+                                // Show selection animation
+                                // Get.snackbar(
+                                //   '🎁 Gift Selected',
+                                //   'Added ${gift?.giftName ?? ""} to your gift',
+
+                                //   colorText: Colors.white,
+                                //   duration: const Duration(seconds: 2),
+                                //   snackPosition: SnackPosition.TOP,
+                                //   margin: EdgeInsets.all(16.w),
+                                //   borderRadius: 12.r,
+                                //   icon: CustomCachedNetworkImage(
+                                //     imageUrl: gift?.giftAnimation ?? "",
+                                //   ),
+                                // );
+
+                                controller.sendLiveGift(
+                                  giftID: gift?.giftId,
+                                  liveSessionID: liveAstrologer?.astrologerId,
+                                );
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                      gift?.giftAnimation ?? "",
+                                    ),
+                                  ),
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.w),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Icon with gradient background
+                                      Container(
+                                        height: 50.h,
+                                        width: 60.w,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              gift?.giftImage ?? "",
+                                            ),
+                                          ),
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: CustomCachedNetworkImage(
+                                          imageUrl: gift?.giftImage ?? "",
+                                        ),
+                                      ),
+
+                                      SizedBox(height: 12.h),
+
+                                      // Gift Name
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 16.w,
+                                          vertical: 4.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            8.r,
+                                          ),
+                                          color: AppColors.backgroundDark
+                                              .withValues(alpha: 0.4),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              gift?.giftName ?? "",
+
+                                              style: AppTextStyles.body()
+                                                  .copyWith(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 14.sp,
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+
+                                            SizedBox(height: 4.h),
+
+                                            // Price
+                                            Text(
+                                              "\u20B9 ${gift?.price.toString() ?? ""}",
+                                              style: AppTextStyles.body()
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16.sp,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                        SizedBox(height: 24.h),
+                      ],
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child: TextButton(
+                    onPressed: () => Get.back(),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12.h,
+                        horizontal: 24.w,
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: AppTextStyles.body().copyWith(
+                        color: Colors.white70,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+    );
+  }
+
+  // not used code given bellow
+  /*
+  Widget _buildReportOption(String option) {
+    return InkWell(
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Radio<String>(
+              value: option,
+              groupValue: null,
+              onChanged: (value) {},
+              activeColor: const Color(0xFF00D4FF),
+            ),
+            Expanded(
+              child: Text(option, style: const TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildQualityInfoItem(String title, String value, Color color) {
+    return ListTile(
+      leading: Container(
+        width: 12,
+        height: 12,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
+      trailing: Text(
+        value,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  String _getNetworkQualityText() {
+    switch (controller.networkQuality.value) {
+      case 'excellent':
+        return 'Excellent';
+      case 'poor':
+        return 'Poor';
+      default:
+        return 'Fair';
+    }
+  }
+
+  Color _getNetworkQualityColor() {
+    switch (controller.networkQuality.value) {
+      case 'excellent':
+        return Colors.green;
+      case 'poor':
+        return Colors.red;
+      default:
+        return Colors.orange;
+    }
+  }
+
+  void _showChatDialog() {
+    Get.bottomSheet(
+      Container(
+        height: Get.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Color(0xFF1A1F3A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Live Chat',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Center(
+                  child: Text(
+                    'Chat feature coming soon!\nYou\'ll be able to interact with the astrologer here.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white60, fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      enabled: false,
+                      decoration: InputDecoration(
+                        hintText: 'Type your message...',
+                        hintStyle: const TextStyle(color: Colors.white30),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF00D4FF),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: null,
+                      icon: const Icon(Icons.send, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showReportDialog() {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: const Color(0xFF1A1F3A),
+        title: const Text(
+          'Report Live Stream',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Why are you reporting this live stream?',
+              style: TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 16),
+            _buildReportOption('Inappropriate content'),
+            _buildReportOption('Spam or misleading'),
+            _buildReportOption('Harassment or bullying'),
+            _buildReportOption('Copyright violation'),
+            _buildReportOption('Other'),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              controller.reportLive();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            child: const Text('Report', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+    void _showQualityDialog() {
     Get.bottomSheet(
       Container(
         decoration: const BoxDecoration(
@@ -697,187 +1108,32 @@ class ViewerView extends GetView<LiveAstroController> {
     );
   }
 
-  Widget _buildQualityInfoItem(String title, String value, Color color) {
+
+    Widget _buildSettingsItem(String title, IconData icon, VoidCallback onTap) {
     return ListTile(
-      leading: Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      ),
+      leading: Icon(icon, color: Colors.white),
       title: Text(title, style: const TextStyle(color: Colors.white)),
-      trailing: Text(
-        value,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold),
-      ),
+      trailing: const Icon(Icons.chevron_right, color: Colors.white),
+      onTap: () {
+        Get.back();
+        onTap();
+      },
     );
   }
 
-  String _getNetworkQualityText() {
-    switch (controller.networkQuality.value) {
-      case 'excellent':
-        return 'Excellent';
-      case 'poor':
-        return 'Poor';
-      default:
-        return 'Fair';
-    }
-  }
-
-  Color _getNetworkQualityColor() {
-    switch (controller.networkQuality.value) {
-      case 'excellent':
-        return Colors.green;
-      case 'poor':
-        return Colors.red;
-      default:
-        return Colors.orange;
-    }
-  }
-
-  // void _showChatDialog() {
-  //   Get.bottomSheet(
-  //     Container(
-  //       height: Get.height * 0.7,
-  //       decoration: const BoxDecoration(
-  //         color: Color(0xFF1A1F3A),
-  //         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //       ),
-  //       child: Column(
-  //         children: [
-  //           Container(
-  //             width: 40,
-  //             height: 4,
-  //             margin: const EdgeInsets.only(top: 12),
-  //             decoration: BoxDecoration(
-  //               color: Colors.white.withOpacity(0.3),
-  //               borderRadius: BorderRadius.circular(2),
-  //             ),
-  //           ),
-  //           const Padding(
-  //             padding: EdgeInsets.all(20),
-  //             child: Text(
-  //               'Live Chat',
-  //               style: TextStyle(
-  //                 color: Colors.white,
-  //                 fontSize: 18,
-  //                 fontWeight: FontWeight.w600,
-  //               ),
-  //             ),
-  //           ),
-  //           Expanded(
-  //             child: Container(
-  //               margin: const EdgeInsets.symmetric(horizontal: 16),
-  //               child: const Center(
-  //                 child: Text(
-  //                   'Chat feature coming soon!\nYou\'ll be able to interact with the astrologer here.',
-  //                   textAlign: TextAlign.center,
-  //                   style: TextStyle(color: Colors.white60, fontSize: 16),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //           Container(
-  //             padding: const EdgeInsets.all(16),
-  //             child: Row(
-  //               children: [
-  //                 Expanded(
-  //                   child: TextField(
-  //                     enabled: false,
-  //                     decoration: InputDecoration(
-  //                       hintText: 'Type your message...',
-  //                       hintStyle: const TextStyle(color: Colors.white30),
-  //                       filled: true,
-  //                       fillColor: Colors.white.withOpacity(0.1),
-  //                       border: OutlineInputBorder(
-  //                         borderRadius: BorderRadius.circular(25),
-  //                         borderSide: BorderSide.none,
-  //                       ),
-  //                     ),
-  //                     style: const TextStyle(color: Colors.white),
-  //                   ),
-  //                 ),
-  //                 const SizedBox(width: 8),
-  //                 Container(
-  //                   decoration: const BoxDecoration(
-  //                     color: Color(0xFF00D4FF),
-  //                     shape: BoxShape.circle,
-  //                   ),
-  //                   child: IconButton(
-  //                     onPressed: null,
-  //                     icon: const Icon(Icons.send, color: Colors.white),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  void _showReportDialog() {
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: const Color(0xFF1A1F3A),
-        title: const Text(
-          'Report Live Stream',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Why are you reporting this live stream?',
-              style: TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 16),
-            _buildReportOption('Inappropriate content'),
-            _buildReportOption('Spam or misleading'),
-            _buildReportOption('Harassment or bullying'),
-            _buildReportOption('Copyright violation'),
-            _buildReportOption('Other'),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              controller.reportLive();
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text('Report', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+ void _toggleFullscreen() {
+    // Implement fullscreen functionality
+    Get.snackbar(
+      'Fullscreen',
+      'Fullscreen mode activated',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF1A1F3A),
+      colorText: Colors.white,
+      duration: const Duration(seconds: 1),
     );
   }
 
-  Widget _buildReportOption(String option) {
-    return InkWell(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            Radio<String>(
-              value: option,
-              groupValue: null,
-              onChanged: (value) {},
-              activeColor: const Color(0xFF00D4FF),
-            ),
-            Expanded(
-              child: Text(option, style: const TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showMoreOptions() {
+ void _showMoreOptions() {
     Get.bottomSheet(
       Container(
         decoration: const BoxDecoration(
@@ -937,27 +1193,156 @@ class ViewerView extends GetView<LiveAstroController> {
     );
   }
 
-  Widget _buildSettingsItem(String title, IconData icon, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: Text(title, style: const TextStyle(color: Colors.white)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.white),
-      onTap: () {
-        Get.back();
-        onTap();
-      },
+
+
+  Widget _buildSideButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required String tooltip,
+    bool isActive = false,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color:
+              isActive
+                  ? const Color(0xFF00D4FF)
+                  : Colors.black.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
+        ),
+        child: IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon, color: Colors.white, size: 20),
+        ),
+      ),
     );
   }
 
-  // void _toggleFullscreen() {
-  //   // Implement fullscreen functionality
-  //   Get.snackbar(
-  //     'Fullscreen',
-  //     'Fullscreen mode activated',
-  //     snackPosition: SnackPosition.BOTTOM,
-  //     backgroundColor: const Color(0xFF1A1F3A),
-  //     colorText: Colors.white,
-  //     duration: const Duration(seconds: 1),
-  //   );
-  // }
+  Widget _buildBottomControls() {
+    return Positioned(
+      bottom: 40,
+      left: 16,
+      right: 16,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Audio Toggle Button
+            _buildControlButton(
+              icon:
+                  controller.isAudioMuted.value
+                      ? Icons.volume_off
+                      : Icons.volume_up,
+              isActive: !controller.isAudioMuted.value,
+              onPressed: controller.toggleAudio,
+              tooltip:
+                  controller.isAudioMuted.value ? 'Unmute audio' : 'Mute audio',
+            ),
+
+            // Volume Control
+            _buildControlButton(
+              icon: Icons.tune,
+              isActive: true,
+              onPressed: () => _showAudioControlDialog(),
+              tooltip: 'Audio settings',
+            ),
+
+            // Leave Button
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.red.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: () => _showLeaveDialog(),
+                icon: const Icon(
+                  Icons.exit_to_app,
+                  color: Colors.white,
+                  size: 28,
+                ),
+                tooltip: 'Leave stream',
+              ),
+            ),
+
+            // Quality Settings
+            _buildControlButton(
+              icon: Icons.hd,
+              isActive: true,
+              onPressed: () => _showQualityDialog(),
+              tooltip: 'Video quality',
+            ),
+
+            // More options
+            _buildControlButton(
+              icon: Icons.more_vert,
+              isActive: true,
+              onPressed: () => _showMoreOptions(),
+              tooltip: 'More options',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSideControls() {
+    return Positioned(
+      right: 16,
+      top: 260,
+      child: Column(
+        children: [
+          // Chat button
+          _buildSideButton(
+            icon: Icons.chat,
+            onPressed: () => _showChatDialog(),
+            tooltip: 'Chat',
+          ),
+          const SizedBox(height: 12),
+
+          // Share button
+          _buildSideButton(
+            icon: Icons.share,
+            onPressed: controller.shareLive,
+            tooltip: 'Share',
+          ),
+          const SizedBox(height: 12),
+
+          // Report button
+          _buildSideButton(
+            icon: Icons.flag,
+            onPressed: () => _showReportDialog(),
+            tooltip: 'Report',
+          ),
+          const SizedBox(height: 12),
+
+          // Fullscreen button
+          _buildSideButton(
+            icon: Icons.fullscreen,
+            onPressed: () => _toggleFullscreen(),
+            tooltip: 'Fullscreen',
+          ),
+        ],
+      ),
+    );
+  }
+*/
 }
