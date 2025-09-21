@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   emoji_picker_flutter
   file_selector_windows
+  firebase_core
   flutter_inappwebview_windows
   geolocator_windows
   iris_method_channel

@@ -65,10 +65,12 @@ dependencies:
   animate_do:
   video_player: ^2.10.0
   youtube_player_flutter: ^9.1.2
-  payu_upi_flutter: ^0.0.2
+  payu_upi_flutter:
   emoji_picker_flutter: ^4.3.0
   web_socket_channel: ^3.0.3
   speech_to_text:
+  firebase_core: ^3.15.1
+  firebase_messaging: ^15.2.10
 
 
 dev_dependencies:
@@ -83,6 +85,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
+  change_app_package_name: ^1.5.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

@@ -1,4 +1,4 @@
-package com.astrowaydiploy.user.astrology
+package com.astrodarshan.user
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "680930418161",
+    "firebase_url": "https://astro-darshan-a4ac5-default-rtdb.firebaseio.com",
+    "project_id": "astro-darshan-a4ac5",
+    "storage_bucket": "astro-darshan-a4ac5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680930418161:android:3af728659c465491673850",
+        "android_client_info": {
+          "package_name": "com.astrodarshan.partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD74WlX6tVXL6opjjQky8ZWnKfg9Shm2eY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680930418161:android:5ea1046e11e923dd673850",
+        "android_client_info": {
+          "package_name": "com.astrodarshan.user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD74WlX6tVXL6opjjQky8ZWnKfg9Shm2eY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
