@@ -172,7 +172,7 @@ class SplashView extends StatelessWidget {
           child: Opacity(
             opacity: (controller.fadeAnimation.value * 0.8).clamp(0.0, 1.0),
             child: const Text(
-              "Tagline -AstroDarshan ho saath, toh fikr ki kya baat!",
+              "AstroDarshan ho saath, toh fikr ki kya baat!",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.white70, letterSpacing: 1, fontStyle: FontStyle.italic),
             ),
