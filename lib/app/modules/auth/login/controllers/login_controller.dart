@@ -87,7 +87,7 @@ class LoginController extends GetxController {
             icon: Icons.check_circle,
           );
         } else {
-          // Get.toNamed(Routes.SIGNUP, arguments: mobileNumberController.text);
+          Get.toNamed(Routes.SIGNUP, arguments: mobileNumberController.text);
           SnackBarUiView.showSuccess(
             message: res.data["Message"] ?? "",
             icon: Icons.check_circle,

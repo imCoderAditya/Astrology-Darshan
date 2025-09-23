@@ -171,47 +171,31 @@ class ProfileView extends StatelessWidget {
                   const SizedBox(height: 35), // More space
                   // Account Settings Section
                   _buildSectionTitle("Account Settings", textColor),
-                  _buildSettingsTile(
-                    Icons.lock_outline,
-                    "Change Password",
-                    textColor: textColor,
-                    onTap:
-                        () => Get.snackbar(
-                          "Action",
-                          "Change Password Tapped",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.primaryColor,
-                          colorText: AppColors.white,
-                        ),
-                  ),
+                  // _buildSettingsTile(
+                  //   Icons.lock_outline,
+                  //   "Change Password",
+                  //   textColor: textColor,
+                  //   onTap:
+                  //       () => Get.snackbar(
+                  //         "Action",
+                  //         "Change Password Tapped",
+                  //         snackPosition: SnackPosition.BOTTOM,
+                  //         backgroundColor: AppColors.primaryColor,
+                  //         colorText: AppColors.white,
+                  //       ),
+                  // ),
                   _buildSettingsTile(
                     Icons.notifications_none,
                     "Notifications",
                     textColor: textColor,
                     trailing: Switch(
                       value: true,
-                      onChanged: (bool value) {
-                        Get.snackbar(
-                          "Notifications",
-                          "Notifications Toggled: $value",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.sucessPrimary,
-                          colorText: AppColors.white,
-                        );
-                      },
-                      activeColor:
-                          AppColors.accentColor, // Use accent for switch
+                      onChanged: (bool value) {},
+                      activeColor: AppColors.accentColor,
                       inactiveThumbColor: secondaryTextColor,
                       inactiveTrackColor: dividerColor,
                     ),
-                    onTap:
-                        () => Get.snackbar(
-                          "Action",
-                          "Notifications Settings Tapped",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.primaryColor,
-                          colorText: AppColors.white,
-                        ),
+                    onTap: () {},
                   ),
                   // _buildSettingsTile(
                   //   Icons.language,
@@ -231,14 +215,7 @@ class ProfileView extends StatelessWidget {
                     Icons.security,
                     "Privacy Policy",
                     textColor: textColor,
-                    onTap:
-                        () => Get.snackbar(
-                          "Action",
-                          "Privacy Policy Tapped",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.primaryColor,
-                          colorText: AppColors.white,
-                        ),
+                    onTap: () => {},
                   ),
 
                   const SizedBox(height: 25),
@@ -249,27 +226,13 @@ class ProfileView extends StatelessWidget {
                     Icons.info_outline,
                     "About App",
                     textColor: textColor,
-                    onTap:
-                        () => Get.snackbar(
-                          "Action",
-                          "About App Tapped",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.primaryColor,
-                          colorText: AppColors.white,
-                        ),
+                    onTap: () => {},
                   ),
                   _buildSettingsTile(
                     Icons.star_rate_rounded, // Nicer icon for Rate Us
                     "Rate Us",
                     textColor: textColor,
-                    onTap:
-                        () => Get.snackbar(
-                          "Action",
-                          "Rate Us Tapped",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.primaryColor,
-                          colorText: AppColors.white,
-                        ),
+                    onTap: () => {},
                   ),
 
                   const SizedBox(height: 35),

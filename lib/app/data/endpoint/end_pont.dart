@@ -5,6 +5,7 @@ class EndPoint {
   // Login API
   static const sendOTP = "Login/SendOtp";
   static const otpVerify = "Login/LoginUser";
+  static const registerCustomer = "Registration/customer";
   static const userProfile = "Profile/UserProfile";
   // Ecommerce API Section Given Below
   static const category = "Master/GetProduct_Category";
