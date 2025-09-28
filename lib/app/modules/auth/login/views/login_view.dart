@@ -656,101 +656,101 @@ class LoginView extends GetView<LoginController> {
                         },
                       ),
 
-                      // Enhanced Sign Up Link with theme support
-                      TweenAnimationBuilder<double>(
-                        tween: Tween(begin: 0.0, end: 1.0),
-                        duration: const Duration(milliseconds: 200),
-                        builder: (context, value, child) {
-                          return Opacity(
-                            opacity: value,
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color:
-                                    isDark
-                                        ? AppColors.darkSurface.withValues(
-                                          alpha: 0.6,
-                                        )
-                                        : AppColors.white.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color:
-                                      isDark
-                                          ? AppColors.darkDivider.withValues(
-                                            alpha: 0.3,
-                                          )
-                                          : AppColors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.person_add_outlined,
-                                    color:
-                                        isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.white.withValues(
-                                              alpha: 0.8,
-                                            ),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    "Don't have an account? ",
-                                    style: TextStyle(
-                                      color:
-                                          isDark
-                                              ? AppColors.darkTextSecondary
-                                              : AppColors.white.withValues(
-                                                alpha: 0.8,
-                                              ),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: controller.onSignUp,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            isDark
-                                                ? AppColors.primaryColor
-                                                    .withValues(alpha: 0.2)
-                                                : AppColors.white.withValues(
-                                                  alpha: 0.2,
-                                                ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        'Sign Up',
-                                        style: TextStyle(
-                                          color:
-                                              isDark
-                                                  ? AppColors.primaryColor
-                                                  : AppColors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      // // Enhanced Sign Up Link with theme support
+                      // TweenAnimationBuilder<double>(
+                      //   tween: Tween(begin: 0.0, end: 1.0),
+                      //   duration: const Duration(milliseconds: 200),
+                      //   builder: (context, value, child) {
+                      //     return Opacity(
+                      //       opacity: value,
+                      //       child: Container(
+                      //         padding: const EdgeInsets.all(20),
+                      //         decoration: BoxDecoration(
+                      //           color:
+                      //               isDark
+                      //                   ? AppColors.darkSurface.withValues(
+                      //                     alpha: 0.6,
+                      //                   )
+                      //                   : AppColors.white.withValues(
+                      //                     alpha: 0.1,
+                      //                   ),
+                      //           borderRadius: BorderRadius.circular(16),
+                      //           border: Border.all(
+                      //             color:
+                      //                 isDark
+                      //                     ? AppColors.darkDivider.withValues(
+                      //                       alpha: 0.3,
+                      //                     )
+                      //                     : AppColors.white.withValues(
+                      //                       alpha: 0.3,
+                      //                     ),
+                      //             width: 1,
+                      //           ),
+                      //         ),
+                      //         child: Row(
+                      //           mainAxisAlignment: MainAxisAlignment.center,
+                      //           children: [
+                      //             Icon(
+                      //               Icons.person_add_outlined,
+                      //               color:
+                      //                   isDark
+                      //                       ? AppColors.darkTextSecondary
+                      //                       : AppColors.white.withValues(
+                      //                         alpha: 0.8,
+                      //                       ),
+                      //               size: 18,
+                      //             ),
+                      //             const SizedBox(width: 8),
+                      //             Text(
+                      //               "Don't have an account? ",
+                      //               style: TextStyle(
+                      //                 color:
+                      //                     isDark
+                      //                         ? AppColors.darkTextSecondary
+                      //                         : AppColors.white.withValues(
+                      //                           alpha: 0.8,
+                      //                         ),
+                      //                 fontSize: 14,
+                      //                 fontWeight: FontWeight.w500,
+                      //               ),
+                      //             ),
+                      //             GestureDetector(
+                      //               onTap: controller.onSignUp,
+                      //               child: Container(
+                      //                 padding: const EdgeInsets.symmetric(
+                      //                   horizontal: 12,
+                      //                   vertical: 4,
+                      //                 ),
+                      //                 decoration: BoxDecoration(
+                      //                   color:
+                      //                       isDark
+                      //                           ? AppColors.primaryColor
+                      //                               .withValues(alpha: 0.2)
+                      //                           : AppColors.white.withValues(
+                      //                             alpha: 0.2,
+                      //                           ),
+                      //                   borderRadius: BorderRadius.circular(8),
+                      //                 ),
+                      //                 child: Text(
+                      //                   'Sign Up',
+                      //                   style: TextStyle(
+                      //                     color:
+                      //                         isDark
+                      //                             ? AppColors.primaryColor
+                      //                             : AppColors.white,
+                      //                     fontSize: 14,
+                      //                     fontWeight: FontWeight.w700,
+                      //                     letterSpacing: 0.5,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
 
                       const SizedBox(height: 30),
                     ],

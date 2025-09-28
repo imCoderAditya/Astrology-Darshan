@@ -81,7 +81,7 @@ class SplashController extends GetxController
 
     // Simulate loading process
     for (int i = 0; i < loadingTexts.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 600));
+      await Future.delayed(const Duration(milliseconds: 400));
       loadingText.value = loadingTexts[i];
       loadingProgress.value = (i + 1) / loadingTexts.length;
     }
@@ -90,7 +90,7 @@ class SplashController extends GetxController
     await animationController.forward();
 
     // Add final delay
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 400));
 
     // Navigate to next screen
     _navigateToNext();

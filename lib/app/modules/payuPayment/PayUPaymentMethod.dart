@@ -1323,7 +1323,7 @@ import 'package:payu_upi_flutter/PayUUPIConstantKeys.dart';
 import 'package:payu_upi_flutter/payu_upi_flutter.dart';
 
 class Payupaymentmethod extends StatefulWidget {
-  const Payupaymentmethod({Key? key}) : super(key: key);
+  const Payupaymentmethod({super.key});
 
   @override
   _UpiPaymentPageState createState() => _UpiPaymentPageState();

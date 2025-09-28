@@ -6,14 +6,28 @@ import 'package:astrology/app/data/endpoint/end_pont.dart';
 import 'package:astrology/app/data/models/reels/reels_model.dart'
     show ReelsModel, reelsModelFromJson;
 import 'package:get/get.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class ReelsController extends GetxController {
   int _currentIndex = 0;
-
   int get currentIndex => _currentIndex;
   final Rxn<ReelsModel> _reelsModel = Rxn<ReelsModel>();
   Rxn<ReelsModel> get reelsModel => _reelsModel;
+YoutubePlayerController? youtubeController;
 
+  void setYoutubeController(YoutubePlayerController controller) {
+    youtubeController = controller;
+  }
+
+  void pauseVideo() {
+    youtubeController?.pause();
+    update();
+  }
+
+  void playVideo() {
+    youtubeController?.play();
+    update();
+  }
   void setCurrentIndex(int index) {
     _currentIndex = index;
     update();

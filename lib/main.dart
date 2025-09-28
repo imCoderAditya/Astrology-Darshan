@@ -1,3 +1,4 @@
+
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
@@ -19,6 +20,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await BaseClient.initialize(EndPoint.baseurl, allowBadCert: true);
   await FirebaseServices.firebaseToken();
+  FirebaseServices().setupFirebaseForegroundListener();
+
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: AppColors.primaryColor,

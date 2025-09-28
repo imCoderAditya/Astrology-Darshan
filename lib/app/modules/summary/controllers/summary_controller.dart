@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 class SummaryController extends GetxController {
   final userId = LocalStorageService.getUserId();
   // Observable for selected payment method using a string
-  var selectedPaymentMethod = ''.obs;
+  var selectedPaymentMethod = 'online'.obs;
 
   // Method to change payment method
   void selectPaymentMethod(String method) {

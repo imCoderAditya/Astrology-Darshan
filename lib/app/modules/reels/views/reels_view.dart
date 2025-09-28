@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/theme_controller.dart';
 import 'package:astrology/app/data/models/reels/reels_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,7 +11,8 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../controllers/reels_controller.dart';
 
 class ReelsView extends GetView<ReelsController> {
-  ReelsView({super.key});
+  final bool? isPlay;
+  ReelsView({super.key, this.isPlay = false});
 
   final ThemeController themeController = Get.find<ThemeController>();
 
@@ -22,6 +24,8 @@ class ReelsView extends GetView<ReelsController> {
         return Scaffold(
           backgroundColor: Colors.black,
           body: PageView.builder(
+            pageSnapping: true,
+            allowImplicitScrolling: true,
             scrollDirection: Axis.vertical,
             itemCount: controller.reelsModel.value?.data?.length,
             onPageChanged: (index) {
@@ -31,6 +35,7 @@ class ReelsView extends GetView<ReelsController> {
               return ReelItem(
                 reel: controller.reelsModel.value?.data?[index],
                 isCurrentPage: controller.currentIndex == index,
+                isPlay: isPlay,
               );
             },
           ),
@@ -43,8 +48,14 @@ class ReelsView extends GetView<ReelsController> {
 class ReelItem extends StatefulWidget {
   final ReelsData? reel;
   final bool isCurrentPage;
+  final bool? isPlay;
 
-  const ReelItem({super.key, this.reel, required this.isCurrentPage});
+  const ReelItem({
+    super.key,
+    this.reel,
+    required this.isCurrentPage,
+    this.isPlay = false,
+  });
 
   @override
   State<ReelItem> createState() => _ReelItemState();
@@ -58,10 +69,11 @@ class _ReelItemState extends State<ReelItem>
   // bool _isFollowing = false;
   bool _showHeart = false;
   ScrollController scrollController = ScrollController();
-
+  final reelsController = Get.put(ReelsController(), permanent: true);
   @override
   void initState() {
     super.initState();
+
     _animationController = AnimationController(
       duration: const Duration(seconds: 10),
       vsync: this,
@@ -77,7 +89,7 @@ class _ReelItemState extends State<ReelItem>
       _youtubeController = YoutubePlayerController(
         initialVideoId: videoId,
         flags: const YoutubePlayerFlags(
-          autoPlay: false,
+          autoPlay: true,
           mute: false,
           loop: true,
           enableCaption: false,
@@ -87,22 +99,10 @@ class _ReelItemState extends State<ReelItem>
           hideControls: true,
         ),
       );
-
-      if (mounted) {
-        setState(() {});
-      }
     }
-  }
 
-  @override
-  void didUpdateWidget(ReelItem oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Play/pause based on current page
-    if (widget.isCurrentPage && !oldWidget.isCurrentPage) {
-      _youtubeController?.play();
-    } else if (!widget.isCurrentPage && oldWidget.isCurrentPage) {
-      _youtubeController?.pause();
+    if (_youtubeController != null) {
+      reelsController.setYoutubeController(_youtubeController!);
     }
   }
 
@@ -131,10 +131,11 @@ class _ReelItemState extends State<ReelItem>
   void _togglePlayPause() {
     if (_youtubeController != null) {
       if (_youtubeController!.value.isPlaying) {
-        _youtubeController!.pause();
+        _youtubeController?.pause();
       } else {
-        _youtubeController!.play();
+        _youtubeController?.play();
       }
+      setState(() {});
     }
   }
 
@@ -145,7 +146,6 @@ class _ReelItemState extends State<ReelItem>
         // YouTube Video Player
         GestureDetector(
           onDoubleTap: _onDoubleTap,
-          onTap: _togglePlayPause,
           child: SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -160,7 +160,7 @@ class _ReelItemState extends State<ReelItem>
                         aspectRatio: 9 / 16,
                         onReady: () {
                           if (widget.isCurrentPage) {
-                            _youtubeController!.play();
+                            _youtubeController?.play();
                           }
                         },
                       ),
@@ -464,6 +464,22 @@ class _ReelItemState extends State<ReelItem>
               child: const Icon(Icons.favorite, color: Colors.red, size: 80),
             ),
           ),
+
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 40,
+          bottom: 0,
+          child: IconButton(
+            onPressed: _togglePlayPause,
+            icon: Icon(
+              (_youtubeController?.value.isPlaying ?? true)
+                  ? Icons.play_arrow
+                  : null,
+              color: AppColors.white.withValues(alpha: 0.4),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -626,7 +642,7 @@ class CommentSheet extends StatelessWidget {
 
 
 
-// Native player Used to Reels Section 
+// Native player Used to Reels Section
 // // ignore_for_file: deprecated_member_use
 
 // import 'package:astrology/app/core/config/theme/theme_controller.dart';

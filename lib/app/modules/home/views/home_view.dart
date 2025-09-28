@@ -272,13 +272,13 @@ class HomeView extends GetView<HomeController> {
       },
       {'icon': Icons.casino, 'title': 'Numerology', 'color': Colors.orange},
       {'icon': Icons.style, 'title': 'Tarot', 'color': Colors.purple},
-      {'icon': Icons.schedule, 'title': 'Muhurat', 'color': Colors.blueGrey},
+      // {'icon': Icons.schedule, 'title': 'Muhurat', 'color': Colors.blueGrey},
       {'icon': Icons.healing, 'title': 'Remedies', 'color': Colors.deepOrange},
-      {
-        'icon': Icons.more_horiz,
-        'title': 'More',
-        'color': AppColors.primaryColor,
-      },
+      // {
+      //   'icon': Icons.more_horiz,
+      //   'title': 'More',
+      //   'color': AppColors.primaryColor,
+      // },
     ];
 
     return Container(
@@ -296,7 +296,7 @@ class HomeView extends GetView<HomeController> {
             padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
+              crossAxisCount: 3,
               crossAxisSpacing: 10.w,
               mainAxisSpacing: 10.h,
               mainAxisExtent: 90.h,

@@ -57,4 +57,5 @@ class EndPoint {
   static const updatePayment = "Puja/UpdatePaymentStatus";
   static const getVirtualGifts = "Master/GetVirtualGifts";
   static const sendGift = "LiveSession/SendGift";
+  static const notification = "Notification/GetUnread";
 }

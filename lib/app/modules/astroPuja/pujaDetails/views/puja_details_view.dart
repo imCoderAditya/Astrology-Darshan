@@ -878,7 +878,7 @@ class PujaDetailsView extends GetView<PujaDetailsController> {
   void _showBookingConfirmation(BuildContext context) {
     String? locationController;
     final TextEditingController addressController = TextEditingController();
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -905,7 +905,7 @@ class PujaDetailsView extends GetView<PujaDetailsController> {
           ),
           content: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1158,7 +1158,7 @@ class PujaDetailsView extends GetView<PujaDetailsController> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   // Process booking with location and address
                   String? location = locationController;
                   final String address = addressController.text.trim();

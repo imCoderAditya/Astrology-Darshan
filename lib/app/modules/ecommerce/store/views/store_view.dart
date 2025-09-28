@@ -133,7 +133,6 @@ class StoreView extends GetView<StoreController> {
                       final productName = product.productName ?? "";
                       final productPrice = product.price ?? 0.0;
                       final productDescription = product.description ?? "";
-                      ;
                       // final productImage =
                       //     'https://picsum.photos/id/${100 + index}/200/200';
                       final productImage = product.images;
