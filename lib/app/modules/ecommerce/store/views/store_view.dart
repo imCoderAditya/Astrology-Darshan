@@ -42,7 +42,10 @@ class StoreView extends GetView<StoreController> {
         return Scaffold(
           drawer: isBack == true ? AppDrawer() : SizedBox(),
           backgroundColor: backgroundColor,
+          drawerScrimColor: AppColors.white,
           appBar: AppBar(
+            iconTheme: const IconThemeData(color: AppColors.white),
+            foregroundColor: AppColors.white,
             leading:
                 isBack == true
                     ? null
@@ -50,7 +53,7 @@ class StoreView extends GetView<StoreController> {
                       onPressed: () {
                         Get.back();
                       },
-                      icon: Icon(Icons.arrow_back_ios),
+                      icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
                     ),
             title: Text(
               'Our Store',
@@ -64,7 +67,10 @@ class StoreView extends GetView<StoreController> {
                 onPressed: () {
                   Get.toNamed(Routes.CART);
                 },
-                icon: Icon(Icons.shopping_cart_outlined),
+                icon: Icon(
+                  Icons.shopping_cart_outlined,
+                  color: AppColors.white,
+                ),
               ),
             ],
             centerTitle: true,

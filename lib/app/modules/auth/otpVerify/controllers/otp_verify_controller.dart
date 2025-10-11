@@ -6,6 +6,7 @@ import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
 import 'package:astrology/app/modules/auth/login/controllers/login_controller.dart';
 import 'package:astrology/app/routes/app_pages.dart';
+import 'package:astrology/app/services/firebase/firebase_services.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:astrology/components/snack_bar_view.dart';
@@ -20,14 +21,20 @@ class OtpVerifyController extends GetxController {
   final RxInt resendTimer = 60.obs;
 
   String? phoneNumber;
+  String? fmcToken;
 
   final loginController = Get.find<LoginController>();
   @override
   void onInit() {
     super.onInit();
+    getToken();
     phoneNumber = Get.arguments ?? "";
     debugPrint("Phone Number: $phoneNumber");
     startResendTimer();
+  }
+
+  void getToken() async {
+    fmcToken = await FirebaseServices.firebaseToken();
   }
 
   Timer? _timer;
@@ -71,7 +78,7 @@ class OtpVerifyController extends GetxController {
         data: {
           "PhoneNumber": phoneNumber,
           "Otp": otpCode.value,
-          "Fcm": "fcm_token_12345",
+          "Fcm": fmcToken,
         },
       );
       if (res != null && res.statusCode == 200 && res.data["status"] == true) {
@@ -79,7 +86,9 @@ class OtpVerifyController extends GetxController {
         final int userId = res.data["user"]["UserID"] ?? 0;
         final int custumerId = res.data["user"]["CustomerID"] ?? 0;
         LocalStorageService.saveLogin(userId: userId.toString());
-        LocalStorageService.saveCustomerIdLogin(userCustomerId: custumerId.toString());
+        LocalStorageService.saveCustomerIdLogin(
+          userCustomerId: custumerId.toString(),
+        );
         log("UserId : $userId");
       } else {
         SnackBarUiView.showError(

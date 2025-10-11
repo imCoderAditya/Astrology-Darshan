@@ -232,14 +232,16 @@ class UserRequestView extends GetView<UserRequestController> {
               return;
             }
             if (session?.status?.toLowerCase() == "completed") {
-              return;
+              // return;
+              await chatController.setData(sessionId: session?.sessionId);
+              Get.to(ChatView(sessionData: session,nativationType: "chat&call",));
             }
             if (session?.status?.toLowerCase() == "pending") {
               controller.statusUpdate("Active", session?.sessionId);
             }
             if (session?.sessionType == "Chat") {
               await chatController.setData(sessionId: session?.sessionId);
-              Get.to(ChatView(sessionData: session));
+              Get.to(ChatView(sessionData: session,nativationType: "chat&call",));
             } else {
               Get.to(VoiceCallView(channelName: session?.sessionId.toString()));
             }

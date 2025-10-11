@@ -2,10 +2,9 @@
 
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/data/models/userRequest/user_request_model.dart';
+import 'package:astrology/app/modules/chat/components/request_submitted_popup.dart';
 import 'package:astrology/app/modules/chat/controllers/chat_controller.dart';
 import 'package:astrology/app/modules/userRequest/controllers/user_request_controller.dart';
-import 'package:astrology/app/services/timerServices/timer_service.dart';
-import 'package:astrology/components/confirm_dailog_box.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,9 +15,15 @@ import 'package:flutter/foundation.dart' as foundation;
 
 // Main Chat Screen
 class ChatView extends StatefulWidget {
+  final String? nativationType;
   final Session? sessionData;
   final int? endTime;
-  const ChatView({super.key, this.sessionData, this.endTime});
+  const ChatView({
+    super.key,
+    this.sessionData,
+    this.endTime,
+    this.nativationType,
+  });
 
   @override
   State<ChatView> createState() => _ChatViewState();
@@ -28,71 +33,81 @@ class _ChatViewState extends State<ChatView> {
   final controller = Get.put(ChatController());
   final userRequestController = Get.put(UserRequestController());
 
-  final timerService = TimerService();
+  initilize() async {
+    controller.endTime = widget.endTime;
+    debugPrint("=========>${widget.endTime}");
+    controller.timerText.value = "";
+    controller.update();
+    if (widget.nativationType == "chat&call") {
+      debugPrint("Sorry not showing popup");
+    } else {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (context) => RequestSubmittedPopup(
+              astrologerName: widget.sessionData?.astrologerName ?? "",
+              astrologerPhoto: widget.sessionData?.astrologerPhoto ?? "",
+              requestType: "chat",
+              waitingTime: "2-5 mins",
+              onOkayPressed: () {},
+              onCancelPressed: () {},
+            ),
+      );
+    }
 
-  String? timerText = "";
-  _timerStart() {
-    timerService.startTimer(
-      endTimeInMinutes: widget.endTime ?? 0,
-      onTick: (remaining) {
-        timerText = "${remaining.inMinutes}:${remaining.inSeconds % 60}";
-        debugPrint(timerText);
-        setState(() {});
-      },
-      onComplete: () {
-        timerService.stopTimer();
-        userRequestController.statusUpdate(
-          "Chat",
-          widget.sessionData?.sessionId,
-        );
-      },
-    );
+    debugPrint("Time: ${controller.endTime}");
   }
 
   @override
   void initState() {
-    _timerStart();
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initilize();
+    });
   }
 
+  final callcontroller =
+      Get.isRegistered<UserRequestController>()
+          ? Get.find<UserRequestController>()
+          : Get.put(UserRequestController());
   @override
   void dispose() {
+    // controller.webSocketService?.disconnect();
+    // controller.showEmojiPicker.value = false
+
+    if (controller.isDisable.value == false) {
+      controller.sendMessage(message: "Disconnect");
+    }
+    Future.delayed(Duration(microseconds: 200));
     controller.webSocketService?.disconnect();
     controller.showEmojiPicker.value = false;
-    timerService.stopTimer();
+
+    controller.timerService.stopTimer();
+    callcontroller.statusUpdate("Completed", controller.sessionID).then((
+      value,
+    ) async {
+      debugPrint("complete API call :${controller.sessionID}");
+    });
+    controller.isDisable.value = false;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ChatController());
+    debugPrint("Timer: ${controller.endTime}");
+    //  debugPrint("Timer: ${ widget.endTime}");
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final userRequsetController = Get.put(UserRequestController());
     return WillPopScope(
       onWillPop: () async {
-        final shouldPop = await showDialog<bool>(
-          context: context,
-          builder:
-              (context) => ConfirmDialog(
-                title: "End Chat",
-                content: "Are you sure you want to end the Chat?",
-                cancelText: "No",
-                confirmText: "Yes, End",
-                isDanger: true,
-                onConfirm: () async {
-                  await userRequsetController.statusUpdate(
-                    "Completed",
-                    controller.sessionID ?? 0,
-                    isSideChat: true,
-                  );
-                  Navigator.of(
-                    context,
-                  ).pop(true); // ✅ dialog बंद करके true return
-                },
-              ),
-        );
-
-        return shouldPop ?? false; // अगर cancel दबाया तो false मिलेगा
+        if (controller.isDisable.value == false) {
+          final shouldClose = await _showExitConfirmationDialog();
+          return shouldClose;
+        } else {
+          return true;
+        }
       },
 
       child: Scaffold(
@@ -108,7 +123,33 @@ class _ChatViewState extends State<ChatView> {
                       : SizedBox(),
             ),
             Expanded(child: _buildMessagesList(controller)),
-            _buildMessageInput(controller, isDark),
+            Obx(() {
+              return controller.isDisable.value == true
+                  ? Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.offline_bolt,
+                          color: Colors.red,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Chat Disconnected",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.shade700,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                  : _buildMessageInput(controller, isDark);
+            }),
           ],
         ),
       ),
@@ -147,36 +188,24 @@ class _ChatViewState extends State<ChatView> {
   }
 
   PreferredSizeWidget _buildAppBar(ChatController controller, bool isDark) {
-    final userRequsetController = Get.put(UserRequestController());
     return AppBar(
       backgroundColor:
           isDark ? const Color(0xFF1F2C34) : const Color(0xFF075E54),
       elevation: 1,
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: AppColors.white),
-        onPressed:
-            () => {
-              showDialog(
-                context: context,
-                builder:
-                    (context) => ConfirmDialog(
-                      title: "End Chat",
-                      content: "Are you sure you want to end the Chat?",
-                      cancelText: "No",
-                      confirmText: "Yes, End",
-                      isDanger: true,
-                      onConfirm: () async {
-                        userRequsetController.statusUpdate(
-                          "Completed",
-                          controller.sessionID ?? 0,
-                          isSideChat: true,
-                        );
-                      },
-                    ),
-              ),
-            },
+        onPressed: () async {
+          if (controller.isDisable.value == false) {
+            bool shouldClose = await _showExitConfirmationDialog();
+            if (shouldClose) {
+              Get.back();
+            }
+          } else {
+            Get.back();
+          }
+        },
       ),
-   
+
       title: Row(
         children: [
           Hero(
@@ -240,10 +269,15 @@ class _ChatViewState extends State<ChatView> {
                 Obx(
                   () => Text(
                     controller.webSocketService?.isConnected.value ?? false
-                        ? controller.lastSeen.value
+                        ? controller.isDisable.value
+                            ? "Offline"
+                            : controller.lastSeen.value
                         : 'Connecting...',
                     style: GoogleFonts.openSans(
-                      color: Colors.white70,
+                      color:
+                          controller.isDisable.value
+                              ? AppColors.white.withValues(alpha: 0.8)
+                              : AppColors.white,
                       fontSize: 12.sp,
                     ),
                   ),
@@ -254,30 +288,35 @@ class _ChatViewState extends State<ChatView> {
         ],
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: "Remaining: ", // ✅ Static part
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.white,
+        Obx(
+          () =>
+              controller.isDisable.value
+                  ? SizedBox()
+                  : Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Timer: ", // ✅ Static part
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.white,
+                            ),
+                          ),
+                          TextSpan(
+                            text: controller.timerText.value,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.yellow, // अलग color दे सकते हो
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text: timerText ?? "", // ✅ Timer dynamic part
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.yellow, // अलग color दे सकते हो
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ],
     );
@@ -550,7 +589,7 @@ class _ChatViewState extends State<ChatView> {
                       child: Icon(
                         controller.messageText.isNotEmpty
                             ? Icons.send
-                            : Icons.mic,
+                            : Icons.send,
                         color: Colors.white,
                         size: 20.r,
                       ),
@@ -628,5 +667,113 @@ class _ChatViewState extends State<ChatView> {
       case MessageStatus.read:
         return Icons.done_all;
     }
+  }
+
+  // Add this method to your _ChatViewState class
+  Future<bool> _showExitConfirmationDialog() async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // Prevents dismissing by tapping outside
+          builder: (BuildContext context) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF1F2C34) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.r),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.warning_rounded,
+                      color: Colors.red,
+                      size: 24.r,
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Text(
+                      'End Chat Session?',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              content: Text(
+                'Are you sure you want to close this chat? This action will end the current session and cannot be undone.',
+                style: GoogleFonts.openSans(
+                  fontSize: 14.sp,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                  height: 1.4,
+                ),
+              ),
+              actions: [
+                // Cancel Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pop(false); // Return false (don't close)
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? Colors.white70 : Colors.grey[600],
+                    ),
+                  ),
+                ),
+
+                // Proceed Button
+                ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                    Get.back();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'End Chat',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Return false if dialog is dismissed
   }
 }

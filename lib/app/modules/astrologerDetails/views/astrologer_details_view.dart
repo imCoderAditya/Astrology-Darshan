@@ -31,13 +31,11 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
             backgroundColor:
                 isDark ? AppColors.darkBackground : AppColors.lightBackground,
             appBar: AppBar(
+              centerTitle: true,
               title: Text(
                 'Astrologer Profile',
                 style: AppTextStyles.headlineMedium().copyWith(
-                  color:
-                      isDark
-                          ? AppColors.darkTextPrimary
-                          : AppColors.lightTextPrimary,
+                  color: AppColors.darkTextPrimary,
                 ),
               ),
               backgroundColor:
@@ -509,7 +507,7 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                   onWalletRedirect: () {
                     Get.toNamed(Routes.WALLET);
                   },
-                  rate: astrologer?.callMrpPerMinute??0,
+                  rate: astrologer?.callMrpPerMinute ?? 0,
                   type: 'Call',
                   astrologerName:
                       "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",

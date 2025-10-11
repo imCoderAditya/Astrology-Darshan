@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
@@ -13,6 +12,7 @@ import 'package:astrology/app/modules/profile/controllers/profile_controller.dar
 import 'package:astrology/app/modules/voiceCall/views/voice_call_view.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/components/global_loader.dart';
+import 'package:astrology/components/snack_bar_view.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -25,6 +25,7 @@ class AstrologersController extends GetxController {
 
   ScrollController scrollController = ScrollController();
   final Rxn<AstrologerModel> _astrologerModel = Rxn<AstrologerModel>();
+  TextEditingController searchController = TextEditingController();
   final RxList<Astrologer> _astrologerList = RxList<Astrologer>();
 
   final Rxn<AstroCategoryModel> _astroCategoryModel = Rxn<AstroCategoryModel>();
@@ -32,24 +33,28 @@ class AstrologersController extends GetxController {
 
   RxList<Astrologer> get astrologerList => _astrologerList;
   var currentPage = 1.obs;
-  var limit = 10.obs;
+  var limit = 6.obs;
 
   final chatController = Get.put(ChatController());
 
   void selectCategory(Datum datum) async {
     _astrologerList.clear();
+    searchController.clear();
+    currentPage.value = 1;
     selectCategoryId = datum.categoryId ?? -1;
     selectSpecalization = datum.categoryName ?? "All";
     fetchAstrologerData();
     update();
   }
 
-  Future<void> fetchAstrologerData() async {
+  Future<void> fetchAstrologerData({String? search}) async {
     isLoading.value = true;
     try {
       final res = await BaseClient.get(
         api:
-            "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating",
+            search?.isEmpty ?? true
+                ? "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating"
+                : "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating&search=$search",
       );
       if (res != null && res.statusCode == 200) {
         // Process the response here
@@ -75,14 +80,14 @@ class AstrologersController extends GetxController {
     // Show loader immediately
     GlobalLoader.show();
 
-    final userId = LocalStorageService.getUserId();
- log("select_id $selectCategoryId");
+    final userId = LocalStorageService.getCustomerId();
+    log("select_id $selectCategoryId");
     try {
       final res = await BaseClient.post(
         api: EndPoint.bookConsultBook,
         data: {
           "customerId": int.parse(userId.toString()),
-          "astrologerId": astrologerId ,
+          "astrologerId": astrologerId,
           "EstimatedDuration": 5,
           "categoryId": selectCategoryId.abs(),
           "sessionType": type,
@@ -90,11 +95,12 @@ class AstrologersController extends GetxController {
         },
       );
 
-      if (res != null && res.statusCode == 200) {
+      if (res != null && res.statusCode == 200 && res.data["success"] == true) {
         log(json.encode(res.data));
         final data = res.data['data'];
         final int sessionId = data['sessionId'];
         debugPrint("Session Id => $sessionId");
+        debugPrint("Session Id => ${json.encode(data)}");
 
         // Hide loader **before navigation**
         GlobalLoader.hide();
@@ -116,6 +122,7 @@ class AstrologersController extends GetxController {
       } else {
         // LoggerUtils.error(res.data["message"] ?? "");
         GlobalLoader.hide();
+        SnackBarUiView.showError(message: res.data["message"]);
       }
     } catch (e) {
       LoggerUtils.error("Error fetching astrologer data: $e");

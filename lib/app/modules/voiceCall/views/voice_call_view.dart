@@ -32,7 +32,7 @@ class VoiceCallView extends StatelessWidget {
                   await userRequsetController.statusUpdate(
                     "Completed",
                     int.parse(controller.channelName.value) ,
-                    isSideChat: true,
+                    // isSideChat: true,
                   );
                 Get.back(); // ✅ dialog बंद करके true return
                 },
@@ -62,7 +62,7 @@ class VoiceCallView extends StatelessWidget {
                         userRequsetController.statusUpdate(
                           "Completed",
                           int.parse(controller.channelName.value) ,
-                          isSideChat: true,
+                 
                         );
                       },
                     ),

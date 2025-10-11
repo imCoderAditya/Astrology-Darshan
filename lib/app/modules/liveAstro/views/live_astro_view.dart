@@ -112,6 +112,27 @@ class ViewerView extends GetView<LiveAstroController> {
           // Gift Icon Button
           InkWell(
             onTap: () {
+    
+            },
+            borderRadius: BorderRadius.circular(20.r),
+            child: Container(
+              height: 40.h,
+              width: 40.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+                border: Border.all(color: AppColors.white.withOpacity(0.3)),
+              ),
+              child: const Icon(
+                Icons.send,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          InkWell(
+            onTap: () {
               giftBottomSheet();
             },
             borderRadius: BorderRadius.circular(20.r),
