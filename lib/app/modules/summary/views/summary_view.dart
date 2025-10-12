@@ -1,7 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:convert';
-import 'dart:developer';
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/data/models/address/address_model.dart';
@@ -9,7 +7,6 @@ import 'package:astrology/app/data/models/ecommerce/cart_model.dart';
 import 'package:astrology/app/modules/ecommerce/cart/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controllers/summary_controller.dart';
 
 class SummaryView extends GetView<SummaryController> {
@@ -19,7 +16,7 @@ class SummaryView extends GetView<SummaryController> {
 
   @override
   Widget build(BuildContext context) {
-    log("AddressModel: ${json.encode(addressEcModel)}");
+    // log("AddressModel: ${json.encode(addressEcModel)}");
 
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color background =
@@ -33,90 +30,99 @@ class SummaryView extends GetView<SummaryController> {
     final Color dividerColor =
         isDark ? AppColors.darkDivider : AppColors.lightDivider;
     Get.put(SummaryController());
-    return Scaffold(
-      backgroundColor: background,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              titlePadding: const EdgeInsets.only(bottom: 16.0),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: AppColors.headerGradientColors,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20),
-                    Icon(Icons.receipt_long, size: 32, color: AppColors.white),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Order Summary",
-                      style: AppTextStyles.headlineMedium().copyWith(
-                        color: AppColors.white,
+    return GetBuilder<SummaryController>(
+      // init: SummaryController(),
+      builder: (controller) {
+        return Scaffold(
+          backgroundColor: background,
+          body: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 120.0,
+                floating: false,
+                pinned: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
+                  titlePadding: const EdgeInsets.only(bottom: 16.0),
+                  background: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: AppColors.headerGradientColors,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
                     ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        Icon(
+                          Icons.receipt_long,
+                          size: 32,
+                          color: AppColors.white,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Order Summary",
+                          style: AppTextStyles.headlineMedium().copyWith(
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 20),
+                  if (addressEcModel != null) ...[
+                    _buildSectionTitle("Delivery Address", textColor),
+                    _buildAddressCard(
+                      cardColor,
+                      textColor,
+                      secondaryTextColor,
+                      isDark,
+                    ),
+                    const SizedBox(height: 20),
                   ],
-                ),
+                  _buildSectionTitle("Order Items", textColor),
+                  Obx(
+                    () => _buildOrderItemsCard(
+                      cardColor,
+                      textColor,
+                      secondaryTextColor,
+                      isDark,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Price Details", textColor),
+                  Obx(
+                    () => _buildPriceBreakdownCard(
+                      cardColor,
+                      textColor,
+                      secondaryTextColor,
+                      dividerColor,
+                      isDark,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Payment Method", textColor),
+                  _buildPaymentMethodSelection(
+                    cardColor,
+                    textColor,
+                    secondaryTextColor,
+                    isDark,
+                  ),
+                  const SizedBox(height: 30),
+                  Obx(() => _buildPlaceOrderButton(isDark)),
+                  const SizedBox(height: 40),
+                ]),
               ),
-            ),
+            ],
           ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(height: 20),
-              if (addressEcModel != null) ...[
-                _buildSectionTitle("Delivery Address", textColor),
-                _buildAddressCard(
-                  cardColor,
-                  textColor,
-                  secondaryTextColor,
-                  isDark,
-                ),
-                const SizedBox(height: 20),
-              ],
-              _buildSectionTitle("Order Items", textColor),
-              Obx(
-                () => _buildOrderItemsCard(
-                  cardColor,
-                  textColor,
-                  secondaryTextColor,
-                  isDark,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildSectionTitle("Price Details", textColor),
-              Obx(
-                () => _buildPriceBreakdownCard(
-                  cardColor,
-                  textColor,
-                  secondaryTextColor,
-                  dividerColor,
-                  isDark,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildSectionTitle("Payment Method", textColor),
-              _buildPaymentMethodSelection(
-                cardColor,
-                textColor,
-                secondaryTextColor,
-                isDark,
-              ),
-              const SizedBox(height: 30),
-              Obx(() => _buildPlaceOrderButton(isDark)),
-              const SizedBox(height: 40),
-            ]),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -685,9 +691,12 @@ class SummaryView extends GetView<SummaryController> {
 
   void _showOrderConfirmationDialog() {
     final summaryController = Get.find<SummaryController>();
+    final cartController = Get.find<CartController>();
+    final summary = cartController.cartEcModel.value?.data?.summary;
+
+    final total = summary?.total ?? 0.0;
     final isCod = summaryController.selectedPaymentMethod.value == 'cod';
     final methodText = isCod ? "Cash on Delivery" : "Online Payment";
-
     Get.defaultDialog(
       title: "",
       content: Column(
@@ -736,7 +745,30 @@ class SummaryView extends GetView<SummaryController> {
                 child: ElevatedButton(
                   onPressed: () {
                     Get.back();
-                    controller.placeOrderAPI(address: addressEcModel);
+                    controller.placeOrderAPI(
+                      address: addressEcModel,
+                      amount: total.toString(),
+                    );
+                    // String txnId =
+                    //     "megaone${DateTime.now().millisecondsSinceEpoch}";
+                    // final payUParam = PayUPaymentParamModel(
+                    //   type: "Eccomerce",
+                    //   amount: total.toString(),
+                    //   productInfo: "Astro Ecommerce",
+                    //   firstName:
+                    //       "${address?.firstName ?? ""} ${address?.lastName ?? ""}",
+                    //   email:
+                    //       profileController.profileModel.value?.data?.email ??
+                    //       "",
+                    //   phone: address?.phoneNumber ?? "",
+                    //   environment: "0",
+                    //   transactionId: txnId,
+                    //   userCredential:
+                    //       ":${profileController.profileModel.value?.data?.email ?? ""}",
+                    // );
+                    // controller.payuController.openPayUScreen(
+                    //   payUPaymentParamModel: payUParam,
+                    // );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,

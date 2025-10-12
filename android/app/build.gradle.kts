@@ -39,8 +39,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true  // ✅ Use "isMinifyEnabled" instead of "minifyEnabled"
-            isShrinkResources = true  // ✅ Use "isShrinkResources" instead of "shrinkResources"
+            isMinifyEnabled = false  // ✅ Use "isMinifyEnabled" instead of "minifyEnabled"
+            isShrinkResources = false  // ✅ Use "isShrinkResources" instead of "shrinkResources"
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")

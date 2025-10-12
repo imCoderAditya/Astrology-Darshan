@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
 import 'package:astrology/app/data/models/address/address_model.dart';
-import 'package:astrology/app/modules/transaction/views/transaction_view.dart';
+import 'package:astrology/app/modules/payuPay/payu_model.dart';
+import 'package:astrology/app/modules/payuPay/payu_payment_controller.dart';
+import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/components/snack_bar_view.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SummaryController extends GetxController {
@@ -12,12 +18,19 @@ class SummaryController extends GetxController {
   // Observable for selected payment method using a string
   var selectedPaymentMethod = 'online'.obs;
 
+  final profileController =
+      Get.isRegistered<ProfileController>()
+          ? Get.find<ProfileController>()
+          : Get.put(ProfileController());
+
   // Method to change payment method
   void selectPaymentMethod(String method) {
     selectedPaymentMethod.value = method;
   }
 
-  Future<void> placeOrderAPI({AddressDatum? address}) async {
+  final payuController = Get.put(PayuPaymentController());
+
+  Future<void> placeOrderAPI({AddressDatum? address, String? amount}) async {
     if (address == null) {
       SnackBarUiView.showError(message: 'Please select a valid address.');
       return;
@@ -57,9 +70,29 @@ class SummaryController extends GetxController {
             "TotalAmount": body['TotalAmount'],
             "PaymentStatus": body['PaymentStatus'],
           };
+          log(json.encode(orderData));
 
-          Get.off(() => TransactionView(orderData: orderData));
-          LoggerUtils.debug("Order placed successfully");
+          // String txnId = "megaone${DateTime.now().millisecondsSinceEpoch}";
+          final payUParam = PayUPaymentParamModel(
+            amount: amount.toString(),
+            productInfo: "Astro Ecommerce",
+            firstName:
+                "${address.address?.firstName ?? ""} ${address.address?.lastName ?? ""}",
+            email: profileController.profileModel.value?.data?.email ?? "",
+            phone:
+                profileController.profileModel.value?.data?.phoneNumber ?? "",
+            environment: "0",
+            transactionId: body['orderId'].toString(),
+            userCredential:
+                ":${profileController.profileModel.value?.data?.email ?? ""}",
+          );
+
+          payuController.openPayUScreen(
+            payUPaymentParamModel: payUParam,
+            type: "Ecomerce",
+          );
+          // Get.off(() => TransactionView(orderData: orderData));
+          // LoggerUtils.debug("Order placed successfully");
         } else {
           SnackBarUiView.showError(message: body['message'] ?? '');
           LoggerUtils.debug("API error: ${body['message']}");
@@ -73,6 +106,28 @@ class SummaryController extends GetxController {
     } catch (e) {
       SnackBarUiView.showError(message: 'Something went wrong ${e.toString()}');
       LoggerUtils.debug("Error placing order: $e");
+    }
+  }
+
+ 
+
+  Future<void> statusEccomerceUpdate({String? orderId}) async {
+    try {
+      final res = await BaseClient.post(
+        api:
+            "https://astroapi.veteransoftwares.com/api/Master/update_payment_status",
+        data: {
+          "OrderID": int.tryParse(orderId ?? ""),
+          "PaymentStatus": "Paid",
+        },
+      );
+      if (res != null && res.statusCode == 200) {
+        log("Sucess: ${res.data}");
+      } else {
+        log("Sucess: ${res.data}");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
     }
   }
 }
