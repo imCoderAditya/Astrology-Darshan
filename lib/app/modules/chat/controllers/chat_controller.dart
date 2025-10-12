@@ -145,6 +145,7 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<double> fadeAnimation;
   StreamSubscription? _wsSubscription;
+  String? navigationPage ;
   int? endTime;
 
   // WebSocket service
@@ -327,7 +328,7 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     //   Get.back();
     // }
 
-    if (messages.isNotEmpty && messages.length == 1 && messages.isEmpty) {
+    if (messages.isNotEmpty && messages.length==1 && navigationPage!="chat&call") {
       debugPrint("lesss=====>${messages.length}");
       startChatTimer(endTimeInMinutes: endTime);
       Get.back();
@@ -338,6 +339,12 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     // if (messageController.text.trim().isEmpty) return;
 
     final messageText = message ?? messageController.text.trim();
+
+    if (messageController.text.length >= 3 &&
+    RegExp(r'^[0-9]+$').hasMatch(messageController.text)) {
+  messageController.clear();
+  return;
+}
     final localId = DateTime.now().millisecondsSinceEpoch.toString();
 
     // ✅ Create local message for immediate UI update (NO messageID)

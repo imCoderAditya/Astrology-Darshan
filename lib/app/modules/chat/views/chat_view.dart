@@ -34,9 +34,11 @@ class _ChatViewState extends State<ChatView> {
   final userRequestController = Get.put(UserRequestController());
 
   initilize() async {
+    controller.messageController.clear();
     controller.endTime = widget.endTime;
     debugPrint("=========>${widget.endTime}");
     controller.timerText.value = "";
+    controller.navigationPage = widget.nativationType;
     controller.update();
     if (widget.nativationType == "chat&call") {
       debugPrint("Sorry not showing popup");
