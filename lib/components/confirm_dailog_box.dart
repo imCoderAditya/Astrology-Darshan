@@ -205,9 +205,9 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
                                   widget.onConfirm();
 
                                   // Add a small delay to show loading state
-                                  await Future.delayed(
-                                    const Duration(milliseconds: 1000),
-                                  );
+                                  // await Future.delayed(
+                                  //   const Duration(milliseconds: 1000),
+                                  // );
 
                                   // Close dialog
                                   if (mounted) {

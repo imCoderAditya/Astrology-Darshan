@@ -228,22 +228,31 @@ class UserRequestView extends GetView<UserRequestController> {
           onTap: () async {
             // first time status set active
 
-            if (session?.status?.toLowerCase() == "cancelled") {
+            final status = session?.status?.toLowerCase();
+            final type = session?.sessionType;
+
+            if (status == "cancelled" ||
+                (status == "completed" && (type == "Chat" || type == "Call"))) {
               return;
             }
-            if (session?.status?.toLowerCase() == "completed") {
-              // return;
-              await chatController.setData(sessionId: session?.sessionId);
-              Get.to(ChatView(sessionData: session,nativationType: "chat&call"));
-            }
-            if (session?.status?.toLowerCase() == "pending") {
-              controller.statusUpdate("Active", session?.sessionId);
-            }
+            // if (session?.status?.toLowerCase() == "pending") {
+            // controller.statusUpdate("Active", session?.sessionId);
+            // }
             if (session?.sessionType == "Chat") {
+              if (session?.status?.toLowerCase() == "pending") {
+                controller.statusUpdate("Active", session?.sessionId);
+              }
               await chatController.setData(sessionId: session?.sessionId);
-              Get.to(ChatView(sessionData: session,nativationType: "chat&call",));
+              Get.to(
+                ChatView(sessionData: session, nativationType: "chat&call"),
+              );
             } else {
-              Get.to(VoiceCallView(channelName: session?.sessionId.toString()));
+              Get.to(
+                VoiceCallView(
+                  channelName: session?.sessionId.toString(),
+                  session: session,
+                ),
+              );
             }
           },
           child: Padding(

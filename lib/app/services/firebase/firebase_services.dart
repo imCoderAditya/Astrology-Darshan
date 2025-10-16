@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -52,6 +53,8 @@ class FirebaseServices {
               'General Notifications', // channel name
               importance: Importance.max,
               priority: Priority.high,
+              icon: "@mipmap/launcher_icon",
+              color: AppColors.primaryColor
             ),
             iOS: DarwinNotificationDetails(), // optional iOS settings
           ),

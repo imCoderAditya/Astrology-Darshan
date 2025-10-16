@@ -498,7 +498,7 @@ class AstrologersView extends GetView<AstrologersController> {
                               endTime: value,
                               astrologerId: astrologer.astrologerId,
                               type: "Chat",
-                              astrologerPhoto: astrologer.profilePicture
+                              astrologerPhoto: astrologer.profilePicture,
                             );
                           },
                           onWalletRedirect: () {
@@ -539,9 +539,9 @@ class AstrologersView extends GetView<AstrologersController> {
                           astrologerPhoto: astrologer.profilePicture,
                           onConfirm: (value) {
                             Get.back();
-
                             controller.astrologerBook(
                               endTime: value,
+                              astrologerPhoto: astrologer.profilePicture,
                               astrologerId: astrologer.astrologerId,
                               type: "Call",
                             );

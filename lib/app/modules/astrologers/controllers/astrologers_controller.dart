@@ -103,24 +103,32 @@ class AstrologersController extends GetxController {
         debugPrint("Session Id => $sessionId");
         debugPrint("Session Id => ${json.encode(data)}");
         debugPrint("astrologerName => ${data["astrologerName"]}");
-        String astroName = (data["astrologerName"] ?? "Unknown")
+        String astroName = (data["astrologerName"] ?? "")
             .toString()
-            .trim() 
-            .replaceAll(
-              RegExp(r'\s+'),
-              ' ',
-            ); 
+            .trim()
+            .replaceAll(RegExp(r'\s+'), ' ');
         // Hide loader **before navigation**
         GlobalLoader.hide();
         // Navigate to VoiceCalls
         await chatController.setData(sessionId: sessionId);
         if (type == "Call") {
-          Get.to(() => VoiceCallView(channelName: sessionId.toString()));
+          Get.to(
+            () => VoiceCallView(
+              channelName: sessionId.toString(),
+              session: Session(
+                astrologerName: astroName,
+                astrologerPhoto: astrologerPhoto,
+              ),
+            ),
+          );
         } else {
           Get.to(
             () => ChatView(
               endTime: endTime,
-              sessionData: Session(astrologerName: astroName ,astrologerPhoto: astrologerPhoto),
+              sessionData: Session(
+                astrologerName: astroName,
+                astrologerPhoto: astrologerPhoto,
+              ),
             ),
           );
         }

@@ -457,18 +457,18 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                   astrologerPhoto: astrologer?.profilePicture,
                   onConfirm: (value) {
                     Get.back();
-
                     astrologersController.astrologerBook(
                       endTime: value,
                       astrologerId: astrologer?.astrologerId,
                       type: "Chat",
-                      astrologerPhoto: astrologer?.profilePicture
+                      astrologerPhoto: astrologer?.profilePicture,
                     );
                   },
                   onWalletRedirect: () {
                     Get.toNamed(Routes.WALLET);
                   },
                   rate: astrologer?.chatMrpPerMinute,
+
                   type: 'Chat',
                   astrologerName:
                       "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",
@@ -502,6 +502,7 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                     astrologersController.astrologerBook(
                       endTime: value,
                       astrologerId: astrologer?.astrologerId,
+                      astrologerPhoto: astrologer?.profilePicture,
                       type: "Call",
                     );
                   },

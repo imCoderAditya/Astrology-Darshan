@@ -1,8 +1,11 @@
 // 1. Agora Controller - GetX Controller for managing voice call state
 // ignore_for_file: constant_identifier_names
 
+import 'dart:io';
+
 import 'package:agora_token_generator/agora_token_generator.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
+import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
 import 'package:astrology/app/modules/userRequest/controllers/user_request_controller.dart';
 import 'package:astrology/components/confirm_dailog_box.dart';
 import 'package:astrology/components/global_loader.dart';
@@ -14,12 +17,21 @@ import 'package:permission_handler/permission_handler.dart';
 class VoiceCallController extends GetxController {
   static const String APPID = "8afca3f27f524c65a4ead12c1f5f92fa";
   static const String APPCERTIFICATE = "d1dc9896ab264eb18df26c49dfe96e01";
+  final profileController =
+      Get.isRegistered<ProfileController>()
+          ? Get.find<ProfileController>()
+          : Get.put(ProfileController());
 
+  final userRequsetController =
+      Get.isRegistered<UserRequestController>()
+          ? Get.find<UserRequestController>()
+          : Get.put(UserRequestController());
   // Agora Engine instance
   RtcEngine? engine;
 
   // Observable variables
   RxBool isJoined = false.obs;
+  RxBool isCalling = false.obs;
   RxBool isMuted = false.obs;
   RxBool isLoading = false.obs;
   RxBool isSpeakerOn = false.obs;
@@ -46,7 +58,9 @@ class VoiceCallController extends GetxController {
   Future<void> initializeAgora() async {
     try {
       // Request microphone permission
-      await requestMicrophonePermission();
+      if (Platform.isAndroid) {
+        await requestMicrophonePermission();
+      }
 
       // Create Agora engine
       engine = createAgoraRtcEngine();
@@ -89,64 +103,66 @@ class VoiceCallController extends GetxController {
   }
 
   // Set up event handlers
-  void _setEventHandlers() {
+  void _setEventHandlers() async {
     engine!.registerEventHandler(
       RtcEngineEventHandler(
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+        onJoinChannelSuccess: (RtcConnection connection, int elapsed) async {
           LoggerUtils.debug(
             "Local user joined channel: ${connection.channelId}",
           );
           isJoined.value = true;
+          isCalling.value = true;
           localUid.value = connection.localUid!;
           isLoading.value = false;
-          // Get.snackbar(
-          //   "Success",
-          //   "Joined channel successfully",
-          //   backgroundColor: Colors.green,
-          //   colorText: Colors.white,
-          // );
+          isSpeakerOn.value = true;
+          await engine?.setEnableSpeakerphone(isSpeakerOn.value);
         },
-
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+        onUserJoined: (
+          RtcConnection connection,
+          int remoteUid,
+          int elapsed,
+        ) async {
+          isCalling.value = false;
           LoggerUtils.debug("Remote user joined: $remoteUid");
           remoteUsers.add(remoteUid);
-          Get.snackbar(
-            "User Joined",
-            "User $remoteUid joined the call",
-            backgroundColor: Colors.blue,
-            colorText: Colors.white,
+          // SnackBarUiView.showInfo(message: "User $remoteUid joined the call");
+          userRequsetController.statusUpdate(
+            "Active",
+            int.tryParse(channelName.value),
           );
         },
-
         onUserOffline: (
           RtcConnection connection,
           int remoteUid,
           UserOfflineReasonType reason,
-        ) {
+        ) async {
           LoggerUtils.debug("Remote user left: $remoteUid");
           remoteUsers.remove(remoteUid);
-          Get.snackbar(
-            "User Left",
-            "User $remoteUid left the call",
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-          );
+          // SnackBarUiView.showError(message: "User $remoteUid left the call");
+          await userRequsetController
+              .statusUpdate("Completed", int.tryParse(channelName.value))
+              .then((_) {
+                Get.back(); // Pop screen
+                WidgetsBinding.instance.addPersistentFrameCallback((
+                  vallue,
+                ) async {
+                  await leaveChannel();
+                });
+              });
         },
-
-        onLeaveChannel: (RtcConnection connection, RtcStats stats) {
+        onLeaveChannel: (RtcConnection connection, RtcStats stats) async {
           LoggerUtils.debug("Left channel");
           isJoined.value = false;
           remoteUsers.clear();
           localUid.value = 0;
           channelName.value = '';
         },
-
         onAudioVolumeIndication: (
           RtcConnection connection,
           List<AudioVolumeInfo> speakers,
           int speakerNumber,
           int totalVolume,
-        ) {
+        ) async {
           // Handle volume indication if needed
           // You can use this to show speaking indicators
         },
@@ -229,8 +245,8 @@ class VoiceCallController extends GetxController {
     if (!isJoined.value) return;
 
     try {
-      await engine!.leaveChannel();
-      LoggerUtils.error("Left channel successfully");
+      await engine?.leaveChannel();
+      LoggerUtils.debug("Left channel successfully");
     } catch (e) {
       LoggerUtils.error("Error leaving channel: $e");
     }
@@ -263,30 +279,28 @@ class VoiceCallController extends GetxController {
   // Get connection status
   String get connectionStatus {
     if (isLoading.value) return "Connecting...";
+    if (isCalling.value) return "Calling...";
     if (isJoined.value) return "Connected";
     return "Disconnected";
   }
 
   // Get participants count
   int get participantsCount => remoteUsers.length + (isJoined.value ? 1 : 0);
-  final userRequsetController = Get.put(UserRequestController());
+
   Future<bool?> showEndChatDialog(BuildContext context) async {
     return showDialog<bool>(
       context: context,
       builder:
           (context) => ConfirmDialog(
-            title: "End Chat",
-            content: "Are you sure you want to end the Chat?",
+            title: "End Call",
+            content: "Are you sure you want to end the Call?",
             cancelText: "No",
             confirmText: "Yes, End",
             isDanger: true,
             onConfirm: () async {
               await userRequsetController
-                  .statusUpdate("Completed", int.parse(channelName.value))
-                  .then((_) {
-                    leaveChannel();
-                  });
-              Get.back(); // Pop screen
+                  .statusUpdate("Completed", int.tryParse(channelName.value));
+                
             },
           ),
     );

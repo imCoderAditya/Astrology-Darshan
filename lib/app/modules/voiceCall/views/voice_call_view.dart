@@ -1,33 +1,51 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
+
 import 'package:astrology/app/core/config/theme/app_colors.dart';
+import 'package:astrology/app/data/models/userRequest/user_request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/voice_call_controller.dart';
 
-class VoiceCallView extends StatelessWidget {
+class VoiceCallView extends StatefulWidget {
   final String? channelName;
+  final Session? session;
 
-  VoiceCallView({super.key, this.channelName});
+  VoiceCallView({super.key, this.channelName, this.session});
+
+  @override
+  State<VoiceCallView> createState() => _VoiceCallViewState();
+}
+
+class _VoiceCallViewState extends State<VoiceCallView> {
   final VoiceCallController controller = Get.put(VoiceCallController());
+
+  @override
+  void dispose() {
+    controller.leaveChannel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    controller.channelName.value = channelName ?? "";
-
-    debugPrint("###${controller.channelName.value}");
+    debugPrint("====>${json.encode(widget.session)}");
+    controller.channelName.value = widget.channelName ?? "";
     return WillPopScope(
       onWillPop:
-          () async => await controller.showEndChatDialog(context) ?? false,
+          () async =>
+              false, //await controller.showEndChatDialog(context) ?? false,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Voice Call', style: TextStyle(color: AppColors.white)),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: AppColors.white),
-            onPressed:
-                () async => {await controller.showEndChatDialog(context)},
-          ),
+          centerTitle: false,
+          automaticallyImplyLeading: false,
 
+          // leading: IconButton(
+          //   icon: Icon(Icons.arrow_back, color: AppColors.white),
+          //   onPressed:
+          //       () async => {await controller.showEndChatDialog(context)},
+          // ),
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
           actions: [
@@ -56,10 +74,12 @@ class VoiceCallView extends StatelessWidget {
             child: Column(
               children: [
                 // Channel Info
-                _buildChannelInfo(),
+                // _buildChannelInfo(),
 
                 // Participants List
-                Expanded(child: _buildParticipantsList()),
+                Expanded(
+                  child: _buildParticipantsList(session: widget.session),
+                ),
 
                 // Control Buttons
                 _buildControlButtons(),
@@ -73,37 +93,37 @@ class VoiceCallView extends StatelessWidget {
 
   /// 📌 Show confirmation dialog before ending chat or popping the screen
 
-  Widget _buildChannelInfo() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Channel: $channelName',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Obx(
-            () => Text(
-              '${controller.participantsCount} Participant(s)',
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildChannelInfo() {
+  //   return Container(
+  //     margin: const EdgeInsets.all(16),
+  //     padding: const EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white.withOpacity(0.1),
+  //       borderRadius: BorderRadius.circular(12),
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Text(
+  //           'Channel: $channelName',
+  //           style: const TextStyle(
+  //             color: Colors.white,
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         Obx(
+  //           () => Text(
+  //             '${controller.participantsCount} Participant(s)',
+  //             style: const TextStyle(color: Colors.white70, fontSize: 14),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildParticipantsList() {
+  Widget _buildParticipantsList({Session? session}) {
     return Obx(() {
       if (!controller.isJoined.value && !controller.isLoading.value) {
         return Center(
@@ -118,7 +138,8 @@ class VoiceCallView extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
-                onPressed: () => controller.joinChannel(channelName ?? ""),
+                onPressed:
+                    () => controller.joinChannel(widget.channelName ?? ""),
                 icon: const Icon(Icons.call),
                 label: const Text('Join Call'),
                 style: ElevatedButton.styleFrom(
@@ -157,17 +178,27 @@ class VoiceCallView extends StatelessWidget {
       // Add local user
       participants.add(
         _buildParticipantCard(
+          name: "You",
+          photo:
+              controller
+                  .profileController
+                  .profileModel
+                  .value
+                  ?.data
+                  ?.profilePicture ??
+              "",
           uid: controller.localUid.value,
           isLocal: true,
           isMuted: controller.isMuted.value,
         ),
       );
-
       // Add remote users
       for (int uid in controller.remoteUsers) {
         participants.add(
           _buildParticipantCard(
             uid: uid,
+            name: session?.astrologerName ?? "",
+            photo: session?.astrologerPhoto ?? "",
             isLocal: false,
             isMuted: false, // You can track remote mute status if needed
           ),
@@ -186,6 +217,8 @@ class VoiceCallView extends StatelessWidget {
     required int uid,
     required bool isLocal,
     required bool isMuted,
+    String? name,
+    String? photo,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -198,16 +231,34 @@ class VoiceCallView extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: isLocal ? Colors.green : Colors.blue,
-            child: Text(
-              isLocal ? 'You' : uid.toString(),
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-            ),
+            radius: 25,
+            backgroundColor: Colors.grey.shade300,
+            child:
+                widget.session?.astrologerPhoto?.isNotEmpty ?? false
+                    ? ClipOval(
+                      child: Image.network(
+                        photo ?? "",
+                        fit: BoxFit.cover,
+                        width: 50,
+                        height: 50,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.person, color: Colors.white);
+                        },
+                      ),
+                    )
+                    : const Icon(Icons.person, color: Colors.white),
           ),
+
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              isLocal ? 'You (Local)' : 'User $uid',
+              "$name",
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -255,8 +306,7 @@ class VoiceCallView extends StatelessWidget {
               color: Colors.red,
               onPressed: () async {
                 await controller.showEndChatDialog(Get.context!);
-                // await controller.leaveChannel();
-                // Get.back();
+                Get.back();
               },
             ),
           ],
