@@ -1166,6 +1166,8 @@ class PujaDetailsView extends GetView<PujaDetailsController> {
                     pujaServiceID: pujaService?.pujaServiceId,
                     pujaLocation: location,
                     address: address,
+                    pujaService:pujaService,
+                    
                   );
                 }
               },

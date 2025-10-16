@@ -12,7 +12,10 @@ class MyPujaController extends GetxController {
   var isLoading = false.obs;
   Rxn<MyPujaModel> myPujaModel = Rxn<MyPujaModel>();
   final userId = LocalStorageService.getUserId();
+
+
   Future<void> getPuja() async {
+    isLoading.value= true;
     try {
       final res = await BaseClient.get(
         api: "${EndPoint.myBooks}?userId=$userId&status=all&page=1&limit=10000",
@@ -27,6 +30,7 @@ class MyPujaController extends GetxController {
     } catch (e) {
       debugPrint("Error: $e");
     } finally {
+      isLoading.value= false;
       update();
     }
   }

@@ -29,10 +29,15 @@ class PujaView extends GetView<PujaController> {
               // Enhanced App Bar with gradient
               SliverAppBar(
                 expandedHeight: 260.h,
+                centerTitle: true,
                 backgroundColor: Colors.transparent,
                 pinned: true,
                 elevation: 0,
-                title: Text("Puja Booking", style: AppTextStyles.body()),
+                title: Text("Puja", style: AppTextStyles.body().copyWith(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.white
+                )),
                 leading: IconButton(
                   icon: Icon(
                     Icons.arrow_back_ios,

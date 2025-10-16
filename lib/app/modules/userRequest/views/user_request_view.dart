@@ -234,7 +234,7 @@ class UserRequestView extends GetView<UserRequestController> {
             if (session?.status?.toLowerCase() == "completed") {
               // return;
               await chatController.setData(sessionId: session?.sessionId);
-              Get.to(ChatView(sessionData: session,nativationType: "chat&call",));
+              Get.to(ChatView(sessionData: session,nativationType: "chat&call"));
             }
             if (session?.status?.toLowerCase() == "pending") {
               controller.statusUpdate("Active", session?.sessionId);

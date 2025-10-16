@@ -462,6 +462,7 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                       endTime: value,
                       astrologerId: astrologer?.astrologerId,
                       type: "Chat",
+                      astrologerPhoto: astrologer?.profilePicture
                     );
                   },
                   onWalletRedirect: () {

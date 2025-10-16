@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:astrology/app/modules/astroPuja/pujaDetails/controllers/puja_details_controller.dart';
 import 'package:astrology/app/modules/payuPay/hash_service.dart';
 import 'package:astrology/app/modules/payuPay/payu_model.dart';
 import 'package:astrology/app/modules/summary/controllers/summary_controller.dart';
@@ -99,11 +100,23 @@ class PayuPaymentController extends GetxController
     super.onInit();
   }
 
-  _fucType({String? status}) {
-    if (_type == "Ecomerce" && status == "Success") {
+  _fucType({String? status}) async {
+    if (_type == "Ecomerce" && status == "Completed") {
       SummaryController().statusEccomerceUpdate(orderId: _txId);
     } else if (_type == "Wallet") {
       WalletController().statusUpdate(transactionId: _txId, status: status);
+    } else if (_type == "AstroPuja") {
+      if (status == "Completed") {
+        await PujaDetailsController().paymentUpdate(
+          bookingId: int.tryParse(_txId.toString()),
+          paymentStatus: "Paid",
+        );
+      } else {
+        await PujaDetailsController().paymentUpdate(
+          bookingId: int.tryParse(_txId.toString()),
+          paymentStatus: "Failed",
+        );
+      }
     }
   }
 }

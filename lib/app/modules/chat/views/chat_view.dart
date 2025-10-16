@@ -99,6 +99,7 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     final controller = Get.put(ChatController());
     debugPrint("Timer: ${controller.endTime}");
+    debugPrint("Photo: ${widget.sessionData?.astrologerPhoto}");
     //  debugPrint("Timer: ${ widget.endTime}");
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -300,7 +301,7 @@ class _ChatViewState extends State<ChatView> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "Timer: ", // ✅ Static part
+                            text: controller.timerText.value.isEmpty? "":"Timer: ", // ✅ Static part
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.normal,

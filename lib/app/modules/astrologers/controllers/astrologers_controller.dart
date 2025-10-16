@@ -75,6 +75,7 @@ class AstrologersController extends GetxController {
   Future<void> astrologerBook({
     int? astrologerId,
     String? type,
+    String? astrologerPhoto,
     int? endTime,
   }) async {
     // Show loader immediately
@@ -101,10 +102,16 @@ class AstrologersController extends GetxController {
         final int sessionId = data['sessionId'];
         debugPrint("Session Id => $sessionId");
         debugPrint("Session Id => ${json.encode(data)}");
-
+        debugPrint("astrologerName => ${data["astrologerName"]}");
+        String astroName = (data["astrologerName"] ?? "Unknown")
+            .toString()
+            .trim() 
+            .replaceAll(
+              RegExp(r'\s+'),
+              ' ',
+            ); 
         // Hide loader **before navigation**
         GlobalLoader.hide();
-
         // Navigate to VoiceCalls
         await chatController.setData(sessionId: sessionId);
         if (type == "Call") {
@@ -113,9 +120,7 @@ class AstrologersController extends GetxController {
           Get.to(
             () => ChatView(
               endTime: endTime,
-              sessionData: Session(
-                astrologerName: data["astrologerName"] ?? "",
-              ),
+              sessionData: Session(astrologerName: astroName ,astrologerPhoto: astrologerPhoto),
             ),
           );
         }

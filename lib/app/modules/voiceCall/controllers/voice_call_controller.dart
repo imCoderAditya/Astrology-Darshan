@@ -3,6 +3,8 @@
 
 import 'package:agora_token_generator/agora_token_generator.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
+import 'package:astrology/app/modules/userRequest/controllers/user_request_controller.dart';
+import 'package:astrology/components/confirm_dailog_box.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,7 +46,7 @@ class VoiceCallController extends GetxController {
   Future<void> initializeAgora() async {
     try {
       // Request microphone permission
-      // await requestMicrophonePermission();
+      await requestMicrophonePermission();
 
       // Create Agora engine
       engine = createAgoraRtcEngine();
@@ -58,9 +60,9 @@ class VoiceCallController extends GetxController {
 
       // Enable audio
       await engine?.enableAudio();
-   
+
       joinChannel(channelName.value, uid: localUid.value);
-    
+
       // Set event handlers
       _setEventHandlers();
 
@@ -212,7 +214,7 @@ class VoiceCallController extends GetxController {
         options: const ChannelMediaOptions(
           clientRoleType: ClientRoleType.clientRoleBroadcaster,
           channelProfile: ChannelProfileType.channelProfileCommunication,
-          autoSubscribeAudio: true
+          autoSubscribeAudio: true,
         ),
       );
     } catch (e) {
@@ -252,9 +254,9 @@ class VoiceCallController extends GetxController {
     try {
       isSpeakerOn.value = !isSpeakerOn.value;
       await engine?.setEnableSpeakerphone(isSpeakerOn.value);
-      print("Speaker ${isSpeakerOn.value ? 'enabled' : 'disabled'}");
+      debugPrint("Speaker ${isSpeakerOn.value ? 'enabled' : 'disabled'}");
     } catch (e) {
-      print("Error toggling speaker: $e");
+      debugPrint("Error toggling speaker: $e");
     }
   }
 
@@ -267,4 +269,26 @@ class VoiceCallController extends GetxController {
 
   // Get participants count
   int get participantsCount => remoteUsers.length + (isJoined.value ? 1 : 0);
+  final userRequsetController = Get.put(UserRequestController());
+  Future<bool?> showEndChatDialog(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder:
+          (context) => ConfirmDialog(
+            title: "End Chat",
+            content: "Are you sure you want to end the Chat?",
+            cancelText: "No",
+            confirmText: "Yes, End",
+            isDanger: true,
+            onConfirm: () async {
+              await userRequsetController
+                  .statusUpdate("Completed", int.parse(channelName.value))
+                  .then((_) {
+                    leaveChannel();
+                  });
+              Get.back(); // Pop screen
+            },
+          ),
+    );
+  }
 }

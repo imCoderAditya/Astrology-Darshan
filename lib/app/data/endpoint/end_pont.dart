@@ -47,7 +47,7 @@ class EndPoint {
   // get_consultation_sessions
   static const getConsultationSessions =
       "GetConsultations/get_consultation_sessions";
-  static const statusUpdate = "Consultation/update_Status";
+  static const statusUpdate = "BookConsult/update_Status";
   
   // Puja Section
   static const pujaCategories = "Puja/PujaCategories";

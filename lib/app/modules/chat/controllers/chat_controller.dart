@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:astrology/app/core/utils/date_utils.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
+import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/app/services/timerServices/timer_service.dart';
 import 'package:astrology/app/services/webshoket/web_shoket_services.dart';
@@ -139,6 +141,10 @@ enum MessageType { text, image, voice }
 
 // Chat Controller
 class ChatController extends GetxController with GetTickerProviderStateMixin {
+  final profileController =
+      Get.isRegistered<ProfileController>()
+          ? Get.find<ProfileController>()
+          : Get.put(ProfileController());
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   var showEmojiPicker = false.obs;
@@ -147,6 +153,7 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
   StreamSubscription? _wsSubscription;
   String? navigationPage;
   int? endTime;
+  String? dob;
 
   // WebSocket service
   WebSocketService? webSocketService;
@@ -171,8 +178,10 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     final userId = userId_;
     currentUserID = int.parse(userId.toString());
     sessionID = sessionId;
+    dob = AppDateUtils.extractDate(profileController.profileModel.value?.data?.dateOfBirth.toString(), 5);
     update();
     debugPrint("currentUserID=$currentUserID sessionID $sessionID");
+
     initializeWebSocket();
   }
 
@@ -331,9 +340,18 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     if (messages.isNotEmpty &&
         messages.length == 1 &&
         navigationPage != "chat&call") {
+      final profile = profileController.profileModel.value?.data;
       debugPrint("lesss=====>${messages.length}");
       startChatTimer(endTimeInMinutes: endTime);
       Get.back();
+      sendMessage(
+        message: """
+Name : ${profile?.firstName} ${profile?.lastName}
+DOB : $dob
+TOB : ${profile?.timeOfBirth}
+Place : ${profile?.placeOfBirth}
+""",
+      );
     }
   }
 

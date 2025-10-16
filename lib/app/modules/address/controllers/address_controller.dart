@@ -87,7 +87,6 @@ class AddressController extends GetxController {
       );
       if (res != null) {
         await loadAddresses();
-
         GlobalLoader.hide();
         SnackBarUiView.showSuccess(message: res.data["message"]);
       } else {

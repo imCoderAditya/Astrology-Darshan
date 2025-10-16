@@ -1,8 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:astrology/app/core/config/theme/app_colors.dart';
-import 'package:astrology/app/modules/userRequest/controllers/user_request_controller.dart';
-import 'package:astrology/components/confirm_dailog_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/voice_call_controller.dart';
@@ -15,61 +13,21 @@ class VoiceCallView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     controller.channelName.value = channelName ?? "";
-    final userRequsetController = Get.put(UserRequestController());
+
     debugPrint("###${controller.channelName.value}");
     return WillPopScope(
-      onWillPop: () async {
-        final shouldPop = await showDialog<bool>(
-          context: context,
-          builder:
-              (context) => ConfirmDialog(
-                title: "End Chat",
-                content: "Are you sure you want to end the Chat?",
-                cancelText: "No",
-                confirmText: "Yes, End",
-                isDanger: true,
-                onConfirm: () async {
-                  await userRequsetController.statusUpdate(
-                    "Completed",
-                    int.parse(controller.channelName.value) ,
-                    // isSideChat: true,
-                  );
-                Get.back(); // ✅ dialog बंद करके true return
-                },
-              ),
-        );
-
-        return shouldPop ?? false; // अगर cancel दबाया तो false मिलेगा
-      },
+      onWillPop:
+          () async => await controller.showEndChatDialog(context) ?? false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Voice Call'),
+          title: Text('Voice Call', style: TextStyle(color: AppColors.white)),
           centerTitle: true,
           leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: AppColors.white),
-        onPressed:
-            () => {
-              showDialog(
-                context: context,
-                builder:
-                    (context) => ConfirmDialog(
-                      title: "End Chat",
-                      content: "Are you sure you want to end the Chat?",
-                      cancelText: "No",
-                      confirmText: "Yes, End",
-                      isDanger: true,
-                      onConfirm: () async {
-                        userRequsetController.statusUpdate(
-                          "Completed",
-                          int.parse(controller.channelName.value) ,
-                 
-                        );
-                      },
-                    ),
-              ),
-            },
-      ),
-   
+            icon: Icon(Icons.arrow_back, color: AppColors.white),
+            onPressed:
+                () async => {await controller.showEndChatDialog(context)},
+          ),
+
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
           actions: [
@@ -112,6 +70,8 @@ class VoiceCallView extends StatelessWidget {
       ),
     );
   }
+
+  /// 📌 Show confirmation dialog before ending chat or popping the screen
 
   Widget _buildChannelInfo() {
     return Container(
@@ -294,8 +254,9 @@ class VoiceCallView extends StatelessWidget {
               icon: Icons.call_end,
               color: Colors.red,
               onPressed: () async {
-                await controller.leaveChannel();
-                Get.back();
+                await controller.showEndChatDialog(Get.context!);
+                // await controller.leaveChannel();
+                // Get.back();
               },
             ),
           ],

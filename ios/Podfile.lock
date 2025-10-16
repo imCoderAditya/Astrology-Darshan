@@ -190,7 +190,7 @@ PODS:
   - PayUIndia-CheckoutProBase (8.11.2):
     - PayUIndia-PayUParams (~> 6.8)
     - PayUIndia-PG-SDK (~> 11.9)
-  - PayUIndia-CommonUI (2.3.0):
+  - PayUIndia-CommonUI (2.3.1):
     - PayUIndia-Analytics (~> 4.0)
     - PayUIndia-CrashReporter (~> 4.0)
   - PayUIndia-CrashReporter (4.0.2)
@@ -206,7 +206,7 @@ PODS:
   - PayUIndia-Networking (5.0.1):
     - PayUIndia-Logger (~> 5.0)
   - PayUIndia-NetworkReachability (2.1.1)
-  - PayUIndia-PayUParams (6.8.0)
+  - PayUIndia-PayUParams (6.8.1)
   - PayUIndia-PG-SDK (11.9.1):
     - PayUIndia-CrashReporter (~> 4.0)
     - PayUIndia-NetworkReachability (~> 2.1)
@@ -402,14 +402,14 @@ SPEC CHECKSUMS:
   PayUIndia-CardScanner: d6d024645e7fab58326e0d00b22ed42ca0ad5dc1
   PayUIndia-CheckoutPro: 17f4fa17707513aeed4fff91288092733a5cc146
   PayUIndia-CheckoutProBase: 8babca07b4408f0dad9142d66843db3cc4e5d11f
-  PayUIndia-CommonUI: 7b251eda3932e69dd44fccd10e0c865c984a32c0
+  PayUIndia-CommonUI: 502b10114323582e4e589785b2e4e2334c823fd8
   PayUIndia-CrashReporter: 913f79270aef2281e1b01af6b41d8465d8fb1b18
   PayUIndia-Custom-Browser: cea86601cfea2f1878e2896d37c8ab31215adb45
   PayUIndia-Logger: 50866e18a275b0726ed59afaea67b6529ab42774
   PayUIndia-NativeOtpAssist: 4afca30e0c2ecfc132c8e42077c5c4ac22cd5600
   PayUIndia-Networking: 0709588fd96b6b42c1398d07471cf87ef2c0db71
   PayUIndia-NetworkReachability: 581c04b9ea3a8aaa78faef179ad819759942f381
-  PayUIndia-PayUParams: c4acd8c19dbd939cfd0409505525edec59caeced
+  PayUIndia-PayUParams: b74ebe4f1def26de4998e1ae86deb192cb7cb6fe
   PayUIndia-PG-SDK: 958e1fa7eee3ef2e9a33ad34fd4fbb8a79f35c27
   PayUIndia-UPICore: 2b9e0db5403f7cb96bb7467a1fb551e54efe1c3e
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
