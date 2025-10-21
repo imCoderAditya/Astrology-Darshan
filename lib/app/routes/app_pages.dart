@@ -58,6 +58,7 @@ class AppPages {
   AppPages._();
 
   static const INITIAL = Routes.SPLASH;
+  // static const INITIAL = Routes.LIVE_ASTRO;
 
   static final routes = [
     GetPage(name: _Paths.HOME, page: () => HomeView(), binding: HomeBinding()),

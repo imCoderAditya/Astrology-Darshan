@@ -359,6 +359,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_token_generator/agora_token_generator.dart';
@@ -368,6 +369,7 @@ import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
 import 'package:astrology/app/data/models/gift/gift_model.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
+import 'package:astrology/app/services/webshoket/live_webshoket_services.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:astrology/components/snack_bar_view.dart';
 import 'package:flutter/material.dart';
@@ -379,6 +381,7 @@ const String APPID = "25747e4b1b9c43d8a8b7cde83abddf45";
 const String APPCERTIFICATE = "3bac8b59eec041909daf6ef145021e45";
 
 class LiveAstroController extends GetxController {
+  TextEditingController messageController = TextEditingController();
   late RtcEngine engine;
   String? channelName;
   String? userName;
@@ -873,6 +876,219 @@ class LiveAstroController extends GetxController {
   @override
   void onInit() {
     fetchGift();
+    initializeWebSocket();
     super.onInit();
+  }
+
+  //-------------------------Live Astrologer chat --------------------------------
+  LiveWebshoketServices? liveWebshoketServices;
+  StreamSubscription? _wsSubscription;
+  final RxList<LiveAstrolorWebSoketModel> liveAstrolorWebSoketList =
+      <LiveAstrolorWebSoketModel>[].obs;
+  void initializeWebSocket() {
+    // messages.clear();
+    // scrollToBottom();
+    // Check if WebSocketService is already initialized
+    if (Get.isRegistered<LiveWebshoketServices>()) {
+      liveWebshoketServices = Get.find<LiveWebshoketServices>();
+    } else {
+      liveWebshoketServices = Get.put(LiveWebshoketServices());
+    }
+
+    // Connect if not already connected
+    if (!(liveWebshoketServices?.isConnected.value == true)) {
+      liveWebshoketServices?.connect(sessionId: "86");
+    }
+
+    // Cancel previous subscription before listening again
+    _wsSubscription?.cancel();
+
+    // Listen to incoming messages
+    _wsSubscription = liveWebshoketServices?.messageStream.listen((
+      messageData,
+    ) {
+      handleIncomingMessage(messageData);
+    });
+  }
+
+  int? currentUserID;
+  LiveAstrolorWebSoketModel? liveAstrolorWebSoketModel;
+  void handleIncomingMessage(Map<String, dynamic> messageData) {
+    currentUserID = int.parse(userId.toString());
+    LoggerUtils.debug("📨 Received message: $messageData");
+
+    // Only handle valid chat messages
+    if (messageData['type'] != 'chat_message') return;
+
+    final message = LiveAstrolorWebSoketModel.fromJson(messageData);
+
+    LoggerUtils.debug("👤 Message from another user");
+
+    final alreadyExists = liveAstrolorWebSoketList.any(
+      (m) => m.messageID == message.messageID,
+    );
+
+    if (!alreadyExists) {
+      liveAstrolorWebSoketList.add(message);
+      log(
+        "✅ Added new message from other user ${json.encode(liveAstrolorWebSoketList)}",
+      );
+    } else {
+      LoggerUtils.debug("⚠️ Duplicate message skipped");
+    }
+  }
+
+  void sendMessageLocal() {
+    // if (messageController.text.trim().isEmpty) return;
+
+    final messageText = messageController.text.trim();
+
+    if (messageController.text.length >= 3 &&
+        RegExp(r'^[0-9]+$').hasMatch(messageController.text)) {
+      messageController.clear();
+      return;
+    }
+    final localId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // ✅ Create local message for immediate UI update (NO messageID)
+    // final localMessage = {
+    //   {
+    //     "action": "sendMessage",
+    //     "senderId": 143,
+    //     "messageType": "Text",
+    //     "content": "Hello from WebSocket! 9",
+    //     "fileUrl": null,
+    //   },
+    // };
+
+    // ✅ Add local message immediately to show on screen
+    // messages.add(localMessage);
+
+    messageController.clear();
+    // this.messageText.value = '';
+    // isTyping.value = false;
+    // scrollToBottom();
+
+    LoggerUtils.debug(
+      "✅ Added local message with status: sending - ID: $localId",
+    );
+
+    // Send via WebSocket
+    final messageData = {
+      "action": "sendMessage",
+      "senderId": currentUserID,
+      "messageType": "Text",
+      "content": messageText,
+      "fileUrl": null,
+    };
+
+    liveWebshoketServices?.sendMessage(messageData);
+
+    // Update local message status to sent after sending
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    //   final index = messages.indexWhere((m) => m.id == localId);
+    //   if (index != -1 && messages[index].status == MessageStatus.sending) {
+    //     messages[index] = messages[index].copyWith(status: MessageStatus.sent);
+    //     LoggerUtils.debug("✅ Updated local message status to: sent");
+    //   }
+    // });
+  }
+}
+
+//------------------------- Model -------------------------
+class LiveAstrolorWebSoketModel {
+  final int? messageID;
+  final int? sessionID;
+  final int? senderID;
+  final String? messageType;
+  final String? content;
+  final String? fileURL;
+  final bool? isRead;
+  final DateTime? sentAt;
+  final String? source;
+  final String? type;
+
+  const LiveAstrolorWebSoketModel({
+    this.messageID,
+    this.sessionID,
+    this.senderID,
+    this.messageType,
+    this.content,
+    this.fileURL,
+    this.isRead,
+    this.sentAt,
+    this.source,
+    this.type,
+  });
+
+  factory LiveAstrolorWebSoketModel.fromJson(Map<String, dynamic> json) {
+    return LiveAstrolorWebSoketModel(
+      messageID:
+          json['messageID'] is int
+              ? json['messageID']
+              : int.tryParse(json['messageID']?.toString() ?? ''),
+      sessionID:
+          json['sessionID'] is int
+              ? json['sessionID']
+              : int.tryParse(json['sessionID']?.toString() ?? ''),
+      senderID:
+          json['senderID'] is int
+              ? json['senderID']
+              : int.tryParse(json['senderID']?.toString() ?? ''),
+      messageType: json['messageType']?.toString(),
+      content: json['content']?.toString(),
+      fileURL: json['fileURL']?.toString(),
+      isRead:
+          json['isRead'] is bool
+              ? json['isRead']
+              : (json['isRead']?.toString().toLowerCase() == 'true'),
+      sentAt:
+          json['sentAt'] != null
+              ? DateTime.tryParse(json['sentAt'].toString())
+              : null,
+      source: json['source']?.toString(),
+      type: json['type']?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'messageID': messageID,
+      'sessionID': sessionID,
+      'senderID': senderID,
+      'messageType': messageType,
+      'content': content,
+      'fileURL': fileURL,
+      'isRead': isRead,
+      'sentAt': sentAt?.toIso8601String(),
+      'source': source,
+    };
+  }
+
+  LiveAstrolorWebSoketModel copyWith({
+    int? messageID,
+    int? sessionID,
+    int? senderID,
+    String? messageType,
+    String? content,
+    String? fileURL,
+    bool? isRead,
+    DateTime? sentAt,
+    String? source,
+    String? type,
+  }) {
+    return LiveAstrolorWebSoketModel(
+      messageID: messageID ?? this.messageID,
+      sessionID: sessionID ?? this.sessionID,
+      senderID: senderID ?? this.senderID,
+      messageType: messageType ?? this.messageType,
+      content: content ?? this.content,
+      fileURL: fileURL ?? this.fileURL,
+      isRead: isRead ?? this.isRead,
+      sentAt: sentAt ?? this.sentAt,
+      source: source ?? this.source,
+      type: type ?? this.type,
+    );
   }
 }

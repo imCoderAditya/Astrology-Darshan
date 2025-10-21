@@ -60,7 +60,7 @@ class ViewerView extends GetView<LiveAstroController> {
               _buildConnectionStatus(),
 
               // Watch Timer
-              _buildWatchTimer(),
+              // _buildWatchTimer(),
 
               // Host Info
               _buildHostInfo(),
@@ -81,6 +81,7 @@ class ViewerView extends GetView<LiveAstroController> {
           // Chat Input Field
           Expanded(
             child: TextField(
+              controller: controller.messageController,
               decoration: InputDecoration(
                 hintText: 'Type a message...',
                 hintStyle: TextStyle(color: Colors.white54, fontSize: 14.sp),
@@ -112,7 +113,7 @@ class ViewerView extends GetView<LiveAstroController> {
           // Gift Icon Button
           InkWell(
             onTap: () {
-    
+              controller.sendMessageLocal();
             },
             borderRadius: BorderRadius.circular(20.r),
             child: Container(
@@ -123,11 +124,7 @@ class ViewerView extends GetView<LiveAstroController> {
                 color: Colors.white.withOpacity(0.1),
                 border: Border.all(color: AppColors.white.withOpacity(0.3)),
               ),
-              child: const Icon(
-                Icons.send,
-                color: Colors.white,
-                size: 22,
-              ),
+              child: const Icon(Icons.send, color: Colors.white, size: 22),
             ),
           ),
           SizedBox(width: 10),
@@ -347,91 +344,223 @@ class ViewerView extends GetView<LiveAstroController> {
   }
 
   Widget _buildConnectionStatus() {
-    return Positioned(
-      top: 120.h,
-      left: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: _getConnectionColor().withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(_getConnectionIcon(), color: Colors.white, size: 14),
-            const SizedBox(width: 6),
-            Text(
-              _getConnectionText(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+    return _getConnectionText() == "Watching"
+        ? SizedBox()
+        : Positioned(
+          top: 120.h,
+          left: 16,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: _getConnectionColor().withOpacity(0.9),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
-          ],
-        ),
-      ),
-    );
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(_getConnectionIcon(), color: Colors.white, size: 14),
+                const SizedBox(width: 6),
+                Text(
+                  _getConnectionText(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
   }
 
-  Widget _buildWatchTimer() {
-    return Positioned(
-      top: 160.h,
-      left: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.access_time, color: Colors.white, size: 14),
-            const SizedBox(width: 6),
-            Obx(
-              () => Text(
-                controller.watchDuration.value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildWatchTimer() {
+  //   return Positioned(
+  //     top: 160.h,
+  //     left: 16,
+  //     child: Container(
+  //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+  //       decoration: BoxDecoration(
+  //         color: Colors.black.withOpacity(0.6),
+  //         borderRadius: BorderRadius.circular(16),
+  //       ),
+  //       child: Row(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           const Icon(Icons.access_time, color: Colors.white, size: 14),
+  //           const SizedBox(width: 6),
+  //           Obx(
+  //             () => Text(
+  //               controller.watchDuration.value,
+  //               style: const TextStyle(
+  //                 color: Colors.white,
+  //                 fontSize: 12,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildHostInfo() {
+  //   return Positioned(
+  //     bottom: 100.h,
+  //     left: 16.w,
+  //     right: 16.w,
+  //     top: 380,
+  //     child: SingleChildScrollView(
+  //       physics: NeverScrollableScrollPhysics(),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           ListView.builder(
+  //             padding: EdgeInsets.zero,
+  //             shrinkWrap: true,
+  //             itemCount: controller.liveAstrolorWebSoketList.length,
+  //             itemBuilder: (context, index) {
+  //               final liveAstro = controller.liveAstrolorWebSoketList[index];
+  //               return Text(
+  //                 liveAstro.content ?? "",
+  //                 style: AppTextStyles.subtitle().copyWith(
+  //                   color: AppColors.white,
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //           SizedBox(height: 5.h),
+  //           Container(
+  //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  //             decoration: BoxDecoration(
+  //               color: Colors.black.withOpacity(0.6),
+  //               borderRadius: BorderRadius.circular(16),
+  //             ),
+  //             child: Row(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 const CircleAvatar(
+  //                   radius: 12,
+  //                   backgroundColor: Color(0xFF00D4FF),
+  //                   child: Icon(Icons.person, color: Colors.white, size: 16),
+  //                 ),
+  //                 const SizedBox(width: 8),
+  //                 Text(
+  //                   controller.userName ?? 'Astrologer',
+  //                   style: const TextStyle(
+  //                     color: Colors.white,
+  //                     fontSize: 12,
+  //                     fontWeight: FontWeight.w500,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildHostInfo() {
     return Positioned(
       bottom: 100.h,
-      left: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircleAvatar(
-              radius: 12,
-              backgroundColor: Color(0xFF00D4FF),
-              child: Icon(Icons.person, color: Colors.white, size: 16),
+      left: 16.w,
+      right: 16.w,
+      top: 380,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Messages list
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              reverse: true, // New messages appear at bottom
+              itemCount: controller.liveAstrolorWebSoketList.length,
+              itemBuilder: (context, index) {
+                var liveAstro =
+                    controller.liveAstrolorWebSoketList.reversed.toList();
+                final liveAstroReversed = liveAstro[index];
+                return _buildMessageBubble(
+                  username: liveAstroReversed.content ?? '',
+                  message: liveAstroReversed.content ?? "",
+                );
+              },
             ),
-            const SizedBox(width: 8),
-            Text(
-              controller.userName ?? 'Astrologer',
+          ),
+          SizedBox(height: 12.h),
+
+          // Host info badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircleAvatar(
+                  radius: 12,
+                  backgroundColor: Color(0xFF00D4FF),
+                  child: Icon(Icons.person, color: Colors.white, size: 16),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  controller.userName ?? 'Astrologer',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble({
+    required String username,
+    required String message,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 6.h),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        //  gradient: LinearGradient(
+        // colors: [
+        //   Colors.black.withOpacity(0.6),
+        //   Colors.black.withOpacity(0.4),
+        // ],
+        // ),
+        // borderRadius: BorderRadius.circular(18),
+        // border: Border.all(
+        //   color: Colors.white.withOpacity(0.1),
+        //   width: 0.5,
+        // ),
+      ),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$username ',
+              style: const TextStyle(
+                color: Color(0xFF00D4FF),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            TextSpan(
+              text: message,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],

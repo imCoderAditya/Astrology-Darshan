@@ -230,9 +230,8 @@ class UserRequestView extends GetView<UserRequestController> {
 
             final status = session?.status?.toLowerCase();
             final type = session?.sessionType;
-
             if (status == "cancelled" ||
-                (status == "completed" && (type == "Chat" || type == "Call"))) {
+                (status == "completed" && (type == "Call"))) {
               return;
             }
             // if (session?.status?.toLowerCase() == "pending") {
@@ -240,7 +239,7 @@ class UserRequestView extends GetView<UserRequestController> {
             // }
             if (session?.sessionType == "Chat") {
               if (session?.status?.toLowerCase() == "pending") {
-                controller.statusUpdate("Active", session?.sessionId);
+                controller.statusUpdate("Active", session?.sessionId,"chat");
               }
               await chatController.setData(sessionId: session?.sessionId);
               Get.to(

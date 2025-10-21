@@ -86,7 +86,7 @@ class _ChatViewState extends State<ChatView> {
     controller.showEmojiPicker.value = false;
 
     controller.timerService.stopTimer();
-    callcontroller.statusUpdate("Completed", controller.sessionID).then((
+    callcontroller.statusUpdate("Completed", controller.sessionID,"chat").then((
       value,
     ) async {
       debugPrint("complete API call :${controller.sessionID}");

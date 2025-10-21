@@ -129,6 +129,7 @@ class VoiceCallController extends GetxController {
           userRequsetController.statusUpdate(
             "Active",
             int.tryParse(channelName.value),
+            "call",
           );
         },
         onUserOffline: (
@@ -140,7 +141,11 @@ class VoiceCallController extends GetxController {
           remoteUsers.remove(remoteUid);
           // SnackBarUiView.showError(message: "User $remoteUid left the call");
           await userRequsetController
-              .statusUpdate("Completed", int.tryParse(channelName.value))
+              .statusUpdate(
+                "Completed",
+                int.tryParse(channelName.value),
+                "call",
+              )
               .then((_) {
                 Get.back(); // Pop screen
                 WidgetsBinding.instance.addPersistentFrameCallback((
@@ -298,9 +303,11 @@ class VoiceCallController extends GetxController {
             confirmText: "Yes, End",
             isDanger: true,
             onConfirm: () async {
-              await userRequsetController
-                  .statusUpdate("Completed", int.tryParse(channelName.value));
-                
+              await userRequsetController.statusUpdate(
+                "Completed",
+                int.tryParse(channelName.value),
+                "call",
+              );
             },
           ),
     );
