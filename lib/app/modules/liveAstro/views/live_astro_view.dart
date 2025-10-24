@@ -21,6 +21,7 @@ class ViewerView extends GetView<LiveAstroController> {
     return GetBuilder<LiveAstroController>(
       init: LiveAstroController(),
       builder: (controller) {
+        controller.liveAstrologer = liveAstrologer;
         return Obx(() {
           if (!controller.isEngineReady.value) {
             return _buildLoadingScreen();
@@ -474,22 +475,26 @@ class ViewerView extends GetView<LiveAstroController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Messages list
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              reverse: true, // New messages appear at bottom
-              itemCount: controller.liveAstrolorWebSoketList.length,
-              itemBuilder: (context, index) {
-                var liveAstro =
-                    controller.liveAstrolorWebSoketList.reversed.toList();
-                final liveAstroReversed = liveAstro[index];
-                return _buildMessageBubble(
-                  username: liveAstroReversed.content ?? '',
-                  message: liveAstroReversed.content ?? "",
-                );
-              },
-            ),
-          ),
+          controller.hostVideoController.value != null &&
+                  controller.isHostOnline.value
+              ? Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  reverse: true, // New messages appear at bottom
+                  itemCount: controller.liveAstrolorWebSoketList.length,
+                  itemBuilder: (context, index) {
+                    var liveAstro =
+                        controller.liveAstrolorWebSoketList.reversed.toList();
+                    final liveAstroReversed = liveAstro[index];
+                    return _buildMessageBubble(
+                      image: liveAstroReversed.profilePicture,
+                      username: liveAstroReversed.senderName ?? '',
+                      message: liveAstroReversed.content ?? "",
+                    );
+                  },
+                ),
+              )
+              : Expanded(child: SizedBox()),
           SizedBox(height: 12.h),
 
           // Host info badge
@@ -502,14 +507,30 @@ class ViewerView extends GetView<LiveAstroController> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircleAvatar(
-                  radius: 12,
-                  backgroundColor: Color(0xFF00D4FF),
-                  child: Icon(Icons.person, color: Colors.white, size: 16),
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.pinkAccent.withOpacity(0.4),
+                  child: ClipOval(
+                    child:
+                        (controller.liveAstrologer?.profilePicture?.isEmpty ??
+                                true)
+                            ? const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 18,
+                            )
+                            : CustomCachedNetworkImage(
+                              imageUrl:
+                                  controller.liveAstrologer?.profilePicture ??
+                                  "",
+                              fit: BoxFit.cover,
+                            ),
+                  ),
                 ),
+
                 const SizedBox(width: 8),
                 Text(
-                  controller.userName ?? 'Astrologer',
+                  "${controller.liveAstrologer?.firstName} ${controller.liveAstrologer?.lastName}",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -527,44 +548,95 @@ class ViewerView extends GetView<LiveAstroController> {
   Widget _buildMessageBubble({
     required String username,
     required String message,
+    required String? image,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 6.h),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        //  gradient: LinearGradient(
-        // colors: [
-        //   Colors.black.withOpacity(0.6),
-        //   Colors.black.withOpacity(0.4),
-        // ],
-        // ),
-        // borderRadius: BorderRadius.circular(18),
-        // border: Border.all(
-        //   color: Colors.white.withOpacity(0.1),
-        //   width: 0.5,
-        // ),
-      ),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '$username ',
-              style: const TextStyle(
-                color: Color(0xFF00D4FF),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+      margin: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.w),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile Avatar with soft glow
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.pink.withOpacity(0.2),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.pinkAccent.withOpacity(0.4),
+              child: ClipOval(
+                child:
+                    (image?.isEmpty ?? true)
+                        ? const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 18,
+                        )
+                        : CustomCachedNetworkImage(
+                          imageUrl: image ?? "",
+                          fit: BoxFit.cover,
+                        ),
               ),
             ),
-            TextSpan(
-              text: message,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-              ),
+          ),
+
+          SizedBox(width: 10.w),
+
+          // Message Section
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Username
+                Text(
+                  username,
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                    shadows: [
+                      Shadow(
+                        color: AppColors.white.withOpacity(0.09),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 4.h),
+
+                // Message Bubble
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.95),
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w400,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

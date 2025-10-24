@@ -1,362 +1,3 @@
-// // viewer_controller.dart - For Users (Preview Only)
-// // ignore_for_file: deprecated_member_use, constant_identifier_names
-
-// import 'dart:async';
-
-// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-// import 'package:agora_token_generator/agora_token_generator.dart';
-// import 'package:astrology/app/core/utils/logger_utils.dart';
-// import 'package:astrology/app/routes/app_pages.dart';
-// import 'package:astrology/components/global_loader.dart';
-// import 'package:astrology/components/snack_bar_view.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-
-// import 'package:permission_handler/permission_handler.dart';
-
-// const String APPID = "25747e4b1b9c43d8a8b7cde83abddf45";
-// const String APPCERTIFICATE = "3bac8b59eec041909daf6ef145021e45";
-
-// class LiveAstroController extends GetxController {
-//   late RtcEngine engine;
-//   String? channelName;
-//   String? userName;
-//   String? token;
-//   int? uId;
-
-//   // Basic states
-//   final isEngineReady = false.obs;
-//   final isWatching = false.obs;
-//   final connectionState = 'disconnected'.obs;
-//   final isHostOnline = false.obs;
-
-//   // Viewer-specific features
-//   final watchDuration = '00:00'.obs;
-//   final networkQuality = 'excellent'.obs;
-//   final audioVolume = 100.obs;
-//   final isAudioMuted = false.obs;
-
-//   // Host video controller
-//   final hostVideoController = Rxn<VideoViewController>();
-//   final hostUid = 0.obs;
-
-//   // Timer
-//   Timer? _watchTimer;
-//   int _watchStartTime = 0;
-
-//   Future<bool> initData({
-//     String? etcToken,
-//     String? channelName,
-//     int? uId,
-//     String? userName,
-//   }) async {
-//     token = etcToken;
-//     this.uId = uId;
-//     this.channelName = channelName;
-//     this.userName = userName;
-//     LoggerUtils.debug('🎯Viewer UId: $uId');
-//     LoggerUtils.debug('🎯Viewer Channel: $channelName');
-//     LoggerUtils.debug('🎯Viewer Token: $etcToken');
-//     await initAgora();
-//     update();
-//     return true;
-//   }
-
-//   Future<void> joinLive({String? channelName, String? userName}) async {
-//     GlobalLoader.show();
-//     const String appId = APPID;
-//     const String appCertificate = APPCERTIFICATE;
-//     const int tokenExpireSeconds = 3600; // 1 hour
-//     final uniqueUid = DateTime.now().millisecondsSinceEpoch % 1000000000;
-
-//     // Generate RTC token for audience
-//     String etcToken = RtcTokenBuilder.buildTokenWithUid(
-//       appId: appId,
-//       appCertificate: appCertificate,
-//       channelName: channelName ?? "",
-//       uid: uniqueUid,
-//       tokenExpireSeconds: tokenExpireSeconds,
-//     );
-//     token = etcToken;
-//     uId = uniqueUid;
-//     this.channelName = channelName;
-//     this.userName = userName;
-//     update();
-//     LoggerUtils.debug('🎯Viewer Token Generated: $token');
-//     LoggerUtils.debug('🎯Viewer UId: $uId');
-//     LoggerUtils.debug('🎯Viewer Channel: $channelName');
-
-//     await initAgora();
-//     GlobalLoader.hide();
-//     Get.toNamed(Routes.LIVE_ASTRO);
-//   }
-
-//   @override
-//   void onClose() {
-//     _watchTimer?.cancel();
-//     leaveLive();
-//     super.onClose();
-//   }
-
-//   Future<void> initAgora() async {
-//     try {
-//       // Only request audio permission for viewers (no camera needed)
-//       await _requestPermissions();
-
-//       engine = createAgoraRtcEngine();
-//       await engine.initialize(RtcEngineContext(appId: APPID));
-
-//       engine.registerEventHandler(
-//         RtcEngineEventHandler(
-//           onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-//             debugPrint('Viewer joined channel: ${connection.channelId}');
-//             isWatching.value = true;
-//             connectionState.value = 'watching';
-//             _startWatchTimer();
-//           },
-//           onUserJoined: (RtcConnection connection, int uid, int elapsed) {
-//             debugPrint('Host joined: $uid');
-//             hostUid.value = uid;
-//             isHostOnline.value = true;
-
-//             // Create remote video controller for host
-//             hostVideoController.value = VideoViewController.remote(
-//               rtcEngine: engine,
-//               canvas: VideoCanvas(uid: uid),
-//               connection: connection,
-//             );
-//           },
-//           onUserOffline: (
-//             RtcConnection connection,
-//             int uid,
-//             UserOfflineReasonType reason,
-//           ) {
-//             debugPrint('Host left: $uid');
-//             if (hostUid.value == uid) {
-//               hostVideoController.value = null;
-//               hostUid.value = 0;
-//               isHostOnline.value = false;
-//             }
-//           },
-//           onConnectionStateChanged: (
-//             RtcConnection connection,
-//             ConnectionStateType state,
-//             ConnectionChangedReasonType reason,
-//           ) {
-//             debugPrint('Viewer connection state: $state');
-//             switch (state) {
-//               case ConnectionStateType.connectionStateConnected:
-//                 connectionState.value = 'watching';
-//                 break;
-//               case ConnectionStateType.connectionStateConnecting:
-//                 connectionState.value = 'connecting';
-//                 break;
-//               case ConnectionStateType.connectionStateReconnecting:
-//                 connectionState.value = 'reconnecting';
-//                 break;
-//               case ConnectionStateType.connectionStateFailed:
-//                 connectionState.value = 'failed';
-//                 break;
-//               default:
-//                 connectionState.value = 'disconnected';
-//             }
-//           },
-//           onNetworkQuality: (
-//             RtcConnection connection,
-//             int remoteUid,
-//             QualityType txQuality,
-//             QualityType rxQuality,
-//           ) {
-//             // For viewers, focus on receive quality
-//             switch (rxQuality) {
-//               case QualityType.qualityExcellent:
-//               case QualityType.qualityGood:
-//                 networkQuality.value = 'excellent';
-//                 break;
-//               case QualityType.qualityPoor:
-//               case QualityType.qualityBad:
-//                 networkQuality.value = 'poor';
-//                 break;
-//               default:
-//                 networkQuality.value = 'fair';
-//             }
-//           },
-//           onError: (ErrorCodeType err, String msg) {
-//             debugPrint('Viewer Agora Error: $err - $msg');
-//             connectionState.value = 'failed';
-//           },
-//           onRemoteVideoStateChanged: (
-//             RtcConnection connection,
-//             int remoteUid,
-//             RemoteVideoState state,
-//             RemoteVideoStateReason reason,
-//             int elapsed,
-//           ) {
-//             debugPrint(
-//               'Remote video state changed: $state for uid: $remoteUid',
-//             );
-//           },
-//           onRemoteAudioStateChanged: (
-//             RtcConnection connection,
-//             int remoteUid,
-//             RemoteAudioState state,
-//             RemoteAudioStateReason reason,
-//             int elapsed,
-//           ) {
-//             debugPrint(
-//               'Remote audio state changed: $state for uid: $remoteUid',
-//             );
-//           },
-//         ),
-//       );
-
-//       // Configure for audience (viewer)
-//       await _configureForViewing();
-
-//       // Join channel as audience
-//       await engine.joinChannel(
-//         token: token ?? "",
-//         channelId: channelName ?? "",
-//         uid: uId ?? 0,
-//         options: const ChannelMediaOptions(
-//           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-//           clientRoleType: ClientRoleType.clientRoleAudience,
-//           publishCameraTrack: false, // Don't publish camera
-//           publishMicrophoneTrack: false, // Don't publish microphone
-//           autoSubscribeAudio: true,
-//           autoSubscribeVideo: true,
-
-//         ),
-//       );
-
-//       isEngineReady.value = true;
-//     } catch (e) {
-//       debugPrint('Error initializing Viewer Agora: $e');
-//       Get.snackbar('Error', 'Failed to join live stream: $e');
-//     }
-//   }
-
-//   Future<void> _configureForViewing() async {
-//     // Disable video and audio publishing (viewer mode)
-//     await engine.disableVideo();
-//     await engine.disableAudio();
-
-//     // Set client role as audience
-//     await engine.setClientRole(role: ClientRoleType.clientRoleAudience);
-
-//     // Set channel profile for live broadcasting
-//     await engine.setChannelProfile(
-//       ChannelProfileType.channelProfileLiveBroadcasting,
-//     );
-
-//     // Enable audio playback for listening
-//     await engine.enableAudioVolumeIndication(
-//       interval: 200,
-//       smooth: 3,
-//       reportVad: false,
-//     );
-//   }
-
-//   Future<void> _requestPermissions() async {
-//     // Only request audio permission for viewers
-//     await [Permission.audio].request();
-//   }
-
-//   void _startWatchTimer() {
-//     _watchStartTime = DateTime.now().millisecondsSinceEpoch;
-//     _watchTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-//       final duration = DateTime.now().millisecondsSinceEpoch - _watchStartTime;
-//       final hours = (duration ~/ 3600000).toString().padLeft(2, '0');
-//       final minutes = ((duration % 3600000) ~/ 60000).toString().padLeft(
-//         2,
-//         '0',
-//       );
-//       final seconds = ((duration % 60000) ~/ 1000).toString().padLeft(2, '0');
-//       watchDuration.value = '$hours:$minutes:$seconds';
-//     });
-//   }
-
-//   // Audio controls for viewer
-//   Future<void> toggleAudio() async {
-//     isAudioMuted.value = !isAudioMuted.value;
-//     await engine.muteAllRemoteAudioStreams(isAudioMuted.value);
-//     SnackBarUiView.showSuccess(
-//       message: isAudioMuted.value ? 'Audio muted' : 'Audio unmuted',
-//     );
-//   }
-
-//   Future<void> setAudioVolume(double volume) async {
-//     audioVolume.value = volume.round();
-//     await engine.adjustPlaybackSignalVolume(audioVolume.value);
-//   }
-
-//   // Leave live stream
-//   Future<void> leaveLive() async {
-//     try {
-//       _watchTimer?.cancel();
-//       await engine.leaveChannel();
-//       await engine.release();
-
-//       // Reset states
-//       isWatching.value = false;
-//       isEngineReady.value = false;
-//       isHostOnline.value = false;
-//       hostVideoController.value = null;
-//       hostUid.value = 0;
-//       connectionState.value = 'disconnected';
-//       watchDuration.value = '00:00';
-//     } catch (e) {
-//       debugPrint('Error leaving live: $e');
-//     }
-//   }
-
-//   // Share live stream
-//   void shareLive() {
-//     // Implement share functionality
-//     SnackBarUiView.showSuccess(message: 'Share link copied to clipboard');
-//   }
-
-//   // Report live stream
-//   void reportLive() {
-//     // Implement report functionality
-//     Get.snackbar(
-//       'Report',
-//       'Thank you for your report. We will review it shortly.',
-//       snackPosition: SnackPosition.BOTTOM,
-//       backgroundColor: Colors.orange,
-//       colorText: Colors.white,
-//     );
-//   }
-
-//   // Network diagnostics for viewer
-//   Future<void> runNetworkTest() async {
-//     try {
-//       await engine.startLastmileProbeTest(
-//         const LastmileProbeConfig(
-//           probeUplink: false, // Viewer doesn't need uplink test
-//           probeDownlink: true,
-//           expectedUplinkBitrate: 0,
-//           expectedDownlinkBitrate: 500000, // Expected download bitrate
-//         ),
-//       );
-
-//       SnackBarUiView.showSuccess(message: 'Running network test...');
-//     } catch (e) {
-//       debugPrint('Network test error: $e');
-//     }
-//   }
-
-//   @override
-//   void onInit() {
-//     WidgetsBinding.instance.addPostFrameCallback((_) async {
-//       await joinLive(channelName: "astroLive", userName: "ViewerUser");
-//     });
-//     super.onInit();
-//   }
-// }
-// viewer_controller.dart - Fixed Version
-// ignore_for_file: deprecated_member_use, constant_identifier_names
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -367,7 +8,9 @@ import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
+import 'package:astrology/app/data/models/astrologer/live_astrologer_model.dart';
 import 'package:astrology/app/data/models/gift/gift_model.dart';
+import 'package:astrology/app/data/models/liveAstroChat/live_astro_websocket_model.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/app/services/webshoket/live_webshoket_services.dart';
 import 'package:astrology/components/global_loader.dart';
@@ -382,6 +25,7 @@ const String APPCERTIFICATE = "3bac8b59eec041909daf6ef145021e45";
 
 class LiveAstroController extends GetxController {
   TextEditingController messageController = TextEditingController();
+  LiveAstrologer? liveAstrologer;
   late RtcEngine engine;
   String? channelName;
   String? userName;
@@ -459,6 +103,7 @@ class LiveAstroController extends GetxController {
   void onClose() {
     _watchTimer?.cancel();
     leaveLive();
+    disconnectWebSocket();
     super.onClose();
   }
 
@@ -897,7 +542,7 @@ class LiveAstroController extends GetxController {
 
     // Connect if not already connected
     if (!(liveWebshoketServices?.isConnected.value == true)) {
-      liveWebshoketServices?.connect(sessionId: "86");
+      liveWebshoketServices?.connect(sessionId: "119");
     }
 
     // Cancel previous subscription before listening again
@@ -925,7 +570,7 @@ class LiveAstroController extends GetxController {
     LoggerUtils.debug("👤 Message from another user");
 
     final alreadyExists = liveAstrolorWebSoketList.any(
-      (m) => m.messageID == message.messageID,
+      (m) => m.messageId == message.messageId,
     );
 
     if (!alreadyExists) {
@@ -950,24 +595,7 @@ class LiveAstroController extends GetxController {
     }
     final localId = DateTime.now().millisecondsSinceEpoch.toString();
 
-    // ✅ Create local message for immediate UI update (NO messageID)
-    // final localMessage = {
-    //   {
-    //     "action": "sendMessage",
-    //     "senderId": 143,
-    //     "messageType": "Text",
-    //     "content": "Hello from WebSocket! 9",
-    //     "fileUrl": null,
-    //   },
-    // };
-
-    // ✅ Add local message immediately to show on screen
-    // messages.add(localMessage);
-
     messageController.clear();
-    // this.messageText.value = '';
-    // isTyping.value = false;
-    // scrollToBottom();
 
     LoggerUtils.debug(
       "✅ Added local message with status: sending - ID: $localId",
@@ -983,112 +611,27 @@ class LiveAstroController extends GetxController {
     };
 
     liveWebshoketServices?.sendMessage(messageData);
-
-    // Update local message status to sent after sending
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   final index = messages.indexWhere((m) => m.id == localId);
-    //   if (index != -1 && messages[index].status == MessageStatus.sending) {
-    //     messages[index] = messages[index].copyWith(status: MessageStatus.sent);
-    //     LoggerUtils.debug("✅ Updated local message status to: sent");
-    //   }
-    // });
-  }
-}
-
-//------------------------- Model -------------------------
-class LiveAstrolorWebSoketModel {
-  final int? messageID;
-  final int? sessionID;
-  final int? senderID;
-  final String? messageType;
-  final String? content;
-  final String? fileURL;
-  final bool? isRead;
-  final DateTime? sentAt;
-  final String? source;
-  final String? type;
-
-  const LiveAstrolorWebSoketModel({
-    this.messageID,
-    this.sessionID,
-    this.senderID,
-    this.messageType,
-    this.content,
-    this.fileURL,
-    this.isRead,
-    this.sentAt,
-    this.source,
-    this.type,
-  });
-
-  factory LiveAstrolorWebSoketModel.fromJson(Map<String, dynamic> json) {
-    return LiveAstrolorWebSoketModel(
-      messageID:
-          json['messageID'] is int
-              ? json['messageID']
-              : int.tryParse(json['messageID']?.toString() ?? ''),
-      sessionID:
-          json['sessionID'] is int
-              ? json['sessionID']
-              : int.tryParse(json['sessionID']?.toString() ?? ''),
-      senderID:
-          json['senderID'] is int
-              ? json['senderID']
-              : int.tryParse(json['senderID']?.toString() ?? ''),
-      messageType: json['messageType']?.toString(),
-      content: json['content']?.toString(),
-      fileURL: json['fileURL']?.toString(),
-      isRead:
-          json['isRead'] is bool
-              ? json['isRead']
-              : (json['isRead']?.toString().toLowerCase() == 'true'),
-      sentAt:
-          json['sentAt'] != null
-              ? DateTime.tryParse(json['sentAt'].toString())
-              : null,
-      source: json['source']?.toString(),
-      type: json['type']?.toString(),
-    );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'type': type,
-      'messageID': messageID,
-      'sessionID': sessionID,
-      'senderID': senderID,
-      'messageType': messageType,
-      'content': content,
-      'fileURL': fileURL,
-      'isRead': isRead,
-      'sentAt': sentAt?.toIso8601String(),
-      'source': source,
-    };
+void disconnectWebSocket() {
+    try {
+      LoggerUtils.debug("🔌 Disconnecting WebSocket...");
+
+      // Cancel subscription to avoid memory leaks
+      _wsSubscription?.cancel();
+      _wsSubscription = null;
+
+      // Close connection if active
+      liveWebshoketServices?.disconnect();
+
+      // Optionally clear the message list (if desired)
+      // liveAstrolorWebSoketList.clear();
+
+      LoggerUtils.debug("✅ WebSocket disconnected successfully");
+    } catch (e) {
+      LoggerUtils.debug("❌ Error while disconnecting WebSocket: $e");
+    }
   }
 
-  LiveAstrolorWebSoketModel copyWith({
-    int? messageID,
-    int? sessionID,
-    int? senderID,
-    String? messageType,
-    String? content,
-    String? fileURL,
-    bool? isRead,
-    DateTime? sentAt,
-    String? source,
-    String? type,
-  }) {
-    return LiveAstrolorWebSoketModel(
-      messageID: messageID ?? this.messageID,
-      sessionID: sessionID ?? this.sessionID,
-      senderID: senderID ?? this.senderID,
-      messageType: messageType ?? this.messageType,
-      content: content ?? this.content,
-      fileURL: fileURL ?? this.fileURL,
-      isRead: isRead ?? this.isRead,
-      sentAt: sentAt ?? this.sentAt,
-      source: source ?? this.source,
-      type: type ?? this.type,
-    );
-  }
+
 }
