@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:astrology/app/data/models/astrologer/live_astrologer_model.dart';
 import 'package:astrology/app/modules/liveAstro/controllers/live_astro_controller.dart';
 import 'package:astrology/app/modules/liveAstro/views/live_astro_view.dart';
@@ -19,8 +22,9 @@ class _LiveAstrologyViewState extends State<LiveAstrologyView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await controller.liveAstrologerAPI();
       if (widget.liveAstrologer == null) {
+        liveController.liveAstrologer= widget.liveAstrologer;
+        await controller.liveAstrologerAPI();
         final astrologers =
             controller.liveAstrologerModel.value?.liveAstrologer;
         await liveController.joinLive(
@@ -28,6 +32,7 @@ class _LiveAstrologyViewState extends State<LiveAstrologyView> {
           userName: astrologers?.firstOrNull?.displayName ?? "",
         );
       } else {
+        log("--------${json.encode(widget.liveAstrologer)}");
         await liveController.joinLive(
           channelName: widget.liveAstrologer?.streamKey ?? "",
           userName: widget.liveAstrologer?.displayName ?? "",
@@ -61,6 +66,9 @@ class _LiveAstrologyViewState extends State<LiveAstrologyView> {
               );
             }
 
+            if (widget.liveAstrologer != null) {
+              return ViewerView(liveAstrologer: widget.liveAstrologer!);
+            }
             return PageView.builder(
               itemCount: astrologers.length,
               controller: PageController(viewportFraction: 1),

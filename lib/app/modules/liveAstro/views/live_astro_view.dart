@@ -1,12 +1,16 @@
 // viewer_view.dart - UI for Users (Preview Only)
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/data/models/astrologer/live_astrologer_model.dart';
 import 'package:astrology/app/modules/liveAstro/controllers/live_astro_controller.dart';
 import 'package:astrology/components/custom_cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +26,8 @@ class ViewerView extends GetView<LiveAstroController> {
       init: LiveAstroController(),
       builder: (controller) {
         controller.liveAstrologer = liveAstrologer;
+        controller.initializeWebSocket();
+        log("LIve:${json.encode(liveAstrologer)}");
         return Obx(() {
           if (!controller.isEngineReady.value) {
             return _buildLoadingScreen();
@@ -114,7 +120,9 @@ class ViewerView extends GetView<LiveAstroController> {
           // Gift Icon Button
           InkWell(
             onTap: () {
-              controller.sendMessageLocal();
+              if(controller.messageController.text.isNotEmpty){
+                controller.sendMessageLocal();
+              }
             },
             borderRadius: BorderRadius.circular(20.r),
             child: Container(
@@ -376,95 +384,6 @@ class ViewerView extends GetView<LiveAstroController> {
         );
   }
 
-  // Widget _buildWatchTimer() {
-  //   return Positioned(
-  //     top: 160.h,
-  //     left: 16,
-  //     child: Container(
-  //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  //       decoration: BoxDecoration(
-  //         color: Colors.black.withOpacity(0.6),
-  //         borderRadius: BorderRadius.circular(16),
-  //       ),
-  //       child: Row(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           const Icon(Icons.access_time, color: Colors.white, size: 14),
-  //           const SizedBox(width: 6),
-  //           Obx(
-  //             () => Text(
-  //               controller.watchDuration.value,
-  //               style: const TextStyle(
-  //                 color: Colors.white,
-  //                 fontSize: 12,
-  //                 fontWeight: FontWeight.w500,
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildHostInfo() {
-  //   return Positioned(
-  //     bottom: 100.h,
-  //     left: 16.w,
-  //     right: 16.w,
-  //     top: 380,
-  //     child: SingleChildScrollView(
-  //       physics: NeverScrollableScrollPhysics(),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           ListView.builder(
-  //             padding: EdgeInsets.zero,
-  //             shrinkWrap: true,
-  //             itemCount: controller.liveAstrolorWebSoketList.length,
-  //             itemBuilder: (context, index) {
-  //               final liveAstro = controller.liveAstrolorWebSoketList[index];
-  //               return Text(
-  //                 liveAstro.content ?? "",
-  //                 style: AppTextStyles.subtitle().copyWith(
-  //                   color: AppColors.white,
-  //                 ),
-  //               );
-  //             },
-  //           ),
-  //           SizedBox(height: 5.h),
-  //           Container(
-  //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-  //             decoration: BoxDecoration(
-  //               color: Colors.black.withOpacity(0.6),
-  //               borderRadius: BorderRadius.circular(16),
-  //             ),
-  //             child: Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 const CircleAvatar(
-  //                   radius: 12,
-  //                   backgroundColor: Color(0xFF00D4FF),
-  //                   child: Icon(Icons.person, color: Colors.white, size: 16),
-  //                 ),
-  //                 const SizedBox(width: 8),
-  //                 Text(
-  //                   controller.userName ?? 'Astrologer',
-  //                   style: const TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 12,
-  //                     fontWeight: FontWeight.w500,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildHostInfo() {
     return Positioned(
       bottom: 100.h,
@@ -487,6 +406,7 @@ class ViewerView extends GetView<LiveAstroController> {
                         controller.liveAstrolorWebSoketList.reversed.toList();
                     final liveAstroReversed = liveAstro[index];
                     return _buildMessageBubble(
+                      fileUrl: liveAstroReversed.fileUrl ?? "",
                       image: liveAstroReversed.profilePicture,
                       username: liveAstroReversed.senderName ?? '',
                       message: liveAstroReversed.content ?? "",
@@ -547,6 +467,7 @@ class ViewerView extends GetView<LiveAstroController> {
 
   Widget _buildMessageBubble({
     required String username,
+    String? fileUrl,
     required String message,
     required String? image,
   }) {
@@ -611,7 +532,26 @@ class ViewerView extends GetView<LiveAstroController> {
                 ),
 
                 SizedBox(height: 4.h),
-
+                fileUrl?.isEmpty ?? true
+                    ? SizedBox()
+                    : ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ), // Adjust radius as needed
+                      child: CachedNetworkImage(
+                        height: 60.h,
+                        width: 80.w,
+                        fit: BoxFit.cover,
+                        imageUrl: fileUrl ?? "",
+                        placeholder:
+                            (context, url) => const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                        errorWidget:
+                            (context, url, error) => const Icon(Icons.error),
+                      ),
+                    ),
+                SizedBox(height: 4.h),
                 // Message Bubble
                 Container(
                   decoration: BoxDecoration(
@@ -921,29 +861,20 @@ class ViewerView extends GetView<LiveAstroController> {
                             final gift =
                                 controller.giftModel.value?.data?[index];
                             return GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 // Add haptic feedback
                                 HapticFeedback.lightImpact();
-
-                                // Show selection animation
-                                // Get.snackbar(
-                                //   '🎁 Gift Selected',
-                                //   'Added ${gift?.giftName ?? ""} to your gift',
-
-                                //   colorText: Colors.white,
-                                //   duration: const Duration(seconds: 2),
-                                //   snackPosition: SnackPosition.TOP,
-                                //   margin: EdgeInsets.all(16.w),
-                                //   borderRadius: 12.r,
-                                //   icon: CustomCachedNetworkImage(
-                                //     imageUrl: gift?.giftAnimation ?? "",
-                                //   ),
-                                // );
-
-                                controller.sendLiveGift(
-                                  giftID: gift?.giftId,
-                                  liveSessionID: liveAstrologer?.astrologerId,
+                                await controller.sendMessageLocal(
+                                  fileUrl: gift?.giftImage ?? "",
+                                  messageText_: gift?.giftName,
                                 );
+
+                                Get.back();
+
+                                // controller.sendLiveGift(
+                                //   giftID: gift?.giftId,
+                                //   liveSessionID: liveAstrologer?.astrologerId,
+                                // );
                               },
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),

@@ -541,8 +541,10 @@ class LiveAstroController extends GetxController {
     }
 
     // Connect if not already connected
+    final sessionId = liveAstrologer?.liveSessionId.toString();
     if (!(liveWebshoketServices?.isConnected.value == true)) {
-      liveWebshoketServices?.connect(sessionId: "119");
+      log("---------pppppp: $sessionId");
+      liveWebshoketServices?.connect(sessionId: sessionId);
     }
 
     // Cancel previous subscription before listening again
@@ -583,7 +585,7 @@ class LiveAstroController extends GetxController {
     }
   }
 
-  void sendMessageLocal() {
+  Future<void> sendMessageLocal({String? messageText_, String? fileUrl}) async{
     // if (messageController.text.trim().isEmpty) return;
 
     final messageText = messageController.text.trim();
@@ -606,14 +608,14 @@ class LiveAstroController extends GetxController {
       "action": "sendMessage",
       "senderId": currentUserID,
       "messageType": "Text",
-      "content": messageText,
-      "fileUrl": null,
+      "content": messageText_ ?? messageText,
+      "fileUrl": fileUrl ?? "",
     };
 
     liveWebshoketServices?.sendMessage(messageData);
   }
 
-void disconnectWebSocket() {
+  void disconnectWebSocket() {
     try {
       LoggerUtils.debug("🔌 Disconnecting WebSocket...");
 
@@ -633,5 +635,8 @@ void disconnectWebSocket() {
     }
   }
 
-
+  @override
+  void onReady() {
+    super.onReady();
+  }
 }
