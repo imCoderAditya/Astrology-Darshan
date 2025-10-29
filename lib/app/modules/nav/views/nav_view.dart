@@ -8,7 +8,6 @@ import 'package:astrology/app/modules/ecommerce/store/views/store_view.dart';
 import 'package:astrology/app/modules/home/views/home_view.dart';
 import 'package:astrology/app/modules/nav/controllers/nav_controller.dart';
 import 'package:astrology/app/modules/profile/views/profile_view.dart';
-import 'package:astrology/app/modules/reels/controllers/reels_controller.dart';
 import 'package:astrology/app/modules/reels/views/reels_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,10 +70,23 @@ class NavView extends StatelessWidget {
         children: [
           _buildBottomNavItem(Icons.home, 'Home', 0, controller),
           _buildBottomNavItem(Icons.people, 'Astrologers', 1, controller),
-          _buildBottomNavItem(null, image: Image.asset("assets/icons/instagram_reels.png",height: 20.h,width: 20.w,
-          color:isDark?AppColors.white: controller.currentIndex.value==2? AppColors.white:AppColors.darkBackground,
-          
-          ), 'Reels', 2, controller),
+          _buildBottomNavItem(
+            null,
+            image: Image.asset(
+              "assets/icons/instagram_reels.png",
+              height: 20.h,
+              width: 20.w,
+              color:
+                  isDark
+                      ? AppColors.white
+                      : controller.currentIndex.value == 2
+                      ? AppColors.white
+                      : AppColors.darkBackground,
+            ),
+            'Reels',
+            2,
+            controller,
+          ),
           _buildBottomNavItem(Icons.store, 'Store', 3, controller),
           _buildBottomNavItem(Icons.account_circle, 'Profile', 4, controller),
         ],
@@ -84,23 +96,20 @@ class NavView extends StatelessWidget {
 
   Widget _buildBottomNavItem(
     IconData? icon,
- 
+
     String label,
     int index,
-    NavController controller,
-      { Widget? image,}
-  ) {
+    NavController controller, {
+    Widget? image,
+  }) {
+   
     bool isActive = controller.currentIndex.value == index;
 
     return GestureDetector(
       onTap: () {
         controller.changeTab(index);
         debugPrint("=======>${index.toString()}");
-        if (index == 2) {
-          Get.find<ReelsController>().playVideo();
-        } else {
-          Get.find<ReelsController>().pauseVideo();
-        }
+        
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -118,11 +127,14 @@ class NavView extends StatelessWidget {
                       : null,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: image?? Icon(
-              icon,
-              color: isActive ? AppColors.white : AppColors.textSecondaryLight,
-              size: 24,
-            ),
+            child:
+                image ??
+                Icon(
+                  icon,
+                  color:
+                      isActive ? AppColors.white : AppColors.textSecondaryLight,
+                  size: 24,
+                ),
           ),
           const SizedBox(height: 4),
           Text(

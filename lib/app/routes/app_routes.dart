@@ -32,6 +32,7 @@ abstract class Routes {
   static const PUJA = _Paths.PUJA;
   static const PUJA_DETAILS = _Paths.PUJA + _Paths.PUJA_DETAILS;
   static const MY_PUJA = _Paths.MY_PUJA;
+  static const REVIEW = _Paths.REVIEW;
 }
 
 abstract class _Paths {
@@ -64,4 +65,5 @@ abstract class _Paths {
   static const PUJA = '/puja';
   static const PUJA_DETAILS = '/puja-details';
   static const MY_PUJA = '/my-puja';
+  static const REVIEW = '/review';
 }

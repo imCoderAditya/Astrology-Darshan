@@ -32,7 +32,7 @@ class ChatView extends StatefulWidget {
 class _ChatViewState extends State<ChatView> {
   final controller = Get.put(ChatController());
   final userRequestController = Get.put(UserRequestController());
-
+  bool isCancelled = false;
   initilize() async {
     controller.messageController.clear();
     controller.endTime = widget.endTime;
@@ -52,7 +52,15 @@ class _ChatViewState extends State<ChatView> {
               astrologerPhoto: widget.sessionData?.astrologerPhoto ?? "",
               requestType: "chat",
               waitingTime: "2-5 mins",
-              onOkayPressed: () {},
+              onOkayPressed: () {
+                isCancelled = true;
+                setState(() {});
+                callcontroller
+                    .statusUpdate("Cancelled", controller.sessionID, "chat")
+                    .then((value) async {
+                      debugPrint("Cancelled API call :${controller.sessionID}");
+                    });
+              },
               onCancelPressed: () {},
             ),
       );
@@ -86,11 +94,14 @@ class _ChatViewState extends State<ChatView> {
     controller.showEmojiPicker.value = false;
 
     controller.timerService.stopTimer();
-    callcontroller.statusUpdate("Completed", controller.sessionID,"chat").then((
-      value,
-    ) async {
-      debugPrint("complete API call :${controller.sessionID}");
-    });
+    if (!isCancelled) {
+      callcontroller
+          .statusUpdate("Completed", controller.sessionID, "chat")
+          .then((value) async {
+            debugPrint("complete API call :${controller.sessionID}");
+          });
+    }
+    isCancelled = false;
     controller.isDisable.value = false;
     super.dispose();
   }
@@ -301,7 +312,10 @@ class _ChatViewState extends State<ChatView> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: controller.timerText.value.isEmpty? "":"Timer: ", // ✅ Static part
+                            text:
+                                controller.timerText.value.isEmpty
+                                    ? ""
+                                    : "Timer: ", // ✅ Static part
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.normal,

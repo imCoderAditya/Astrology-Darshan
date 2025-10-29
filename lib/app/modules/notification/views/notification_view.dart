@@ -60,6 +60,9 @@ class _NotificationViewState extends State<NotificationView> {
         return Scaffold(
           backgroundColor: backgroundColor,
           appBar: AppBar(
+            iconTheme: IconThemeData(
+              color: AppColors.white
+            ),
             title: Text(
               'Notifications',
               style: AppTextStyles.headlineMedium().copyWith(

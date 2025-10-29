@@ -67,8 +67,7 @@ class AstrologersView extends GetView<AstrologersController> {
                 searchTextField(
                   controller: controller.searchController,
                   isDark: isDark,
-                  onChanged: (value) {
-                    controller.astrologerList.clear();
+                  onChanged: (value) async {
                     controller.fetchAstrologerData(search: value);
                   },
                 ),

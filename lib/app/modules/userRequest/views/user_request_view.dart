@@ -6,6 +6,7 @@ import 'package:astrology/app/modules/chat/controllers/chat_controller.dart';
 import 'package:astrology/app/modules/chat/views/chat_view.dart';
 import 'package:astrology/app/modules/userRequest/Components/fillter_ui_view.dart';
 import 'package:astrology/app/modules/voiceCall/views/voice_call_view.dart';
+import 'package:astrology/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -205,6 +206,7 @@ class UserRequestView extends GetView<UserRequestController> {
 
   Widget _buildSessionCard(Session? session, int index) {
     final chatController = Get.put(ChatController());
+    bool isCompleted = session?.status?.toLowerCase() == "completed";
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -239,7 +241,7 @@ class UserRequestView extends GetView<UserRequestController> {
             // }
             if (session?.sessionType == "Chat") {
               if (session?.status?.toLowerCase() == "pending") {
-                controller.statusUpdate("Active", session?.sessionId,"chat");
+                controller.statusUpdate("Active", session?.sessionId, "chat");
               }
               await chatController.setData(sessionId: session?.sessionId);
               Get.to(
@@ -263,6 +265,36 @@ class UserRequestView extends GetView<UserRequestController> {
                 _buildSessionDetails(session),
                 SizedBox(height: 16.h),
                 _buildSessionFooter(session),
+                !isCompleted ? SizedBox() : SizedBox(height: 10.h),
+                !isCompleted
+                    ? SizedBox()
+                    : InkWell(
+                      onTap: () {
+                        Get.toNamed(
+                          Routes.REVIEW,
+                          arguments: {"sessionId": session?.sessionId},
+                        );
+                      },
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          height: 40.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.r),
+                            color: AppColors.green.withValues(alpha: 0.2),
+                          ),
+                          child: Text(
+                            "Add Review",
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.button.copyWith(
+                              color: AppColors.green,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
               ],
             ),
           ),

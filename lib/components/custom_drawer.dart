@@ -7,7 +7,6 @@ import 'package:astrology/app/modules/profile/controllers/profile_controller.dar
 import 'package:astrology/app/routes/app_pages.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 // --- DrawerController (unchanged, but good to include for completeness) ---
@@ -86,7 +85,7 @@ class AppDrawer extends StatelessWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(25),
-            bottomRight: Radius.circular(25),
+            // bottomRight: Radius.circular(25),
           ),
         ),
         elevation: 16, // Added elevation to the drawer itself
@@ -229,50 +228,58 @@ class AppDrawer extends StatelessWidget {
                             ), // outer border
                           ),
                           child: ClipOval(
-                            child: Image.network(
-                              controller
-                                      .profileModel
-                                      .value
-                                      ?.data
-                                      ?.profilePicture ??
-                                  "",
-                              fit: BoxFit.cover,
-                              loadingBuilder: (
-                                context,
-                                child,
-                                loadingProgress,
-                              ) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: Text(
-                                    "${controller.profileModel.value?.data?.firstName?[0] ?? ""} ${controller.profileModel.value?.data?.lastName?[0] ?? ""}"
-                                            .capitalize ??
-                                        "",
-                                    textAlign: TextAlign.center,
-                                    style: AppTextStyles.body().copyWith(
-                                      color: AppColors.white,
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: Text(
-                                    "${controller.profileModel.value?.data?.firstName?[0] ?? ""} ${controller.profileModel.value?.data?.lastName?[0] ?? ""}"
-                                            .capitalize ??
-                                        "",
-                                    textAlign: TextAlign.center,
-                                    style: AppTextStyles.body().copyWith(
-                                      color: AppColors.white,
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                );
-                              },
+                            child: Image.asset(
+                              controller.profileModel.value?.data?.gender
+                                          ?.toLowerCase() ==
+                                      "male"
+                                  ? "assets/images/man.png"
+                                  : "assets/images/female.png",
                             ),
+
+                            // child: Image.network(
+                            //   controller
+                            //           .profileModel
+                            //           .value
+                            //           ?.data
+                            //           ?.profilePicture ??
+                            //       "",
+                            //   fit: BoxFit.cover,
+                            //   loadingBuilder: (
+                            //     context,
+                            //     child,
+                            //     loadingProgress,
+                            //   ) {
+                            //     if (loadingProgress == null) return child;
+                            //     return Center(
+                            //       child: Text(
+                            //         "${controller.profileModel.value?.data?.firstName?[0] ?? ""} ${controller.profileModel.value?.data?.lastName?[0] ?? ""}"
+                            //                 .capitalize ??
+                            //             "",
+                            //         textAlign: TextAlign.center,
+                            //         style: AppTextStyles.body().copyWith(
+                            //           color: AppColors.white,
+                            //           fontSize: 20.sp,
+                            //           fontWeight: FontWeight.w700,
+                            //         ),
+                            //       ),
+                            //     );
+                            //   },
+                            //   errorBuilder: (context, error, stackTrace) {
+                            //     return Center(
+                            //       child: Text(
+                            //         "${controller.profileModel.value?.data?.firstName?[0] ?? ""} ${controller.profileModel.value?.data?.lastName?[0] ?? ""}"
+                            //                 .capitalize ??
+                            //             "",
+                            //         textAlign: TextAlign.center,
+                            //         style: AppTextStyles.body().copyWith(
+                            //           color: AppColors.white,
+                            //           fontSize: 20.sp,
+                            //           fontWeight: FontWeight.w700,
+                            //         ),
+                            //       ),
+                            //     );
+                            //   },
+                            // ),
                           ),
                         ),
                       ),
@@ -739,7 +746,7 @@ class AppDrawer extends StatelessWidget {
           ),
           const SizedBox(height: 25),
           Text(
-            "v1.0.0 • © 2025 Astro Insights",
+            "v1.0.0 • © 2025 Astro Darshan",
             style: AppTextStyles.small().copyWith(
               color: secondaryColor.withOpacity(0.6), // No clamp needed here
               fontSize: 12,

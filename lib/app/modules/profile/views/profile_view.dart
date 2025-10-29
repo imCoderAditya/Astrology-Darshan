@@ -70,8 +70,13 @@ class ProfileView extends StatelessWidget {
                                 child: CircleAvatar(
                                   radius:
                                       42, // Slightly smaller inner for border effect
-                                  backgroundImage: NetworkImage(
-                                    profile?.profilePicture ?? "",
+                                  // backgroundImage: NetworkImage(
+                                  //   profile?.profilePicture ?? "",
+                                  // ),
+                                    backgroundImage: AssetImage(
+                                    profile?.gender?.toLowerCase() == "male"
+                                        ? "assets/images/man.png"
+                                        : "assets/images/female.png",
                                   ),
                                 ),
                               ),
@@ -184,19 +189,19 @@ class ProfileView extends StatelessWidget {
                   //         colorText: AppColors.white,
                   //       ),
                   // ),
-                  _buildSettingsTile(
-                    Icons.notifications_none,
-                    "Notifications",
-                    textColor: textColor,
-                    trailing: Switch(
-                      value: true,
-                      onChanged: (bool value) {},
-                      activeColor: AppColors.accentColor,
-                      inactiveThumbColor: secondaryTextColor,
-                      inactiveTrackColor: dividerColor,
-                    ),
-                    onTap: () {},
-                  ),
+                  // _buildSettingsTile(
+                  //   Icons.notifications_none,
+                  //   "Notifications",
+                  //   textColor: textColor,
+                  //   trailing: Switch(
+                  //     value: true,
+                  //     onChanged: (bool value) {},
+                  //     activeColor: AppColors.accentColor,
+                  //     inactiveThumbColor: secondaryTextColor,
+                  //     inactiveTrackColor: dividerColor,
+                  //   ),
+                  //   onTap: () {},
+                  // ),
                   // _buildSettingsTile(
                   //   Icons.language,
                   //   "Language",

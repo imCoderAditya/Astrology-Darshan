@@ -37,6 +37,8 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/reels/bindings/reels_binding.dart';
 import '../modules/reels/views/reels_view.dart';
+import '../modules/review/bindings/review_binding.dart';
+import '../modules/review/views/review_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/summary/bindings/summary_binding.dart';
@@ -175,6 +177,11 @@ class AppPages {
       name: _Paths.MY_PUJA,
       page: () => const MyPujaView(),
       binding: MyPujaBinding(),
+    ),
+    GetPage(
+      name: _Paths.REVIEW,
+      page: () => const ReviewView(),
+      binding: ReviewBinding(),
     ),
   ];
 }

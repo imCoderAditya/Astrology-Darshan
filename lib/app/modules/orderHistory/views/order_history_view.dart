@@ -21,7 +21,11 @@ class OrderHistoryView extends GetView<OrderHistoryController> {
         return Scaffold(
           backgroundColor:
               isDark ? AppColors.darkBackground : AppColors.lightBackground,
+            
           appBar: AppBar(
+            iconTheme: IconThemeData(
+              color: AppColors.white
+            ),
             title: Text(
               'Order History',
               style: AppTextStyles.headlineMedium().copyWith(

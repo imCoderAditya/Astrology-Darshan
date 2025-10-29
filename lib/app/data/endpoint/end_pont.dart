@@ -58,4 +58,7 @@ class EndPoint {
   static const getVirtualGifts = "Master/GetVirtualGifts";
   static const sendGift = "LiveSession/SendGift";
   static const notification = "Notification/GetUnread";
+  static const getReviews = "Consultation/GetReviews";
+  static const getReAddOrUpdateReviewviews = "Consultation/AddOrUpdateReview";
+  static const deleteReview = "Consultation/DeleteReview";
 }
