@@ -48,7 +48,7 @@ class _ReelItemState extends State<ReelItem> with SingleTickerProviderStateMixin
   VideoPlayerController? _videoController;
   late AnimationController _animationController;
   bool _isLiked = false;
-  bool _isFollowing = false;
+  final bool _isFollowing = false;
   bool _showHeart = false;
   ScrollController scrollController = ScrollController();
   @override

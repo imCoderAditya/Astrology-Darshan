@@ -12,7 +12,7 @@ class VoiceCallView extends StatefulWidget {
   final String? channelName;
   final Session? session;
 
-  VoiceCallView({super.key, this.channelName, this.session});
+  const VoiceCallView({super.key, this.channelName, this.session});
 
   @override
   State<VoiceCallView> createState() => _VoiceCallViewState();

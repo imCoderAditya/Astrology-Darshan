@@ -67,7 +67,7 @@ import 'package:video_player/video_player.dart';
 
 class ReelsController extends GetxController {
   VideoPlayerController? videoController;
-  int _currentIndex = 0;
+  final int _currentIndex = 0;
   int get currentIndex => _currentIndex;
   final Rxn<ReelsModel> _reelsModel = Rxn<ReelsModel>();
   Rxn<ReelsModel> get reelsModel => _reelsModel;
