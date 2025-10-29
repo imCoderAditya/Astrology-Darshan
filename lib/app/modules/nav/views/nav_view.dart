@@ -3,12 +3,7 @@
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/core/config/theme/theme_controller.dart';
-import 'package:astrology/app/modules/astrologers/views/astrologers_view.dart';
-import 'package:astrology/app/modules/ecommerce/store/views/store_view.dart';
-import 'package:astrology/app/modules/home/views/home_view.dart';
 import 'package:astrology/app/modules/nav/controllers/nav_controller.dart';
-import 'package:astrology/app/modules/profile/views/profile_view.dart';
-import 'package:astrology/app/modules/reels/views/reels_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -22,13 +17,6 @@ class NavView extends StatelessWidget {
   Widget build(BuildContext context) {
     final NavController navController = Get.put(NavController());
     final isDark = themeController.isDarkMode.value;
-    final pages = [
-      HomeView(),
-      AstrologersView(isDrawer: true),
-      ReelsView(),
-      StoreView(),
-      const ProfileView(),
-    ];
 
     return GetBuilder<NavController>(
       init: NavController(),
@@ -39,7 +27,7 @@ class NavView extends StatelessWidget {
           body: Obx(
             () => IndexedStack(
               index: navController.currentIndex.value,
-              children: pages,
+              children: controller.pages ?? [],
             ),
           ),
           bottomNavigationBar: Obx(
@@ -56,7 +44,12 @@ class NavView extends StatelessWidget {
       height: 80,
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+        color:
+            controller.currentIndex.value == 2
+                ? AppColors.surfaceDark
+                : isDark
+                ? AppColors.surfaceDark
+                : AppColors.surfaceLight,
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withOpacity(0.1),
@@ -102,14 +95,12 @@ class NavView extends StatelessWidget {
     NavController controller, {
     Widget? image,
   }) {
-   
     bool isActive = controller.currentIndex.value == index;
 
     return GestureDetector(
       onTap: () {
         controller.changeTab(index);
         debugPrint("=======>${index.toString()}");
-        
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -141,7 +132,9 @@ class NavView extends StatelessWidget {
             label,
             style: AppTextStyles.small().copyWith(
               color:
-                  isActive
+                  controller.currentIndex.value == 2
+                      ? AppColors.white
+                      : isActive
                       ? AppColors.accentColor
                       : (themeController.isDarkMode.value
                           ? AppColors.white

@@ -463,6 +463,7 @@ class LiveAstroController extends GetxController {
   final userId = LocalStorageService.getUserId();
 
   Future<void> sendLiveGift({int? liveSessionID, int? giftID}) async {
+  
     try {
       final res = await BaseClient.post(
         api: EndPoint.sendGift,
@@ -585,7 +586,7 @@ class LiveAstroController extends GetxController {
     }
   }
 
-  Future<void> sendMessageLocal({String? messageText_, String? fileUrl}) async{
+  Future<void> sendMessageLocal({String? messageText_, String? fileUrl}) async {
     // if (messageController.text.trim().isEmpty) return;
 
     final messageText = messageController.text.trim();
@@ -635,4 +636,29 @@ class LiveAstroController extends GetxController {
     }
   }
 
+  Future<void> sendLiveGft({int? giftID}) async {
+    final liveSessionId = liveAstrologer?.liveSessionId.toString();
+    try {
+      final res = await BaseClient.post(
+        api: EndPoint.liveSessionsendGift,
+        data: {
+          "LiveSessionID": liveSessionId,
+          "SenderID": currentUserID,
+          "GiftID": giftID,
+        },
+      );
+
+      if (res != null && res.statusCode == 200) {
+        // SnackBarUiView.showError(message: res.data["message"]);
+        if (res.data["success"] == false) {
+          SnackBarUiView.showError(message: res.data["message"]);
+        }
+      } else {
+        SnackBarUiView.showError(message: res.data["message"]);
+      }
+    } catch (e) {
+      SnackBarUiView.showError(message: "Somthing went wrong");
+      LoggerUtils.error("Error: $e");
+    }
+  }
 }

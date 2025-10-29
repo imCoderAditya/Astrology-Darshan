@@ -1,5 +1,6 @@
-
 // ignore_for_file: unused_field
+
+import 'dart:developer';
 
 import 'package:astrology/app/core/config/theme/theme_controller.dart';
 import 'package:astrology/app/data/models/reels/reels_model.dart';
@@ -10,24 +11,37 @@ import 'package:video_player/video_player.dart';
 import '../controllers/reels_controller.dart';
 
 class ReelsView extends GetView<ReelsController> {
-  ReelsView({super.key});
+  final int? curentIndex;
+  ReelsView({super.key, this.curentIndex});
 
   final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
+    log("Reels Select Index $curentIndex");
     return GetBuilder<ReelsController>(
       init: ReelsController(),
       builder: (controller) {
         return Scaffold(
           backgroundColor: Colors.black,
-          body: PageView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: controller.reelsModel.value?.data?.length,
-            itemBuilder: (context, index) {
-              return ReelItem(reel: controller.reelsModel.value?.data?[index], isCurrentPage: false);
-            },
-          ),
+          body:
+              curentIndex == 2
+                  ? PageView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: controller.reelsModel.value?.data?.length ?? 0,
+                    onPageChanged: (index) {
+                      controller.currentPage(index);
+                    },
+                    itemBuilder: (context, index) {
+                      final reel = controller.reelsModel.value?.data?[index];
+                      return ReelItem(
+                        key: ValueKey(index), // 👈 Important
+                        reel: reel,
+                        isCurrentPage: controller.currentIndex == index,
+                      );
+                    },
+                  )
+                  : Material(),
         );
       },
     );
@@ -44,23 +58,29 @@ class ReelItem extends StatefulWidget {
   State<ReelItem> createState() => _ReelItemState();
 }
 
-class _ReelItemState extends State<ReelItem> with SingleTickerProviderStateMixin {
+class _ReelItemState extends State<ReelItem>
+    with SingleTickerProviderStateMixin {
   VideoPlayerController? _videoController;
   late AnimationController _animationController;
   bool _isLiked = false;
   final bool _isFollowing = false;
   bool _showHeart = false;
   ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(duration: const Duration(seconds: 10), vsync: this)..repeat();
-
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this,
+    )..repeat();
     _initializeVideo();
   }
 
   Future<void> _initializeVideo() async {
-    _videoController = VideoPlayerController.network(widget.reel?.videoUrl??"");
+    _videoController = VideoPlayerController.network(
+      widget.reel?.videoUrl ?? "",
+    );
 
     try {
       await _videoController!.initialize();
@@ -70,7 +90,11 @@ class _ReelItemState extends State<ReelItem> with SingleTickerProviderStateMixin
 
       if (widget.isCurrentPage) {
         _videoController?.play();
+        log("isCurrentPage");
         _videoController?.setLooping(true);
+      } else {
+        log("Not Page Current Page");
+        _videoController?.pause();
       }
     } catch (e) {
       debugPrint('Video init error: $e');
@@ -105,19 +129,22 @@ class _ReelItemState extends State<ReelItem> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // Video Player
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          onTap: () {
-            if (_videoController!.value.isPlaying) {
-              _videoController?.pause();
-            } else {
-              _videoController?.play();
-            }
-          },
-          child: SizedBox(
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onDoubleTap: _onDoubleTap,
+      onTap: () {
+        if (_videoController!.value.isPlaying) {
+          _videoController?.pause();
+          log("pause");
+        } else {
+          _videoController?.play();
+          log("play");
+        }
+      },
+      child: Stack(
+        children: [
+          // Video Player
+          SizedBox(
             width: double.infinity,
             height: double.infinity,
             child:
@@ -132,233 +159,200 @@ class _ReelItemState extends State<ReelItem> with SingleTickerProviderStateMixin
                     )
                     : Container(
                       color: Colors.black,
-                      child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
                     ),
           ),
-        ),
 
-        // Gradient Overlay
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.transparent, Colors.black38, Colors.black54],
-              stops: [0.0, 0.5, 0.8, 1.0],
+          // Gradient Overlay
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.transparent,
+                  Colors.black38,
+                  Colors.black54,
+                ],
+                stops: [0.0, 0.5, 0.8, 1.0],
+              ),
             ),
           ),
-        ),
 
-        // Top Bar
-        Positioned(
-          top: 50,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Reels', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                // const Icon(Icons.camera_alt_outlined, color: Colors.white, size: 28),
-              ],
+          // Top Bar
+          Positioned(
+            top: 50,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Reels',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
 
-        // Bottom Content
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Left side content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          // Bottom Content
+          Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Left side content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // User info
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: AssetImage(
+                                "assets/images/logo.png",
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              "Astro Dershan",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        // Description
+                        Text(
+                          widget.reel?.description ?? "",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        // Music
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.music_note,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                "Astro Dershan",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Right side actions
+                  Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // User info
-                      Row(
-                        children: [
-                          CircleAvatar(radius: 20, backgroundImage: AssetImage("assets/images/logo.png")),
-                          const SizedBox(width: 12),
-                          Text(
-                            "Astro Dershan",
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          const SizedBox(width: 8),
-                          // if (!_isFollowing)
-                          //   GestureDetector(
-                          //     onTap: () {
-                          //       setState(() {
-                          //         _isFollowing = !_isFollowing;
-                          //       });
-                          //     },
-                          //     child: Container(
-                          //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          //       decoration: BoxDecoration(
-                          //         border: Border.all(color: Colors.white),
-                          //         borderRadius: BorderRadius.circular(4),
-                          //       ),
-                          //       child: const Text(
-                          //         'Follow',
-                          //         style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                          //       ),
-                          //     ),
-                          //   ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      // Description
-                      Text(
-                        widget.reel?.description??"",
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      // Music
-                      Row(
-                        children: [
-                          const Icon(Icons.music_note, color: Colors.white, size: 16),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              "Astro Dershan",
-                              style: const TextStyle(color: Colors.white, fontSize: 12),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 24),
+                      const SizedBox(height: 24),
+                      const SizedBox(height: 24),
+                      const SizedBox(height: 24),
+
+                      // Rotating music disc
+                      GestureDetector(
+                        onTap: () {
+                          // Handle music tap
+                          log("Handle music tap");
+                        },
+                        child: AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _animationController.value * 2 * 3.14159,
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/images/logo.png"),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),
-                ),
-
-                // Right side actions
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Like button
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       _isLiked = !_isLiked;
-                    //     });
-                    //   },
-                    //   child: Column(
-                    //     children: [
-                    //       Icon(
-                    //         _isLiked ? Icons.favorite : Icons.favorite_border,
-                    //         color: _isLiked ? Colors.red : Colors.white,
-                    //         size: 32,
-                    //       ),
-                    //       const SizedBox(height: 4),
-                    //       Text(
-                    //         widget.reel?.likeCount.toString()??"",
-                    //         style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    const SizedBox(height: 24),
-
-                    // Comment button
-                    GestureDetector(
-                      onTap: () {
-                        _showCommentSheet(context);
-                      },
-                      child: Column(
-                        children: [
-                          const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 32),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.reel?.commentCount.toString()??"",
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Share button
-                    GestureDetector(
-                      onTap: () {
-                        // Handle share
-                      },
-                      child: Column(
-                        children: [
-                          const Icon(Icons.send, color: Colors.white, size: 32),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.reel?.shareCount.toString()??"",
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // More options
-                    // const Icon(Icons.more_vert, color: Colors.white, size: 32),
-                    const SizedBox(height: 24),
-
-                    // Rotating music disc
-                    GestureDetector(
-                      onTap: () {
-                        // Handle music tap
-                      },
-                      child: AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) {
-                          return Transform.rotate(
-                            angle: _animationController.value * 2 * 3.14159,
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(image: AssetImage("assets/images/logo.png"), fit: BoxFit.cover),
-                                border: Border.all(color: Colors.white, width: 2),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
 
-        // Heart animation for double tap
-        if (_showHeart)
-          Center(
-            child: AnimatedOpacity(
-              opacity: _showHeart ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 500),
-              child: const Icon(Icons.favorite, color: Colors.red, size: 80),
-            ),
-          ),
-      ],
+          // Heart animation for double tap
+          // if (_showHeart)
+          //   IgnorePointer(
+          //     child: Center(
+          //       child: AnimatedOpacity(
+          //         opacity: _showHeart ? 1.0 : 0.0,
+          //         duration: const Duration(milliseconds: 500),
+          //         child: const Icon(
+          //           Icons.favorite,
+          //           color: Colors.red,
+          //           size: 80,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+        ],
+      ),
     );
   }
 
-  void _showCommentSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => CommentSheet(reel: widget.reel),
-    );
-  }
+  // void _showCommentSheet(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => CommentSheet(reel: widget.reel),
+  //   );
+  // }
 }
 
 class CommentSheet extends StatelessWidget {
@@ -381,7 +375,10 @@ class CommentSheet extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 12),
             width: 40,
             height: 4,
-            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
 
           // Header
@@ -392,7 +389,10 @@ class CommentSheet extends StatelessWidget {
               children: [
                 Text(
                   '${reel?.commentCount} comments',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Icon(Icons.close),
               ],
@@ -409,13 +409,18 @@ class CommentSheet extends StatelessWidget {
                 return ListTile(
                   leading: CircleAvatar(
                     radius: 16,
-                    backgroundImage: NetworkImage('https://picsum.photos/32/32?random=$index'),
+                    backgroundImage: NetworkImage(
+                      'https://picsum.photos/32/32?random=$index',
+                    ),
                   ),
                   title: RichText(
                     text: TextSpan(
                       style: const TextStyle(color: Colors.black),
                       children: [
-                        TextSpan(text: 'user_$index ', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(
+                          text: 'user_$index ',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         const TextSpan(text: 'This is a sample comment'),
                       ],
                     ),
@@ -436,7 +441,10 @@ class CommentSheet extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const CircleAvatar(radius: 16, backgroundImage: NetworkImage('https://picsum.photos/32/32')),
+                const CircleAvatar(
+                  radius: 16,
+                  backgroundImage: NetworkImage('https://picsum.photos/32/32'),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextField(

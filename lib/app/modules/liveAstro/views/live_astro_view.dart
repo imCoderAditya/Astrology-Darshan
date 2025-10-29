@@ -91,9 +91,9 @@ class ViewerView extends GetView<LiveAstroController> {
               controller: controller.messageController,
               decoration: InputDecoration(
                 hintText: 'Type a message...',
-                hintStyle: TextStyle(color: Colors.white54, fontSize: 14.sp),
+                hintStyle: TextStyle(color: AppColors.white, fontSize: 14.sp),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.1),
+                fillColor: AppColors.black.withOpacity(0.8),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 16.w,
                   vertical: 10.h,
@@ -120,7 +120,8 @@ class ViewerView extends GetView<LiveAstroController> {
           // Gift Icon Button
           InkWell(
             onTap: () {
-              if(controller.messageController.text.isNotEmpty){
+              if (controller.messageController.text.isNotEmpty) {
+                   FocusScope.of(Get.context!).unfocus();
                 controller.sendMessageLocal();
               }
             },
@@ -130,7 +131,7 @@ class ViewerView extends GetView<LiveAstroController> {
               width: 40.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                color: AppColors.black.withOpacity(0.8),
                 border: Border.all(color: AppColors.white.withOpacity(0.3)),
               ),
               child: const Icon(Icons.send, color: Colors.white, size: 22),
@@ -147,7 +148,7 @@ class ViewerView extends GetView<LiveAstroController> {
               width: 40.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                color: AppColors.black.withOpacity(0.8),
                 border: Border.all(color: AppColors.white.withOpacity(0.3)),
               ),
               child: const Icon(
@@ -864,11 +865,14 @@ class ViewerView extends GetView<LiveAstroController> {
                               onTap: () async {
                                 // Add haptic feedback
                                 HapticFeedback.lightImpact();
-                                await controller.sendMessageLocal(
-                                  fileUrl: gift?.giftImage ?? "",
-                                  messageText_: gift?.giftName,
+                                // await controller.sendMessageLocal(
+                                //   fileUrl: gift?.giftImage ?? "",
+                                //   messageText_: gift?.giftName,
+                                // );
+                             
+                                await controller.sendLiveGft(
+                                  giftID: gift?.giftId,
                                 );
-
                                 Get.back();
 
                                 // controller.sendLiveGift(

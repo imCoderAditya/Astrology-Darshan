@@ -61,4 +61,5 @@ class EndPoint {
   static const getReviews = "Consultation/GetReviews";
   static const getReAddOrUpdateReviewviews = "Consultation/AddOrUpdateReview";
   static const deleteReview = "Consultation/DeleteReview";
+  static const liveSessionsendGift = "LiveSession/SendGift";
 }

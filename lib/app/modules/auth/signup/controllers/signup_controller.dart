@@ -201,10 +201,10 @@ class SignupController extends GetxController {
 
   void validation() {
     // Profile picture validation (optional for customers, but recommended)
-    if (file == null) {
-      SnackBarUiView.showError(message: "Please select a profile picture");
-      return;
-    }
+    // if (file == null) {
+    //   SnackBarUiView.showError(message: "Please select a profile picture");
+    //   return;
+    // }
 
     // First name validation
     if (firstNameController.text.trim().isEmpty) {

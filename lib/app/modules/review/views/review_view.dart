@@ -701,52 +701,53 @@ class ReviewView extends GetView<ReviewController> {
   }
 
   // Delete Confirmation Dialog
-  void _showDeleteConfirmationDialog(
-    ReviewController controller,
-    ReviewData review,
-  ) {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28.w),
-            SizedBox(width: 8.w),
-            Text(
-              'Delete Review',
-              style: AppTextStyles.headlineMedium().copyWith(fontSize: 18.sp),
-            ),
-          ],
-        ),
-        content: Text(
-          'Are you sure you want to delete this review? This action cannot be undone.',
-          style: AppTextStyles.body(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'Cancel',
-              style: AppTextStyles.button.copyWith(
-                color: AppColors.lightTextSecondary,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Call controller method to delete review
-              controller.deleteReview(review.reviewId ?? 0);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(
-              'Delete',
-              style: AppTextStyles.button.copyWith(color: AppColors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showDeleteConfirmationDialog(
+  //   ReviewController controller,
+  //   ReviewData review,
+  // ) {
+  //   Get.dialog(
+  //     AlertDialog(
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(16.r),
+  //       ),
+  //       title: Row(
+  //         children: [
+  //           Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28.w),
+  //           SizedBox(width: 8.w),
+  //           Text(
+  //             'Delete Review',
+  //             style: AppTextStyles.headlineMedium().copyWith(fontSize: 18.sp),
+  //           ),
+  //         ],
+  //       ),
+  //       content: Text(
+  //         'Are you sure you want to delete this review? This action cannot be undone.',
+  //         style: AppTextStyles.body(),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(),
+  //           child: Text(
+  //             'Cancel',
+  //             style: AppTextStyles.button.copyWith(
+  //               color: AppColors.lightTextSecondary,
+  //             ),
+  //           ),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () {
+  //             // Call controller method to delete review
+  //             controller.deleteReview(review.reviewId ?? 0);
+  //           },
+  //           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+  //           child: Text(
+  //             'Delete',
+  //             style: AppTextStyles.button.copyWith(color: AppColors.white),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
 }

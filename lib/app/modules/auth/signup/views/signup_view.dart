@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 
 class SignupView extends GetView<SignupController> {
   const SignupView({super.key});
@@ -155,68 +154,68 @@ class SignupView extends GetView<SignupController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Profile Photo Section
-                          Center(
-                            child: GestureDetector(
-                              onTap:
-                                  () => {
-                                    _showImagePickerDialog(controller, isDark),
-                                  },
-                              child: Obx(
-                                () => Container(
-                                  width: 100.w,
-                                  height: 100.h,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color:
-                                        isDark
-                                            ? Colors.white.withOpacity(0.1)
-                                            : Colors.black.withOpacity(0.05),
-                                    border: Border.all(
-                                      color: AppColors.primaryColor.withOpacity(
-                                        0.3,
-                                      ),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child:
-                                      controller.selectedImage.value != null
-                                          ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              50.r,
-                                            ),
-                                            child: Image.file(
-                                              controller.selectedImage.value!,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )
-                                          : Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.add_a_photo,
-                                                size: 30.sp,
-                                                color: AppColors.primaryColor,
-                                              ),
-                                              SizedBox(height: 4.h),
-                                              Text(
-                                                'Add Photo',
-                                                style: TextStyle(
-                                                  fontSize: 10.sp,
-                                                  color:
-                                                      isDark
-                                                          ? Colors.white70
-                                                          : Colors.black54,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          // Center(
+                          //   child: GestureDetector(
+                          //     onTap:
+                          //         () => {
+                          //           _showImagePickerDialog(controller, isDark),
+                          //         },
+                          //     child: Obx(
+                          //       () => Container(
+                          //         width: 100.w,
+                          //         height: 100.h,
+                          //         decoration: BoxDecoration(
+                          //           shape: BoxShape.circle,
+                          //           color:
+                          //               isDark
+                          //                   ? Colors.white.withOpacity(0.1)
+                          //                   : Colors.black.withOpacity(0.05),
+                          //           border: Border.all(
+                          //             color: AppColors.primaryColor.withOpacity(
+                          //               0.3,
+                          //             ),
+                          //             width: 2,
+                          //           ),
+                          //         ),
+                          //         child:
+                          //             controller.selectedImage.value != null
+                          //                 ? ClipRRect(
+                          //                   borderRadius: BorderRadius.circular(
+                          //                     50.r,
+                          //                   ),
+                          //                   child: Image.file(
+                          //                     controller.selectedImage.value!,
+                          //                     fit: BoxFit.cover,
+                          //                   ),
+                          //                 )
+                          //                 : Column(
+                          //                   mainAxisAlignment:
+                          //                       MainAxisAlignment.center,
+                          //                   children: [
+                          //                     Icon(
+                          //                       Icons.add_a_photo,
+                          //                       size: 30.sp,
+                          //                       color: AppColors.primaryColor,
+                          //                     ),
+                          //                     SizedBox(height: 4.h),
+                          //                     Text(
+                          //                       'Add Photo',
+                          //                       style: TextStyle(
+                          //                         fontSize: 10.sp,
+                          //                         color:
+                          //                             isDark
+                          //                                 ? Colors.white70
+                          //                                 : Colors.black54,
+                          //                       ),
+                          //                     ),
+                          //                   ],
+                          //                 ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
 
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 10.h),
                           // First Name & Last Name
                           _buildInputField(
                             label: 'OTP',
@@ -976,146 +975,147 @@ class SignupView extends GetView<SignupController> {
     );
   }
 
-  void _showImagePickerDialog(SignupController? controller, bool isDark) {
-    Get.dialog(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          height: 220.h,
-          margin: EdgeInsets.symmetric(horizontal: 40.w),
-          decoration: BoxDecoration(
-            color:
-                isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color:
-                  isDark
-                      ? Colors.white.withOpacity(0.2)
-                      : Colors.white.withOpacity(0.5),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color:
-                    isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Select Image Source',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-              ),
-              SizedBox(height: 30.h),
-              // Camera Button
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 30.w),
-                height: 50.h,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.primaryColor, AppColors.accentColor],
-                  ),
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryColor.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: MaterialButton(
-                  onPressed: () {
-                    Get.back();
-                    controller?.pickImage(source: ImageSource.camera);
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.camera_alt, color: Colors.white, size: 20.sp),
-                      SizedBox(width: 10.w),
-                      Text(
-                        "Camera",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 15.h),
-              // Gallery Button
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 30.w),
-                height: 50.h,
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withOpacity(0.1) : Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: AppColors.primaryColor.withOpacity(0.3),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: MaterialButton(
-                  onPressed: () {
-                    Get.back();
-                    controller?.pickImage(source: ImageSource.gallery);
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.photo_library,
-                        color: AppColors.primaryColor,
-                        size: 20.sp,
-                      ),
-                      SizedBox(width: 10.w),
-                      Text(
-                        "Gallery",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // void _showImagePickerDialog(SignupController? controller, bool isDark) {
+  //   Get.dialog(
+  //     Dialog(
+  //       backgroundColor: Colors.transparent,
+  //       child: Container(
+  //         height: 220.h,
+  //         margin: EdgeInsets.symmetric(horizontal: 40.w),
+  //         decoration: BoxDecoration(
+  //           color:
+  //               isDark
+  //                   ? Colors.white.withOpacity(0.1)
+  //                   : Colors.white.withOpacity(0.9),
+  //           borderRadius: BorderRadius.circular(20.r),
+  //           border: Border.all(
+  //             color:
+  //                 isDark
+  //                     ? Colors.white.withOpacity(0.2)
+  //                     : Colors.white.withOpacity(0.5),
+  //             width: 1.5,
+  //           ),
+  //           boxShadow: [
+  //             BoxShadow(
+  //               color:
+  //                   isDark
+  //                       ? Colors.black.withOpacity(0.3)
+  //                       : Colors.black.withOpacity(0.1),
+  //               blurRadius: 20,
+  //               offset: const Offset(0, 8),
+  //             ),
+  //           ],
+  //         ),
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Text(
+  //               'Select Image Source',
+  //               style: TextStyle(
+  //                 fontSize: 18.sp,
+  //                 fontWeight: FontWeight.w600,
+  //                 color: isDark ? Colors.white : Colors.black87,
+  //               ),
+  //             ),
+  //             SizedBox(height: 30.h),
+  //             // Camera Button
+  //             Container(
+  //               width: double.infinity,
+  //               margin: EdgeInsets.symmetric(horizontal: 30.w),
+  //               height: 50.h,
+  //               decoration: BoxDecoration(
+  //                 gradient: LinearGradient(
+  //                   colors: [AppColors.primaryColor, AppColors.accentColor],
+  //                 ),
+  //                 borderRadius: BorderRadius.circular(12.r),
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: AppColors.primaryColor.withOpacity(0.3),
+  //                     blurRadius: 8,
+  //                     offset: const Offset(0, 4),
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: MaterialButton(
+  //                 onPressed: () {
+  //                   Get.back();
+  //                   controller?.pickImage(source: ImageSource.camera);
+  //                 },
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(12.r),
+  //                 ),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Icon(Icons.camera_alt, color: Colors.white, size: 20.sp),
+  //                     SizedBox(width: 10.w),
+  //                     Text(
+  //                       "Camera",
+  //                       style: TextStyle(
+  //                         fontSize: 16.sp,
+  //                         fontWeight: FontWeight.w600,
+  //                         color: Colors.white,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //             SizedBox(height: 15.h),
+  //             // Gallery Button
+  //             Container(
+  //               width: double.infinity,
+  //               margin: EdgeInsets.symmetric(horizontal: 30.w),
+  //               height: 50.h,
+  //               decoration: BoxDecoration(
+  //                 color: isDark ? Colors.white.withOpacity(0.1) : Colors.white,
+  //                 borderRadius: BorderRadius.circular(12.r),
+  //                 border: Border.all(
+  //                   color: AppColors.primaryColor.withOpacity(0.3),
+  //                   width: 1.5,
+  //                 ),
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: Colors.black.withOpacity(0.05),
+  //                     blurRadius: 8,
+  //                     offset: const Offset(0, 4),
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: MaterialButton(
+  //                 onPressed: () {
+  //                   Get.back();
+  //                   controller?.pickImage(source: ImageSource.gallery);
+  //                 },
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(12.r),
+  //                 ),
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Icon(
+  //                       Icons.photo_library,
+  //                       color: AppColors.primaryColor,
+  //                       size: 20.sp,
+  //                     ),
+  //                     SizedBox(width: 10.w),
+  //                     Text(
+  //                       "Gallery",
+  //                       style: TextStyle(
+  //                         fontSize: 16.sp,
+  //                         fontWeight: FontWeight.w600,
+  //                         color: AppColors.primaryColor,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
 }
