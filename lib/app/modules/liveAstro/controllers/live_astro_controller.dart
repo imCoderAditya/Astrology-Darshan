@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_token_generator/agora_token_generator.dart';
-import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
@@ -16,7 +14,6 @@ import 'package:astrology/app/services/webshoket/live_webshoket_services.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:astrology/components/snack_bar_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -43,6 +40,7 @@ class LiveAstroController extends GetxController {
   final networkQuality = 'excellent'.obs;
   final audioVolume = 100.obs;
   final isAudioMuted = false.obs;
+  var singleTimeSend = false.obs;
 
   // Host video controller
   final hostVideoController = Rxn<VideoViewController>();
@@ -463,7 +461,6 @@ class LiveAstroController extends GetxController {
   final userId = LocalStorageService.getUserId();
 
   Future<void> sendLiveGift({int? liveSessionID, int? giftID}) async {
-  
     try {
       final res = await BaseClient.post(
         api: EndPoint.sendGift,
@@ -477,39 +474,12 @@ class LiveAstroController extends GetxController {
         LoggerUtils.debug("Response: ${res.data}");
         if (res.data["success"] == true) {
           Get.back();
-          Get.snackbar(
-            '🎁 Gift Selected',
-            res.data["message"],
-            colorText: AppColors.white,
-            backgroundColor: AppColors.primaryColor.withValues(alpha: 0.5),
-            duration: const Duration(seconds: 2),
-            snackPosition: SnackPosition.TOP,
-            margin: EdgeInsets.all(16.w),
-            borderRadius: 12.r,
-          );
+          SnackBarUiView.showInfo(message: res.data["message"]);
         } else {
-          Get.snackbar(
-            'Failed',
-            res.data["message"],
-            colorText: AppColors.white,
-            backgroundColor: AppColors.red.withValues(alpha: 0.5),
-            duration: const Duration(seconds: 2),
-            snackPosition: SnackPosition.TOP,
-            margin: EdgeInsets.all(16.w),
-            borderRadius: 12.r,
-          );
+          SnackBarUiView.showInfo(message: res.data["message"]);
         }
       } else {
-        Get.snackbar(
-          'Failed',
-          res.data["message"],
-          colorText: AppColors.white,
-          backgroundColor: AppColors.red.withValues(alpha: 0.5),
-          duration: const Duration(seconds: 2),
-          snackPosition: SnackPosition.TOP,
-          margin: EdgeInsets.all(16.w),
-          borderRadius: 12.r,
-        );
+        SnackBarUiView.showInfo(message: res.data["message"]);
         LoggerUtils.error("Error: ${res?.data}");
       }
     } catch (e) {
@@ -556,6 +526,10 @@ class LiveAstroController extends GetxController {
       messageData,
     ) {
       handleIncomingMessage(messageData);
+      if (singleTimeSend.value == false) {
+        sendMessageLocal(messageText_: "Joined");
+        singleTimeSend.value = true;
+      }
     });
   }
 

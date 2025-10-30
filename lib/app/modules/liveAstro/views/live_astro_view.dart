@@ -33,45 +33,50 @@ class ViewerView extends GetView<LiveAstroController> {
             return _buildLoadingScreen();
           }
 
-          return Stack(
-            children: [
-              // Background gradient
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF0A0E27),
-                      Color(0xFF1A1F3A),
-                      Color(0xFF2A2F4A),
-                    ],
+          return WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: Stack(
+              children: [
+                // Background gradient
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF0A0E27),
+                        Color(0xFF1A1F3A),
+                        Color(0xFF2A2F4A),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              // Main Video View (Host's stream)
-              _buildHostVideoView(),
+                // Main Video View (Host's stream)
+                _buildHostVideoView(),
 
-              // Top Controls
-              _buildTopControls(),
+                // Top Controls
+                _buildTopControls(),
 
-              // Bottom Controls
-              // _buildBottomControls(),
-              _buildTextField(),
+                // Bottom Controls
+                // _buildBottomControls(),
+                _buildTextField(),
 
-              // Side Controls
-              // _buildSideControls(),
+                // Side Controls
+                // _buildSideControls(),
 
-              // Connection Status
-              _buildConnectionStatus(),
+                // Connection Status
+                _buildConnectionStatus(),
 
-              // Watch Timer
-              // _buildWatchTimer(),
+                // Watch Timer
+                // _buildWatchTimer(),
 
-              // Host Info
-              _buildHostInfo(),
-            ],
+                // Host Info
+                _buildHostInfo(),
+              ],
+            ),
           );
         });
       },
@@ -121,7 +126,7 @@ class ViewerView extends GetView<LiveAstroController> {
           InkWell(
             onTap: () {
               if (controller.messageController.text.isNotEmpty) {
-                   FocusScope.of(Get.context!).unfocus();
+                FocusScope.of(Get.context!).unfocus();
                 controller.sendMessageLocal();
               }
             },
@@ -591,24 +596,23 @@ class ViewerView extends GetView<LiveAstroController> {
     return Tooltip(
       message: tooltip,
       child: Container(
-        width: 35.w,
-        height: 35.h,
+        width: 40.w,
+        height: 40.h,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isActive ? Colors.transparent : Colors.white.withOpacity(0.2),
+          color:
+              isActive
+                  ? AppColors.black.withValues(alpha: 0.8)
+                  : AppColors.black.withOpacity(0.8),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color:
-                isActive
-                    ? AppColors.primaryColor
-                    : Colors.white.withOpacity(0.3),
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
         ),
         child: IconButton(
           onPressed: onPressed,
           icon: Icon(
             icon,
             color: isActive ? Colors.white : Colors.white70,
-            size: 24,
+            size: 20.h,
           ),
         ),
       ),
@@ -656,28 +660,129 @@ class ViewerView extends GetView<LiveAstroController> {
 
   void _showLeaveDialog() {
     Get.dialog(
-      AlertDialog(
-        backgroundColor: const Color(0xFF1A1F3A),
-        title: const Text(
-          'Leave Live Stream',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: const Text(
-          'Are you sure you want to leave this live stream?',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              controller.leaveLive();
-              Get.back();
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('Leave', style: TextStyle(color: AppColors.white)),
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1A1F3A), Color(0xFF2D3250)],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
-        ],
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon with gradient background
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red.withOpacity(0.2),
+                      Colors.red.withOpacity(0.1),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.logout_rounded,
+                  color: Colors.red,
+                  size: 40,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Title
+              const Text(
+                'Leave Live Stream',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Content
+              const Text(
+                'Are you sure you want to leave this live stream?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Get.back();
+                        controller.sendMessageLocal(messageText_: "Left");
+                        controller.leaveLive();
+                        Get.back();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Leave',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -869,7 +974,7 @@ class ViewerView extends GetView<LiveAstroController> {
                                 //   fileUrl: gift?.giftImage ?? "",
                                 //   messageText_: gift?.giftName,
                                 // );
-                             
+
                                 await controller.sendLiveGft(
                                   giftID: gift?.giftId,
                                 );
