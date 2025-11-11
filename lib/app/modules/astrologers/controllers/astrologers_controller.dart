@@ -59,9 +59,7 @@ class AstrologersController extends GetxController {
       if (res != null && res.statusCode == 200) {
         // Process the response here
         _astrologerModel.value = astrologerModelFromJson(json.encode(res.data));
-        _astrologerList..clear()
-        ..addAll(_astrologerModel.value?.data?.astrologers ?? []);
-     
+        _astrologerList.addAll(_astrologerModel.value?.data?.astrologers ?? []);
       } else {
         LoggerUtils.error("Failed Astrologer List API: $res");
       }

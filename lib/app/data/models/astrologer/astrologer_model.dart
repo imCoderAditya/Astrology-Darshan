@@ -84,8 +84,11 @@ class Astrologer {
     final double? rating;
     final int? totalRatings;
     final int? totalConsultations;
-    final bool? isOnline;
     final bool? isApproved;
+    final bool? isOnline;
+    final bool? isAvailableForCall;
+    final bool? isAvailableForChat;
+    final bool? isBoosted;
     final String? firstName;
     final String? lastName;
     final String? email;
@@ -113,8 +116,11 @@ class Astrologer {
         this.rating,
         this.totalRatings,
         this.totalConsultations,
-        this.isOnline,
         this.isApproved,
+        this.isOnline,
+        this.isAvailableForCall,
+        this.isAvailableForChat,
+        this.isBoosted,
         this.firstName,
         this.lastName,
         this.email,
@@ -143,8 +149,11 @@ class Astrologer {
         double? rating,
         int? totalRatings,
         int? totalConsultations,
-        bool? isOnline,
         bool? isApproved,
+        bool? isOnline,
+        bool? isAvailableForCall,
+        bool? isAvailableForChat,
+        bool? isBoosted,
         String? firstName,
         String? lastName,
         String? email,
@@ -172,8 +181,11 @@ class Astrologer {
             rating: rating ?? this.rating,
             totalRatings: totalRatings ?? this.totalRatings,
             totalConsultations: totalConsultations ?? this.totalConsultations,
-            isOnline: isOnline ?? this.isOnline,
             isApproved: isApproved ?? this.isApproved,
+            isOnline: isOnline ?? this.isOnline,
+            isAvailableForCall: isAvailableForCall ?? this.isAvailableForCall,
+            isAvailableForChat: isAvailableForChat ?? this.isAvailableForChat,
+            isBoosted: isBoosted ?? this.isBoosted,
             firstName: firstName ?? this.firstName,
             lastName: lastName ?? this.lastName,
             email: email ?? this.email,
@@ -202,8 +214,11 @@ class Astrologer {
         rating: json["rating"]?.toDouble(),
         totalRatings: json["totalRatings"],
         totalConsultations: json["totalConsultations"],
-        isOnline: json["isOnline"],
         isApproved: json["isApproved"],
+        isOnline: json["IsOnline"],
+        isAvailableForCall: json["IsAvailableForCall"],
+        isAvailableForChat: json["IsAvailableForChat"],
+        isBoosted: json["isBoosted"],
         firstName: json["firstName"],
         lastName: json["lastName"],
         email: json["email"],
@@ -232,8 +247,11 @@ class Astrologer {
         "rating": rating,
         "totalRatings": totalRatings,
         "totalConsultations": totalConsultations,
-        "isOnline": isOnline,
         "isApproved": isApproved,
+        "IsOnline": isOnline,
+        "IsAvailableForCall": isAvailableForCall,
+        "IsAvailableForChat": isAvailableForChat,
+        "isBoosted": isBoosted,
         "firstName": firstName,
         "lastName": lastName,
         "email": email,

@@ -1,4 +1,3 @@
-
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';

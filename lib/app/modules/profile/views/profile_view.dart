@@ -3,6 +3,7 @@
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
+import 'package:astrology/app/modules/webview/views/webview_view.dart';
 import 'package:astrology/app/routes/app_pages.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ class ProfileView extends StatelessWidget {
                                   // backgroundImage: NetworkImage(
                                   //   profile?.profilePicture ?? "",
                                   // ),
-                                    backgroundImage: AssetImage(
+                                  backgroundImage: AssetImage(
                                     profile?.gender?.toLowerCase() == "male"
                                         ? "assets/images/man.png"
                                         : "assets/images/female.png",
@@ -220,7 +221,14 @@ class ProfileView extends StatelessWidget {
                     Icons.security,
                     "Privacy Policy",
                     textColor: textColor,
-                    onTap: () => {},
+                    onTap:
+                        () => {
+                          Get.to(
+                            WebviewView(
+                              url: "https://theastrodarshan.com/Privacy.aspx",
+                            ),
+                          ),
+                        },
                   ),
 
                   const SizedBox(height: 25),
@@ -231,14 +239,21 @@ class ProfileView extends StatelessWidget {
                     Icons.info_outline,
                     "About App",
                     textColor: textColor,
-                    onTap: () => {},
+                    onTap:
+                        () => {
+                          Get.to(
+                            WebviewView(
+                              url: "https://theastrodarshan.com/About_us.aspx",
+                            ),
+                          ),
+                        },
                   ),
-                  _buildSettingsTile(
-                    Icons.star_rate_rounded, // Nicer icon for Rate Us
-                    "Rate Us",
-                    textColor: textColor,
-                    onTap: () => {},
-                  ),
+                  // _buildSettingsTile(
+                  //   Icons.star_rate_rounded, // Nicer icon for Rate Us
+                  //   "Rate Us",
+                  //   textColor: textColor,
+                   
+                  // ),
 
                   const SizedBox(height: 35),
 

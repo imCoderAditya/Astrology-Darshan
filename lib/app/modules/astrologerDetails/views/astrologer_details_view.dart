@@ -137,7 +137,7 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
 
           // Name
           Text(
-            "${astrologer!.firstName ?? ""} ${astrologer!.lastName ?? ""}"
+            "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}"
                 .trim(),
             style: AppTextStyles.headlineLarge().copyWith(
               color: AppColors.white,
@@ -452,35 +452,46 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed:
-                () => CallChatConfirmationDialog.show(
-                  context: Get.context!,
-                  astrologerPhoto: astrologer?.profilePicture,
-                  onConfirm: (value) {
-                    Get.back();
-                    astrologersController.astrologerBook(
-                      endTime: value,
-                      astrologerId: astrologer?.astrologerId,
-                      type: "Chat",
-                      astrologerPhoto: astrologer?.profilePicture,
-                    );
-                  },
-                  onWalletRedirect: () {
-                    Get.toNamed(Routes.WALLET);
-                  },
-                  rate: astrologer?.chatMrpPerMinute,
+                () =>
+                    astrologer?.isAvailableForChat == false
+                        ? null
+                        : CallChatConfirmationDialog.show(
+                          context: Get.context!,
+                          astrologerPhoto: astrologer?.profilePicture,
+                          onConfirm: (value) {
+                            Get.back();
+                            astrologersController.astrologerBook(
+                              endTime: value,
+                              astrologerId: astrologer?.astrologerId,
+                              type: "Chat",
+                              astrologerPhoto: astrologer?.profilePicture,
+                            );
+                          },
+                          onWalletRedirect: () {
+                            Get.toNamed(Routes.WALLET);
+                          },
+                          rate: astrologer?.chatMrpPerMinute,
 
-                  type: 'Chat',
-                  astrologerName:
-                      "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",
-                ),
+                          type: 'Chat',
+                          astrologerName:
+                              "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",
+                        ),
             icon: Icon(
               Icons.chat_bubble_outline,
               size: 20.w,
-              color: AppColors.white,
+              color: isDark ? AppColors.white : AppColors.black,
             ),
-            label: Text('Chat Now', style: AppTextStyles.button),
+            label: Text(
+              'Chat Now',
+              style: AppTextStyles.button.copyWith(
+                color: isDark ? AppColors.white : AppColors.black,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
+              backgroundColor:
+                  astrologer?.isAvailableForChat == false
+                      ? AppColors.white.withValues(alpha: 0.4)
+                      : AppColors.primaryColor,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
@@ -494,30 +505,45 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed:
-                () => CallChatConfirmationDialog.show(
-                  context: Get.context!,
-                  astrologerPhoto: astrologer?.profilePicture,
-                  onConfirm: (value) {
-                    Get.back();
-                    astrologersController.astrologerBook(
-                      endTime: value,
-                      astrologerId: astrologer?.astrologerId,
-                      astrologerPhoto: astrologer?.profilePicture,
-                      type: "Call",
-                    );
-                  },
-                  onWalletRedirect: () {
-                    Get.toNamed(Routes.WALLET);
-                  },
-                  rate: astrologer?.callMrpPerMinute ?? 0,
-                  type: 'Call',
-                  astrologerName:
-                      "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",
-                ),
-            icon: Icon(Icons.videocam, size: 20.w, color: AppColors.white),
-            label: Text('Voice Call', style: AppTextStyles.button),
+                () =>
+                    astrologer?.isAvailableForCall == false
+                        ? null
+                        : CallChatConfirmationDialog.show(
+                          context: Get.context!,
+                          astrologerPhoto: astrologer?.profilePicture,
+                          onConfirm: (value) {
+                            Get.back();
+                            astrologersController.astrologerBook(
+                              endTime: value,
+                              astrologerId: astrologer?.astrologerId,
+                              astrologerPhoto: astrologer?.profilePicture,
+                              type: "Call",
+                            );
+                          },
+                          onWalletRedirect: () {
+                            Get.toNamed(Routes.WALLET);
+                          },
+                          rate: astrologer?.callMrpPerMinute ?? 0,
+                          type: 'Call',
+                          astrologerName:
+                              "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",
+                        ),
+            icon: Icon(
+              Icons.videocam,
+              size: 20.w,
+              color: isDark ? AppColors.white : AppColors.black,
+            ),
+            label: Text(
+              'Voice Call',
+              style: AppTextStyles.button.copyWith(
+                color: isDark ? AppColors.white : AppColors.black,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentColor,
+              backgroundColor:
+                  astrologer?.isAvailableForCall == false
+                      ? AppColors.white.withValues(alpha: 0.5)
+                      : AppColors.accentColor,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),

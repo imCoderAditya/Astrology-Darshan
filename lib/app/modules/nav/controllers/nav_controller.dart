@@ -33,6 +33,8 @@ class NavController extends GetxController {
       homeController.fetchAstrologerData();
     } else if (index == 1) {
       // Get.find<ReelsController>().pauseVideo();
+    astrologersController.searchController.clear();
+      astrologersController.currentPage.value = 1;
       astrologersController.astrologerList.clear();
       astrologersController.fetchAstrologerData();
     } else if (index == 2) {

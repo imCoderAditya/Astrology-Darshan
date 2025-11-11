@@ -68,7 +68,11 @@ class AstrologersView extends GetView<AstrologersController> {
                   controller: controller.searchController,
                   isDark: isDark,
                   onChanged: (value) async {
-                    controller.fetchAstrologerData(search: value);
+                    controller.astrologerList.clear();
+                    if (value.isEmpty) {
+                      controller.currentPage.value = 1;
+                    }
+                    await controller.fetchAstrologerData(search: value);
                   },
                 ),
                 Container(
@@ -268,38 +272,147 @@ class AstrologersView extends GetView<AstrologersController> {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: ListView.builder(
-        controller: controller.scrollController,
-        padding: EdgeInsets.only(left: 16.w, right: 16.w),
-        itemCount:
-            controller.astrologerList.length +
-            (controller.isLoading.value ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < controller.astrologerList.length) {
-            final astrologer = controller.astrologerList[index];
-            final hasChatDiscount =
-                astrologer.consultationRate != null &&
-                astrologer.consultationRate! <
-                    (astrologer.chatMrpPerMinute ?? 0);
-            final hasCallDiscount =
-                astrologer.callDpPerMinute != null &&
-                astrologer.callDpPerMinute! <
-                    (astrologer.callMrpPerMinute ?? 0);
-            return astrologerListView(
-              astrologer,
-              isDark,
-              hasChatDiscount,
-              hasCallDiscount,
-              context,
-              controller,
-            );
-          } else {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-        },
+      child:
+          controller.isLoading.value && controller.astrologerList.isEmpty
+              ? _buildLoadingState()
+              : controller.astrologerList.isEmpty
+              ? _buildEmptyState()
+              : ListView.builder(
+                controller: controller.scrollController,
+                padding: EdgeInsets.only(
+                  left: 16.w,
+                  right: 16.w,
+                  top: 12.h,
+                  bottom: 16.h,
+                ),
+                itemCount:
+                    controller.astrologerList.length +
+                    (controller.isLoading.value ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index < controller.astrologerList.length) {
+                    final astrologer = controller.astrologerList[index];
+                    final hasChatDiscount =
+                        astrologer.consultationRate != null &&
+                        astrologer.consultationRate! <
+                            (astrologer.chatMrpPerMinute ?? 0);
+                    final hasCallDiscount =
+                        astrologer.callDpPerMinute != null &&
+                        astrologer.callDpPerMinute! <
+                            (astrologer.callMrpPerMinute ?? 0);
+
+                    return astrologerListView(
+                      astrologer,
+                      isDark,
+                      hasChatDiscount,
+                      hasCallDiscount,
+                      context,
+                      controller,
+                    );
+                  } else {
+                    // Pagination loading indicator
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      child: Center(
+                        child: SizedBox(
+                          width: 24.w,
+                          height: 24.h,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              isDark ? Colors.orange : AppColors.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 50.w,
+            height: 50.h,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                isDark ? Colors.orange : AppColors.primaryColor,
+              ),
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'Finding astrologers for you...',
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: isDark ? Colors.white70 : Colors.black54,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 32.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Illustration or Icon
+            Container(
+              width: 120.w,
+              height: 120.h,
+              decoration: BoxDecoration(
+                color:
+                    isDark
+                        ? Colors.orange.withOpacity(0.1)
+                        : Colors.orange.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person_search_rounded,
+                size: 60.sp,
+                color: isDark ? Colors.orange : AppColors.primaryColor,
+              ),
+            ),
+            SizedBox(height: 24.h),
+
+            // Title
+            Text(
+              'No Astrologers Found',
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 12.h),
+
+            // Description
+            Text(
+              'We couldn\'t find any astrologers matching your criteria. Try adjusting your filters or check back later.',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: isDark ? Colors.white60 : Colors.black54,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 32.h),
+          ],
+        ),
       ),
     );
   }
@@ -312,6 +425,8 @@ class AstrologersView extends GetView<AstrologersController> {
     BuildContext context,
     AstrologersController controller,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () {
         Get.to(AstrologerDetailsView(astrologer: astrologer));
@@ -333,252 +448,344 @@ class AstrologersView extends GetView<AstrologersController> {
             width: 1,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Profile Image with discount badge
-              Stack(
-                children: [
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [AppColors.primaryColor, AppColors.accentColor],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryColor.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+        child: Column(
+          children: [
+            astrologer.isBoosted == false
+                ? SizedBox()
+                : Container(
+                  width: 110.w,
+                  height: 22.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.red,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.r),
+                      bottomRight: Radius.circular(10.r),
                     ),
-                    child: ClipOval(
-                      child:
-                          astrologer.profilePicture != null
-                              ? Image.network(
-                                astrologer.profilePicture ?? "",
-                                fit: BoxFit.cover,
-                                errorBuilder:
-                                    (
-                                      context,
-                                      error,
-                                      stackTrace,
-                                    ) => _buildDefaultAvatar(
-                                      "${astrologer.firstName?[0] ?? ""} ${astrologer.lastName?[0] ?? ""}",
-                                    ),
-                              )
-                              : _buildDefaultAvatar(
-                                "${astrologer.firstName?[0] ?? ""} ${astrologer.lastName?[0] ?? ""}",
-                              ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Recommended",
+                    style: AppTextStyles.body().copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.sp,
                     ),
                   ),
-
-                  // Discount badge
-                ],
-              ),
-              SizedBox(width: 16.w),
-              // Astrologer Details
-              Expanded(
-                flex: 1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${astrologer.firstName ?? ""} ${astrologer.lastName ?? ""}",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            isDark
-                                ? AppColors.darkTextPrimary
-                                : AppColors.lightTextPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      astrologer.specializations?.firstOrNull ?? "",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: AppColors.secondaryPrimary,
-                          size: 16,
+                ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  // Profile Image with discount badge
+                  Stack(
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primaryColor,
+                              AppColors.accentColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryColor.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 4),
+                        child: ClipOval(
+                          child:
+                              astrologer.profilePicture != null
+                                  ? Image.network(
+                                    astrologer.profilePicture ?? "",
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) => _buildDefaultAvatar(
+                                          "${astrologer.firstName?[0] ?? ""} ${astrologer.lastName?[0] ?? ""}",
+                                        ),
+                                  )
+                                  : _buildDefaultAvatar(
+                                    "${astrologer.firstName?[0] ?? ""} ${astrologer.lastName?[0] ?? ""}",
+                                  ),
+                        ),
+                      ),
+
+                      // Discount badge
+                    ],
+                  ),
+                  SizedBox(width: 16.w),
+                  // Astrologer Details
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          '${astrologer.rating ?? ""}',
+                          "${astrologer.firstName ?? ""} ${astrologer.lastName ?? ""}",
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                             color:
                                 isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.lightTextSecondary,
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          astrologer.specializations?.firstOrNull ?? "",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.primaryColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                astrologer.isOnline == true
-                                    ? AppColors.sucessPrimary.withOpacity(0.1)
-                                    : AppColors.red.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            astrologer.isOnline == true ? 'Online' : 'Offline',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color:
-                                  astrologer.isOnline == true
-                                      ? AppColors.sucessPrimary
-                                      : AppColors.red,
-                              fontWeight: FontWeight.w600,
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: AppColors.secondaryPrimary,
+                              size: 16,
                             ),
-                          ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${astrologer.rating ?? ""}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color:
+                                    isDark
+                                        ? AppColors.darkTextSecondary
+                                        : AppColors.lightTextSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    astrologer.isOnline == true
+                                        ? AppColors.sucessPrimary.withOpacity(
+                                          0.1,
+                                        )
+                                        : AppColors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                astrologer.isOnline == true
+                                    ? 'Online'
+                                    : 'Offline',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      astrologer.isOnline == true
+                                          ? AppColors.sucessPrimary
+                                          : AppColors.red,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Enhanced pricing section with discounts
-                    Column(
-                      children: [
-                        // Chat pricing
-                        _buildPricingRow(
-                          'Chat',
-                          astrologer.chatMrpPerMinute,
-                          astrologer.consultationRate,
-                          hasChatDiscount,
-                          isDark,
-                        ),
-                        const SizedBox(height: 4),
-                        // Call pricing
-                        _buildPricingRow(
-                          'Call',
-                          astrologer.callMrpPerMinute,
-                          astrologer.callDpPerMinute,
-                          hasCallDiscount,
-                          isDark,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              // Action Buttons
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    onPressed:
-                        () => CallChatConfirmationDialog.show(
-                          context: context,
-                          astrologerPhoto: astrologer.profilePicture,
-                          onConfirm: (value) {
-                            Get.back();
-                            controller.astrologerBook(
-                              endTime: value,
-                              astrologerId: astrologer.astrologerId,
-                              type: "Chat",
-                              astrologerPhoto: astrologer.profilePicture,
-                            );
-                          },
-                          onWalletRedirect: () {
-                            Get.toNamed(Routes.WALLET);
-                          },
-                          rate:
-                              astrologer.consultationRate ??
+                        const SizedBox(height: 8),
+                        // Enhanced pricing section with discounts
+                        Column(
+                          children: [
+                            // Chat pricing
+                            _buildPricingRow(
+                              'Chat',
                               astrologer.chatMrpPerMinute,
-                          type: 'Chat',
-                          astrologerName:
-                              "${astrologer.firstName ?? ""} ${astrologer.lastName ?? ""}",
+                              astrologer.consultationRate,
+                              hasChatDiscount,
+                              isDark,
+                            ),
+                            const SizedBox(height: 4),
+                            // Call pricing
+                            _buildPricingRow(
+                              'Call',
+                              astrologer.callMrpPerMinute,
+                              astrologer.callDpPerMinute,
+                              hasCallDiscount,
+                              isDark,
+                            ),
+                          ],
                         ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.chat, size: 16, color: AppColors.white),
-                        SizedBox(width: 10),
-                        const Text('Chat', style: TextStyle(fontSize: 12)),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed:
-                        () => CallChatConfirmationDialog.show(
-                          context: context,
-                          astrologerPhoto: astrologer.profilePicture,
-                          onConfirm: (value) {
-                            Get.back();
-                            controller.astrologerBook(
-                              endTime: value,
-                              astrologerPhoto: astrologer.profilePicture,
-                              astrologerId: astrologer.astrologerId,
-                              type: "Call",
-                            );
-                          },
-                          onWalletRedirect: () {
-                            Get.toNamed(Routes.WALLET);
-                          },
-                          rate:
-                              astrologer.callDpPerMinute ??
-                              astrologer.callMrpPerMinute,
-                          type: 'Call',
-                          astrologerName:
-                              "${astrologer.firstName ?? ""} ${astrologer.lastName ?? ""}",
+                  // Action Buttons
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed:
+                            () =>
+                                astrologer.isAvailableForChat == false
+                                    ? null
+                                    : CallChatConfirmationDialog.show(
+                                      context: context,
+                                      astrologerPhoto:
+                                          astrologer.profilePicture,
+                                      onConfirm: (value) {
+                                        Get.back();
+                                        controller.astrologerBook(
+                                          endTime: value,
+                                          astrologerId: astrologer.astrologerId,
+                                          type: "Chat",
+                                          astrologerPhoto:
+                                              astrologer.profilePicture,
+                                        );
+                                      },
+                                      onWalletRedirect: () {
+                                        Get.toNamed(Routes.WALLET);
+                                      },
+                                      rate:
+                                          astrologer.consultationRate ??
+                                          astrologer.chatMrpPerMinute,
+                                      type: 'Chat',
+                                      astrologerName:
+                                          "${astrologer.firstName ?? ""} ${astrologer.lastName ?? ""}",
+                                    ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              astrologer.isAvailableForChat == false
+                                  ? isDark
+                                      ? AppColors.white.withValues(alpha: 0.5)
+                                      : AppColors.black.withValues(alpha: 0.4)
+                                  : AppColors.primaryColor,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                         ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.accentColor,
-                      side: BorderSide(color: AppColors.accentColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.chat, size: 16, color: AppColors.white),
+                            SizedBox(width: 10),
+                            const Text('Chat', style: TextStyle(fontSize: 12)),
+                          ],
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed:
+                            () =>
+                                astrologer.isAvailableForCall == false
+                                    ? null
+                                    : CallChatConfirmationDialog.show(
+                                      context: context,
+                                      astrologerPhoto:
+                                          astrologer.profilePicture,
+                                      onConfirm:
+                                          (value) => {
+                                            Get.back(),
+                                            controller.astrologerBook(
+                                              endTime: value,
+                                              astrologerPhoto:
+                                                  astrologer.profilePicture,
+                                              astrologerId:
+                                                  astrologer.astrologerId,
+                                              type: "Call",
+                                            ),
+                                          },
+                                      onWalletRedirect: () {
+                                        Get.toNamed(Routes.WALLET);
+                                      },
+                                      rate:
+                                          astrologer.callDpPerMinute ??
+                                          astrologer.callMrpPerMinute,
+                                      type: 'Call',
+                                      astrologerName:
+                                          "${astrologer.firstName ?? ""} ${astrologer.lastName ?? ""}",
+                                    ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.accentColor,
+                          side: BorderSide(
+                            color:
+                                astrologer.isAvailableForCall == false
+                                    ? isDark
+                                        ? AppColors.white.withValues(alpha: 0.4)
+                                        : AppColors.black.withValues(alpha: 0.6)
+                                    : AppColors.accentColor,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.call,
+                              size: 16,
+                              color:
+                                  astrologer.isAvailableForCall == false
+                                      ? isDark
+                                          ? AppColors.white.withValues(
+                                            alpha: 0.4,
+                                          )
+                                          : AppColors.black.withValues(
+                                            alpha: 0.6,
+                                          )
+                                      : AppColors.green,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'Call',
+                              style: AppTextStyles.button.copyWith(
+                                color:
+                                    astrologer.isAvailableForCall == false
+                                        ? isDark
+                                            ? AppColors.white.withValues(
+                                              alpha: 0.4,
+                                            )
+                                            : AppColors.black.withValues(
+                                              alpha: 0.6,
+                                            )
+                                        : AppColors.green,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.call, size: 16),
-                        SizedBox(width: 10),
-                        const Text('Call', style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
