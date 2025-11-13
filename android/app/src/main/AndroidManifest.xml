@@ -12,6 +12,15 @@ package="com.astrodarshan.user"
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+<uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"
+        tools:node="remove" />
+
+<uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL"
+        tools:node="remove" />
+
+
 <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices. -->
 <uses-permission android:name="android.permission.BLUETOOTH" />
 <!-- For Android 12 and above devices, the following permission is also required. -->
