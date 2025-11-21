@@ -1,12 +1,12 @@
 // 1. Agora Controller - GetX Controller for managing voice call state
 // ignore_for_file: constant_identifier_names
-
 import 'dart:io';
 
 import 'package:agora_token_generator/agora_token_generator.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
 import 'package:astrology/app/modules/userRequest/controllers/user_request_controller.dart';
+import 'package:astrology/app/services/timerServices/timer_service.dart';
 import 'package:astrology/components/confirm_dailog_box.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +38,7 @@ class VoiceCallController extends GetxController {
   RxList<int> remoteUsers = <int>[].obs;
   RxString channelName = ''.obs;
   RxInt localUid = 0.obs;
+  var endTimeInMinutes = 0.obs;
 
   String? token;
 
@@ -45,6 +46,38 @@ class VoiceCallController extends GetxController {
   void onReady() {
     generateToken(channelName: channelName.value, userName: "Sachin");
     super.onReady();
+  }
+
+  var timerText = "".obs;
+  final timerService = TimerService();
+  void startChatTimer() {
+    timerService.startTimer(
+      endTimeInMinutes: endTimeInMinutes.value,
+      onTick: (remaining) {
+        final minutes = remaining.inMinutes;
+        final seconds = remaining.inSeconds % 60;
+        timerText.value = "$minutes:${seconds.toString().padLeft(2, '0')}";
+       
+      },
+      onComplete: () {
+        // You can handle end timer event here too
+        timerService.stopTimer();
+        leaveAfterNotEnoughBalance();
+      },
+    );
+  }
+
+  void leaveAfterNotEnoughBalance() async {
+    //  remoteUsers.remove(remoteUid);
+    // SnackBarUiView.showError(message: "User $remoteUid left the call");
+    await userRequsetController
+        .statusUpdate("Completed", int.tryParse(channelName.value), "call")
+        .then((_) {
+          Get.back(); // Pop screen
+          WidgetsBinding.instance.addPostFrameCallback((vallue) async {
+            await leaveChannel();
+          });
+        });
   }
 
   @override
@@ -131,6 +164,7 @@ class VoiceCallController extends GetxController {
             int.tryParse(channelName.value),
             "call",
           );
+          startChatTimer();
         },
         onUserOffline: (
           RtcConnection connection,

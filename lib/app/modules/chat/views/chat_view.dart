@@ -17,9 +17,11 @@ import 'package:flutter/foundation.dart' as foundation;
 class ChatView extends StatefulWidget {
   final String? nativationType;
   final Session? sessionData;
+  final String? status;
   final int? endTime;
   const ChatView({
     super.key,
+    this.status,
     this.sessionData,
     this.endTime,
     this.nativationType,
@@ -65,7 +67,6 @@ class _ChatViewState extends State<ChatView> {
             ),
       );
     }
-
     debugPrint("Time: ${controller.endTime}");
   }
 

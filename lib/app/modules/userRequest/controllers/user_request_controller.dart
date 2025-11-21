@@ -59,9 +59,9 @@ class UserRequestController extends GetxController {
         if (res.data["success"] == true) {
           await fetchUserRequest();
         } else {
-          if (sessionType == "call") {
-            statusUpdate("Cancelled", sessionId, sessionType);
-          }
+          // if (sessionType == "call") {
+          //   statusUpdate("Completed", sessionId, sessionType);
+          // }
         }
       } else {
         LoggerUtils.error("Failed ${res.data}");

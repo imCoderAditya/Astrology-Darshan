@@ -11,6 +11,7 @@ import 'package:astrology/app/modules/profile/controllers/profile_controller.dar
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/components/global_loader.dart';
 import 'package:astrology/components/snack_bar_view.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show debugPrint;
 import 'package:get/get.dart';
 
@@ -30,6 +31,7 @@ class WalletController extends GetxController {
   final RxSet<int> expandedCards = <int>{}.obs;
 
   Future<void> fetchWallet() async {
+    GlobalLoader.show();
     try {
       final res = await BaseClient.get(
         api:
@@ -46,6 +48,7 @@ class WalletController extends GetxController {
     } catch (e) {
       LoggerUtils.error("Error $e", tag: "WalletController");
     } finally {
+      GlobalLoader.hide();
       update();
     }
   }
@@ -193,7 +196,10 @@ class WalletController extends GetxController {
 
   @override
   void onInit() {
-    fetchWallet();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchWallet();
+      Get.find<ProfileController>().fetchProfile();
+    });
     super.onInit();
   }
 }

@@ -1,18 +1,27 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:astrology/app/core/config/theme/app_colors.dart';
+import 'package:astrology/app/core/config/theme/app_text_styles.dart';
 import 'package:astrology/app/data/models/userRequest/user_request_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../controllers/voice_call_controller.dart';
 
 class VoiceCallView extends StatefulWidget {
   final String? channelName;
   final Session? session;
+  final int? endTime;
 
-  const VoiceCallView({super.key, this.channelName, this.session});
+  const VoiceCallView({
+    super.key,
+    this.channelName,
+    this.session,
+    this.endTime,
+  });
 
   @override
   State<VoiceCallView> createState() => _VoiceCallViewState();
@@ -28,6 +37,13 @@ class _VoiceCallViewState extends State<VoiceCallView> {
   }
 
   @override
+  void initState() {
+    controller.endTimeInMinutes.value = widget.endTime ?? 0;
+    log("Timer===>${controller.endTimeInMinutes.value.toString()}");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     debugPrint("====>${json.encode(widget.session)}");
     controller.channelName.value = widget.channelName ?? "";
@@ -40,24 +56,23 @@ class _VoiceCallViewState extends State<VoiceCallView> {
           title: Text('Voice Call', style: TextStyle(color: AppColors.white)),
           centerTitle: false,
           automaticallyImplyLeading: false,
-
-          // leading: IconButton(
-          //   icon: Icon(Icons.arrow_back, color: AppColors.white),
-          //   onPressed:
-          //       () async => {await controller.showEndChatDialog(context)},
-          // ),
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
           actions: [
-            Obx(
-              () => Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Center(
-                  child: Text(
-                    controller.connectionStatus,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Center(
+                child: Obx(() {
+                  controller.timerText.value;
+                  return Text(
+                     controller.connectionStatus,
+                    style: AppTextStyles.body().copyWith(
+                      fontSize: 14.sp,
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  );
+                }),
               ),
             ),
           ],
@@ -176,23 +191,25 @@ class _VoiceCallViewState extends State<VoiceCallView> {
       List<Widget> participants = [];
 
       // Add local user
-      participants.add(
-        _buildParticipantCard(
-          name: "You",
-          photo:
-              controller
-                  .profileController
-                  .profileModel
-                  .value
-                  ?.data
-                  ?.profilePicture ??
-              "",
-          uid: controller.localUid.value,
-          isLocal: true,
-          isMuted: controller.isMuted.value,
-        ),
-      );
-      // Add remote users
+      controller.remoteUsers.isNotEmpty
+          ? SizedBox()
+          : participants.add(
+            _buildParticipantCard(
+              name: "Guest",
+              photo:
+                  controller
+                      .profileController
+                      .profileModel
+                      .value
+                      ?.data
+                      ?.profilePicture ??
+                  "",
+              uid: controller.localUid.value,
+              isLocal: true,
+              isMuted: controller.isMuted.value,
+            ),
+          );
+      // // Add remote users
       for (int uid in controller.remoteUsers) {
         participants.add(
           _buildParticipantCard(
@@ -228,10 +245,10 @@ class _VoiceCallViewState extends State<VoiceCallView> {
         borderRadius: BorderRadius.circular(12),
         border: isLocal ? Border.all(color: Colors.white, width: 2) : null,
       ),
-      child: Row(
+      child: Column(
         children: [
           CircleAvatar(
-            radius: 25,
+            radius: 50.r,
             backgroundColor: Colors.grey.shade300,
             child:
                 widget.session?.astrologerPhoto?.isNotEmpty ?? false
@@ -239,8 +256,8 @@ class _VoiceCallViewState extends State<VoiceCallView> {
                       child: Image.network(
                         photo ?? "",
                         fit: BoxFit.cover,
-                        width: 50,
-                        height: 50,
+                        width: 100.w,
+                        height: 100.h,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return const Center(
@@ -255,15 +272,23 @@ class _VoiceCallViewState extends State<VoiceCallView> {
                     : const Icon(Icons.person, color: Colors.white),
           ),
 
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              "$name",
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+          SizedBox(height: 10.h),
+        
+          Text(
+            "$name",
+            style:  TextStyle(
+              color: Colors.white,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+            SizedBox(height: 5.h),
+           Text(
+            controller.timerText.value.isEmpty?"Calling...":controller.timerText.value,
+            style:  TextStyle(
+              color: Colors.white,
+              fontSize: 19.sp,
+              fontWeight: FontWeight.w700,
             ),
           ),
           if (isMuted) const Icon(Icons.mic_off, color: Colors.red, size: 20),

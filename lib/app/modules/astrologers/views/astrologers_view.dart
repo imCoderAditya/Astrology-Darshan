@@ -20,107 +20,169 @@ class AstrologersView extends GetView<AstrologersController> {
   AstrologersView({super.key, this.isDrawer = false});
 
   final themeController = Get.find<ThemeController>();
+  final controller =
+      Get.isRegistered<AstrologersController>()
+          ? Get.find<AstrologersController>()
+          : Get.put(AstrologersController());
 
+  final ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
+        controller.loadMoreTransaction();
+      }
+    });
     return Obx(() {
       final isDark = themeController.isDarkMode.value;
-      return GetBuilder<AstrologersController>(
-        init: AstrologersController(),
-        builder: (controller) {
-          return Scaffold(
-            backgroundColor:
-                isDark ? AppColors.darkBackground : AppColors.lightBackground,
-            drawer: isDrawer == true ? AppDrawer() : null,
+      return Scaffold(
+        backgroundColor:
+            isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        drawer: isDrawer == true ? AppDrawer() : null,
 
-            appBar: AppBar(
-              iconTheme: IconThemeData(
-                color: AppColors.white,
-                applyTextScaling: true,
-              ),
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: AppColors.white,
+            applyTextScaling: true,
+          ),
 
-              title: Text(
-                'Astrologers',
-                style: TextStyle(
-                  color: AppColors.darkTextPrimary,
+          title: Text(
+            'Astrologers',
+            style: TextStyle(
+              color: AppColors.darkTextPrimary,
 
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              centerTitle: true,
-              backgroundColor:
-                  isDark ? AppColors.darkSurface : AppColors.primaryColor,
-              elevation: 0,
-              flexibleSpace: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: AppColors.headerGradientColors,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          centerTitle: true,
+          backgroundColor:
+              isDark ? AppColors.darkSurface : AppColors.primaryColor,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: AppColors.headerGradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-            body: Column(
-              children: [
-                searchTextField(
-                  controller: controller.searchController,
-                  isDark: isDark,
-                  onChanged: (value) async {
-                    controller.astrologerList.clear();
-                    if (value.isEmpty) {
-                      controller.currentPage.value = 1;
-                    }
-                    await controller.fetchAstrologerData(search: value);
-                  },
-                ),
-                Container(
-                  height: 60.h,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color:
-                        isDark
-                            ? AppColors.darkBackground
-                            : AppColors.lightBackground,
-                  ),
-                  width: double.infinity,
-                  child: Obx(() {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          SizedBox(width: 10),
-                          GestureDetector(
+          ),
+        ),
+
+        body: Column(
+          children: [
+            searchTextField(
+              controller: controller.searchController,
+              isDark: isDark,
+              onChanged: (value) async {
+                controller.astrologerList.clear();
+                if (value.isEmpty) {
+                  controller.currentPage.value = 1;
+                }
+                await controller.fetchAstrologerData(search: value);
+              },
+            ),
+            Container(
+              height: 60.h,
+              padding: EdgeInsets.symmetric(vertical: 14.h),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color:
+                    isDark
+                        ? AppColors.darkBackground
+                        : AppColors.lightBackground,
+              ),
+              width: double.infinity,
+              child: Obx(() {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          controller.astrologerList.clear();
+                          controller.selectSpecalization = "All";
+                          controller.currentPage.value=1;
+                          controller.selectCategoryId = -1;
+                          controller.update();
+                          controller.fetchAstrologerData();
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(left: 10.w),
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4.r),
+                            color:
+                                controller.selectSpecalization == "All"
+                                    ? AppColors.green
+                                    : Colors.transparent,
+
+                            border: Border.all(color: AppColors.primaryColor),
+                          ),
+                          child: Text(
+                            "All",
+                            style: AppTextStyles.body().copyWith(
+                              fontWeight: FontWeight.w500,
+                              color:
+                                  controller.selectSpecalization == "All"
+                                      ? AppColors.white
+                                      : (isDark
+                                          ? AppColors.white
+                                          : AppColors.backgroundDark),
+                            ),
+                          ),
+                        ),
+                      ),
+                      ListView.builder(
+                        padding: EdgeInsets.zero,
+                        physics: NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount:
+                            controller.astroCategoryModel.value?.data?.length ??
+                            0,
+                        itemBuilder: (context, index) {
+                          final astroCategory =
+                              controller.astroCategoryModel.value?.data?[index];
+                          final isSelected =
+                              astroCategory?.categoryId ==
+                              controller.selectCategoryId;
+
+                          return GestureDetector(
                             onTap: () {
-                              controller.astrologerList.clear();
-                              controller.selectSpecalization = "All";
-                              controller.selectCategoryId = -1;
-                              controller.fetchAstrologerData();
+                              controller.selectCategory(astroCategory!);
                               controller.update();
                             },
                             child: Container(
                               margin: EdgeInsets.only(left: 10.w),
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4.r),
                                 color:
-                                    controller.selectSpecalization == "All"
+                                    isSelected
                                         ? AppColors.green
-                                        : Colors.transparent,
+                                        : isDark
+                                        ? AppColors.backgroundDark
+                                        : AppColors.white,
 
                                 border: Border.all(
                                   color: AppColors.primaryColor,
                                 ),
                               ),
                               child: Text(
-                                "All",
+                                astroCategory?.categoryName ?? "",
                                 style: AppTextStyles.body().copyWith(
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight:
+                                      isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
                                   color:
-                                      controller.selectSpecalization == "All"
+                                      isSelected
                                           ? AppColors.white
                                           : (isDark
                                               ? AppColors.white
@@ -128,88 +190,23 @@ class AstrologersView extends GetView<AstrologersController> {
                                 ),
                               ),
                             ),
-                          ),
-                          ListView.builder(
-                            padding: EdgeInsets.zero,
-                            physics: NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemCount:
-                                controller
-                                    .astroCategoryModel
-                                    .value
-                                    ?.data
-                                    ?.length ??
-                                0,
-                            itemBuilder: (context, index) {
-                              final astroCategory =
-                                  controller
-                                      .astroCategoryModel
-                                      .value
-                                      ?.data?[index];
-                              final isSelected =
-                                  astroCategory?.categoryId ==
-                                  controller.selectCategoryId;
-
-                              return GestureDetector(
-                                onTap: () {
-                                  controller.selectCategory(astroCategory!);
-                                  controller.update();
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 10.w),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16.w,
-                                  ),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4.r),
-                                    color:
-                                        isSelected
-                                            ? AppColors.green
-                                            : isDark
-                                            ? AppColors.backgroundDark
-                                            : AppColors.white,
-
-                                    border: Border.all(
-                                      color: AppColors.primaryColor,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    astroCategory?.categoryName ?? "",
-                                    style: AppTextStyles.body().copyWith(
-                                      fontWeight:
-                                          isSelected
-                                              ? FontWeight.w700
-                                              : FontWeight.w500,
-                                      color:
-                                          isSelected
-                                              ? AppColors.white
-                                              : (isDark
-                                                  ? AppColors.white
-                                                  : AppColors.backgroundDark),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  }),
-                ),
-                Expanded(
-                  child:
-                      controller.isLoading.value &&
-                              controller.astrologerList.isEmpty
-                          ? Center(child: CircularProgressIndicator())
-                          : astrollerListView(isDark, controller),
-                ),
-              ],
+                    ],
+                  ),
+                );
+              }),
             ),
-          );
-        },
+            Expanded(
+              child:
+                  controller.isLoading.value &&
+                          controller.astrologerList.isEmpty
+                      ? Center(child: CircularProgressIndicator())
+                      : astrollerListView(isDark, controller),
+            ),
+          ],
+        ),
       );
     });
   }
@@ -278,7 +275,10 @@ class AstrologersView extends GetView<AstrologersController> {
               : controller.astrologerList.isEmpty
               ? _buildEmptyState()
               : ListView.builder(
-                controller: controller.scrollController,
+                physics: AlwaysScrollableScrollPhysics(),
+                // key: const PageStorageKey('astrologer_list'),
+                shrinkWrap: false,
+                controller: scrollController,
                 padding: EdgeInsets.only(
                   left: 16.w,
                   right: 16.w,

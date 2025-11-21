@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 
 class TimerService {
@@ -16,11 +17,12 @@ class TimerService {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       elapsedSeconds++;
-
+      log("Total Second: $totalSeconds");
       if (elapsedSeconds > totalSeconds) {
         timer.cancel();
         onComplete();
-      } else {
+
+      } else {      
         onTick(Duration(seconds: elapsedSeconds));
       }
     });

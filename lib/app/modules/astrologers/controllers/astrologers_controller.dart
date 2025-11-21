@@ -23,7 +23,7 @@ class AstrologersController extends GetxController {
   var selectedLanguage = "English";
   var selectedRating = "Rating";
 
-  ScrollController scrollController = ScrollController();
+  ScrollController scrollController_1 = ScrollController();
   final Rxn<AstrologerModel> _astrologerModel = Rxn<AstrologerModel>();
   TextEditingController searchController = TextEditingController();
   final RxList<Astrologer> _astrologerList = RxList<Astrologer>();
@@ -33,7 +33,7 @@ class AstrologersController extends GetxController {
 
   RxList<Astrologer> get astrologerList => _astrologerList;
   var currentPage = 1.obs;
-  var limit = 6.obs;
+  var limit = 5.obs;
 
   final chatController = Get.put(ChatController());
 
@@ -49,6 +49,7 @@ class AstrologersController extends GetxController {
 
   Future<void> fetchAstrologerData({String? search}) async {
     isLoading.value = true;
+
     try {
       final res = await BaseClient.get(
         api:
@@ -58,8 +59,18 @@ class AstrologersController extends GetxController {
       );
       if (res != null && res.statusCode == 200) {
         // Process the response here
+
         _astrologerModel.value = astrologerModelFromJson(json.encode(res.data));
-        _astrologerList.addAll(_astrologerModel.value?.data?.astrologers ?? []);
+        // _astrologerList.addAll(_astrologerModel.value?.data?.astrologers ?? []);
+        final newList = _astrologerModel.value?.data?.astrologers ?? [];
+        _astrologerList.addAll(
+          newList.where(
+            (newItem) =>
+                !_astrologerList.any(
+                  (oldItem) => oldItem.astrologerId == newItem.astrologerId,
+                ),
+          ),
+        );
       } else {
         LoggerUtils.error("Failed Astrologer List API: $res");
       }
@@ -114,6 +125,7 @@ class AstrologersController extends GetxController {
         if (type == "Call") {
           Get.to(
             () => VoiceCallView(
+              endTime: endTime,
               channelName: sessionId.toString(),
               session: Session(
                 astrologerName: astroName,
@@ -170,25 +182,26 @@ class AstrologersController extends GetxController {
 
   @override
   void onInit() {
+    //  scrollController_1.addListener(_onScroll);
     fetchAstrologerCategory();
     fetchAstrologerData();
-    scrollController.addListener(_onScroll);
+
     super.onInit();
   }
 
-  void _onScroll() {
-    debugPrint("_currentPage $currentPage");
-    debugPrint(currentPage.toString());
+  // void _onScroll() {
+  //   debugPrint("_currentPage $currentPage");
+  //   debugPrint(currentPage.toString());
 
-    final totalPages =
-        _astrologerModel.value?.data?.pagination?.totalPages; // get total pages
-    if (scrollController.position.pixels >=
-            scrollController.position.maxScrollExtent - 200 && // added buffer
-        !isLoading.value &&
-        currentPage < (totalPages ?? 0)) {
-      loadMoreTransaction();
-    }
-  }
+  //   final totalPages =
+  //       _astrologerModel.value?.data?.pagination?.totalPages; // get total pages
+  //   if (scrollController_1.position.pixels >=
+  //           scrollController_1.position.maxScrollExtent - 200 && // added buffer
+  //       !isLoading.value &&
+  //       currentPage < (totalPages ?? 0)) {
+  //     loadMoreTransaction();
+  //   }
+  // }
 
   void loadMoreTransaction() {
     final lastPage = _astrologerModel.value?.data?.pagination?.totalPages ?? 0;
@@ -201,5 +214,11 @@ class AstrologersController extends GetxController {
       fetchAstrologerData();
       update();
     }
+  }
+
+  @override
+  void onClose() {
+    scrollController_1.dispose();
+    super.onClose();
   }
 }

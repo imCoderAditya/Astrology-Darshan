@@ -245,7 +245,11 @@ class UserRequestView extends GetView<UserRequestController> {
               }
               await chatController.setData(sessionId: session?.sessionId);
               Get.to(
-                ChatView(sessionData: session, nativationType: "chat&call"),
+                ChatView(
+                  sessionData: session,
+                  nativationType: "chat&call",
+                  status: session?.status ?? "",
+                ),
               );
             } else {
               Get.to(

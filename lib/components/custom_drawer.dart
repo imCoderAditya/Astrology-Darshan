@@ -7,6 +7,7 @@ import 'package:astrology/app/modules/profile/controllers/profile_controller.dar
 import 'package:astrology/app/routes/app_pages.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 // --- DrawerController (unchanged, but good to include for completeness) ---
@@ -428,7 +429,7 @@ class AppDrawer extends StatelessWidget {
             color: textColor.withOpacity(0.7), // No clamp needed here
             fontWeight: FontWeight.w700,
             letterSpacing: 1.5,
-            fontSize: 12,
+            fontSize: 14.sp,
           ),
         ),
       ),
@@ -538,7 +539,7 @@ class AppDrawer extends StatelessWidget {
                               fontWeight:
                                   isSelected
                                       ? FontWeight.w700
-                                      : FontWeight.w500,
+                                      : FontWeight.w600,
                               fontSize: 16,
                             ),
                             child: Text(item.title),
@@ -614,8 +615,8 @@ class AppDrawer extends StatelessWidget {
                     "Dark Mode",
                     style: AppTextStyles.body().copyWith(
                       color: textColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ),

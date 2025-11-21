@@ -178,7 +178,10 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     final userId = userId_;
     currentUserID = int.parse(userId.toString());
     sessionID = sessionId;
-    dob = AppDateUtils.extractDate(profileController.profileModel.value?.data?.dateOfBirth.toString(), 5);
+    dob = AppDateUtils.extractDate(
+      profileController.profileModel.value?.data?.dateOfBirth.toString(),
+      5,
+    );
     update();
     debugPrint("currentUserID=$currentUserID sessionID $sessionID");
 
@@ -222,7 +225,17 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
       },
       onComplete: () {
         // You can handle end timer event here too
-        timerService.stopTimer();
+        // callcontroller.statusUpdate("Completed", sessionID, "chat").then((
+        //   value,
+        // ) async {
+        //   sendMessage(message: "Disconnect");
+        //   webSocketService?.disconnect();
+        //   showEmojiPicker.value = false;
+        //   timerService.stopTimer();
+        //   debugPrint("complete API call :$sessionID");
+
+        // });
+        Get.back();
       },
     );
   }
@@ -443,7 +456,6 @@ Place : ${profile?.placeOfBirth}
   @override
   void dispose() {
     endTime = 0;
-
     super.dispose();
   }
 }
