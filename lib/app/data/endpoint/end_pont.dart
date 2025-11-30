@@ -48,7 +48,7 @@ class EndPoint {
   static const getConsultationSessions =
       "GetConsultations/get_consultation_sessions";
   static const statusUpdate = "BookConsult/update_Status";
-  
+
   // Puja Section
   static const pujaCategories = "Puja/PujaCategories";
   static const pujaServices = "Puja/PujaServices";
@@ -62,4 +62,6 @@ class EndPoint {
   static const getReAddOrUpdateReviewviews = "Consultation/AddOrUpdateReview";
   static const deleteReview = "Consultation/DeleteReview";
   static const liveSessionsendGift = "LiveSession/SendGift";
+  static const kundali = "prokerala/kundliDetails";
+  static const detailsMatchingKundali = "prokeralaMatching/detailed-matching";
 }

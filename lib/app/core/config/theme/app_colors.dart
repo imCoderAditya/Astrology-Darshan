@@ -31,6 +31,7 @@ class AppColors {
   static const Color darkTextSecondary = Color(0xFFBDBDBD);
   static const Color darkDivider = Color(0xFF2C2C2C);
   static const Color red = Color.fromARGB(255, 252, 2, 2);
+  static const Color pink = Colors.pink;
   static const Color white = Colors.white;
   static const Color black = Colors.black;
 

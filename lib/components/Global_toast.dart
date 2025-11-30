@@ -138,7 +138,7 @@ class GlobalToast {
           ),
         ],
       ),
-      backgroundColor: backgroundColor ?? AppColors.primaryColor,
+      backgroundColor: backgroundColor ?? AppColors.red,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
       borderRadius: 12,

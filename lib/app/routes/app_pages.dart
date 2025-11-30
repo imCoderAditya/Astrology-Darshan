@@ -24,6 +24,12 @@ import '../modules/ecommerce/store/bindings/store_binding.dart';
 import '../modules/ecommerce/store/views/store_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/astrologyServices/kundali/bindings/kundali_binding.dart';
+import '../modules/astrologyServices/kundali/views/kundali_view.dart';
+import '../modules/astrologyServices/kundaliMatching/bindings/kundali_matching_binding.dart';
+import '../modules/astrologyServices/kundaliMatching/views/kundali_matching_view.dart';
+import '../modules/astrologyServices/kundaliMatchingDetails/bindings/kundali_matching_details_binding.dart';
+import '../modules/astrologyServices/kundaliMatchingDetails/views/kundali_matching_details_view.dart';
 import '../modules/liveAstro/bindings/live_astro_binding.dart';
 import '../modules/liveBroadCastAstrology/bindings/live_astrology_binding.dart';
 import '../modules/liveBroadCastAstrology/views/live_astrology_view.dart';
@@ -59,7 +65,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.SPLASH;
+  static const INITIAL = Routes.NAV;
   // static const INITIAL = Routes.LIVE_ASTRO;
 
   static final routes = [
@@ -182,6 +188,21 @@ class AppPages {
       name: _Paths.REVIEW,
       page: () => const ReviewView(),
       binding: ReviewBinding(),
+    ),
+    GetPage(
+      name: _Paths.KUNDALI,
+      page: () => const KundaliView(),
+      binding: KundaliBinding(),
+    ),
+    GetPage(
+      name: _Paths.KUNDALI_MATCHING,
+      page: () => const KundaliMatchingView(),
+      binding: KundaliMatchingBinding(),
+    ),
+    GetPage(
+      name: _Paths.KUNDALI_MATCHING_DETAILS,
+      page: () => const KundaliMatchingDetailsView(),
+      binding: KundaliMatchingDetailsBinding(),
     ),
   ];
 }

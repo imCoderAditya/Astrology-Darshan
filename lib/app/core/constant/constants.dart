@@ -13,7 +13,7 @@ const String securityKey =
 
 const String APPID = "25747e4b1b9c43d8a8b7cde83abddf45";
 const String APPCERTIFICATE = "3bac8b59eec041909daf6ef145021e45";
-
+ final String googleApiKey = "AIzaSyD4AOt8-0N68htBXkrGHgl8lg_goG9wpdk";
 TextInputFormatter upperCaseFormatter() {
   return TextInputFormatter.withFunction((oldValue, newValue) {
     return newValue.copyWith(

@@ -75,6 +75,7 @@ dependencies:
   firebase_in_app_messaging: ^0.8.1+10
   payu_checkoutpro_flutter: ^1.3.4
   crypto: ^3.0.6
+  google_places_flutter: ^2.1.1
   
 
 

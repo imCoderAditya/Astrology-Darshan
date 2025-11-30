@@ -220,6 +220,7 @@ class HomeView extends GetView<HomeController> {
               enlargeFactor: 0.3,
               onPageChanged: (index, item) {
                 debugPrint('Page changed to $index');
+                controller.currentBannerIndex.value=index;
               },
               scrollDirection: Axis.horizontal,
             ),
@@ -263,12 +264,19 @@ class HomeView extends GetView<HomeController> {
         'icon': Icons.auto_awesome,
         'title': 'Horoscope',
         'color': AppColors.accentColor,
+        "root": null,
       },
-      {'icon': Icons.account_circle, 'title': 'Kundali', 'color': Colors.pink},
+      {
+        'icon': Icons.account_circle,
+        'title': 'Kundali',
+        'color': Colors.pink,
+        "root": Routes.KUNDALI,
+      },
       {
         'icon': Icons.favorite,
         'title': 'Matchmaking',
         'color': Colors.lightBlue,
+        "root": Routes.KUNDALI_MATCHING,
       },
       {'icon': Icons.casino, 'title': 'Numerology', 'color': Colors.orange},
       {'icon': Icons.style, 'title': 'Tarot', 'color': Colors.purple},
@@ -305,6 +313,9 @@ class HomeView extends GetView<HomeController> {
             itemBuilder: (context, index) {
               final service = services[index];
               return _buildServiceCard(
+                onTap: () {
+                  Get.toNamed(service["root"].toString());
+                },
                 service['icon'] as IconData,
                 service['title'] as String,
                 service['color'] as Color,
@@ -316,7 +327,12 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildServiceCard(IconData icon, String title, Color color) {
+  Widget _buildServiceCard(
+    IconData icon,
+    String title,
+    Color color, {
+    void Function()? onTap,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: _surfaceColor,
@@ -334,7 +350,7 @@ class HomeView extends GetView<HomeController> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: onTap,
           borderRadius: BorderRadius.circular(16.r),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
