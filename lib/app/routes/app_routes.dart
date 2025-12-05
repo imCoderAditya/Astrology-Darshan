@@ -34,6 +34,7 @@ abstract class Routes {
   static const MY_PUJA = _Paths.MY_PUJA;
   static const REVIEW = _Paths.REVIEW;
   static const KUNDALI = _Paths.KUNDALI;
+  static const KUNDALIFORM = _Paths.KUNDALIFORM;
   static const KUNDALI_MATCHING = _Paths.KUNDALI_MATCHING;
   static const KUNDALI_MATCHING_DETAILS = _Paths.KUNDALI_MATCHING_DETAILS;
 }
@@ -70,6 +71,7 @@ abstract class _Paths {
   static const MY_PUJA = '/my-puja';
   static const REVIEW = '/review';
   static const KUNDALI = '/kundali';
+  static const KUNDALIFORM = '/kundali_form';
   static const KUNDALI_MATCHING = '/kundali-matching';
   static const KUNDALI_MATCHING_DETAILS = '/kundali-matching-details';
 }

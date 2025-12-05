@@ -4,6 +4,8 @@ import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
 import 'package:astrology/app/data/models/kundali/kundali_model.dart';
+import 'package:astrology/app/routes/app_pages.dart';
+import 'package:astrology/components/snack_bar_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,21 +14,36 @@ class KundaliController extends GetxController {
   Rxn<String>? iso = Rxn<String>();
   Rxn<KundaliModel> kundaliModel = Rxn<KundaliModel>();
 
+  //. Kundali Form
+  // Text Controllers
+  final nameController = TextEditingController();
+  final addressController = TextEditingController();
+  final latController = TextEditingController();
+  final lonController = TextEditingController();
+
+  // Focus Node
+  final focusNode = FocusNode();
+
+  // Observable Variables
+
+  final selectedAyanamsa = RxInt(1);
+
   RxBool isLoading = RxBool(false);
   RxString? language = RxString("hi");
   Future<void> fetchKundali() async {
     // GlobalLoader.show();
     isLoading.value = true;
-
+    final lat = double.parse(latController.text);
+    final lon = double.parse(lonController.text);
     try {
       final res = await BaseClient.post(
         api: EndPoint.kundali,
 
         data: {
-          "name": "Rahul Sharma",
-          "dateTime": "1990-07-15T08:30:00+05:30",
-          "lat": 28.6139,
-          "lon": 77.2090,
+          "name": nameController.text.trim(),
+          "dateTime": iso?.value.toString(),
+          "lat": lat,
+          "lon": lon,
           "ayanamsa": 1,
           "la": language?.value,
         },
@@ -35,6 +52,7 @@ class KundaliController extends GetxController {
       if (res != null && res.statusCode == 200) {
         kundaliModel.value = kundaliModelFromJson(json.encode(res.data));
         LoggerUtils.debug("Kundali==>${json.encode(kundaliModel.value)}");
+        Get.toNamed(Routes.KUNDALI);
       } else {
         LoggerUtils.error("Failed ${json.encode(res.data)}");
       }
@@ -62,7 +80,7 @@ class KundaliController extends GetxController {
 
     /// Pick Time
     final TimeOfDay? time = await showTimePicker(
-      context: context,
+      context: Get.context!,
       initialTime: TimeOfDay.fromDateTime(initial),
     );
 
@@ -99,9 +117,50 @@ class KundaliController extends GetxController {
     return "${dt.toIso8601String().split('.').first}$formattedOffset";
   }
 
+  // Validation
+  bool validateForm() {
+    if (nameController.text.trim().isEmpty) {
+      SnackBarUiView.showError(message: 'Please enter your name');
+      return false;
+    }
+
+    if (addressController.text.trim().isEmpty) {
+      SnackBarUiView.showError(message: 'Please select your birth place');
+      return false;
+    }
+
+    if (latController.text.trim().isEmpty ||
+        lonController.text.trim().isEmpty) {
+      SnackBarUiView.showError(message: 'Please select a valid location');
+
+      return false;
+    }
+
+    if (iso?.value == null) {
+      SnackBarUiView.showError(message: 'Please select date and time of birth');
+      return false;
+    }
+
+    return true;
+  }
+
+  // Reset Form
+  void resetForm() {
+    nameController.clear();
+    addressController.clear();
+    latController.clear();
+    lonController.clear();
+    selectedAyanamsa.value = 1;
+    language?.value = 'hi';
+  }
+
   @override
-  void onInit() {
-    fetchKundali();
-    super.onInit();
+  void onClose() {
+    nameController.dispose();
+    addressController.dispose();
+    latController.dispose();
+    lonController.dispose();
+    focusNode.dispose();
+    super.onClose();
   }
 }

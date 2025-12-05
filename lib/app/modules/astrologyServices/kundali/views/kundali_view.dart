@@ -136,12 +136,6 @@ class KundaliView extends GetView<KundaliController> {
           },
           icon: const Icon(Icons.language),
         ),
-        IconButton(
-          onPressed: () {
-            controller.pickDateTime(context);
-          },
-          icon: const Icon(Icons.date_range),
-        ),
       ],
       backgroundColor:
           isDark

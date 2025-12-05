@@ -270,7 +270,7 @@ class HomeView extends GetView<HomeController> {
         'icon': Icons.account_circle,
         'title': 'Kundali',
         'color': Colors.pink,
-        "root": Routes.KUNDALI,
+        "root": Routes.KUNDALIFORM,
       },
       {
         'icon': Icons.favorite,

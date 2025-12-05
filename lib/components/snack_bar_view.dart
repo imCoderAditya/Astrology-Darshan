@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class SnackBarUiView {
@@ -164,7 +165,7 @@ class SnackBarUiView {
         elevation: 0,
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: 80.h),
         action: snackBar.action,
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:astrology/app/modules/astrologyServices/kundali/views/kundali_form_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/address/bindings/address_binding.dart';
@@ -174,11 +175,7 @@ class AppPages {
       page: () => UserRequestView(),
       binding: UserRequestBinding(),
     ),
-    GetPage(
-      name: _Paths.PUJA,
-      page: () => PujaView(),
-      binding: PujaBinding(),
-    ),
+    GetPage(name: _Paths.PUJA, page: () => PujaView(), binding: PujaBinding()),
     GetPage(
       name: _Paths.MY_PUJA,
       page: () => const MyPujaView(),
@@ -192,6 +189,11 @@ class AppPages {
     GetPage(
       name: _Paths.KUNDALI,
       page: () => const KundaliView(),
+      binding: KundaliBinding(),
+    ),
+    GetPage(
+      name: _Paths.KUNDALIFORM,
+      page: () => const KundaliFormView(),
       binding: KundaliBinding(),
     ),
     GetPage(

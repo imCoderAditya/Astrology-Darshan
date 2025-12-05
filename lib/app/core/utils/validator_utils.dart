@@ -39,3 +39,25 @@ class UpperCaseTextFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
+
+
+class FirstLetterUpperCaseFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text;
+
+    if (text.isEmpty) return newValue;
+
+    // Only first character uppercase, rest unchanged
+    final firstChar = text[0].toUpperCase();
+    final remaining = text.length > 1 ? text.substring(1) : '';
+
+    return newValue.copyWith(
+      text: '$firstChar$remaining',
+      selection: newValue.selection,
+    );
+  }
+}
