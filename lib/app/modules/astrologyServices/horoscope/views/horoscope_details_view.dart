@@ -2,6 +2,7 @@
 
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
+import 'package:astrology/app/core/utils/date_utils.dart';
 import 'package:astrology/app/data/models/kundali/horoscope_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -99,7 +100,7 @@ class HoroscopeDetailView extends GetView<HoroscopeController> {
       ),
       actions: [
         Text(
-          dob,
+          AppDateUtils.extractDate(controller.getCurrentIsoDateTime(), 5),
           style: AppTextStyles.caption().copyWith(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,

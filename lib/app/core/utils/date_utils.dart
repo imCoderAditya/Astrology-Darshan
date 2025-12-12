@@ -48,7 +48,7 @@ class AppDateUtils {
 
   static String extractDate(dynamic datetimeString, int formatOption) {
     if (datetimeString.isNotEmpty) {
-      DateTime parsed = DateTime.parse(datetimeString).toLocal();
+      DateTime parsed = DateTime.parse(datetimeString);
 
       switch (formatOption) {
         case 1:

@@ -522,7 +522,7 @@ class KundaliView extends GetView<KundaliController> {
         'value': additionalInfo.birthStone,
         'icon': Icons.diamond,
       },
-      {'label': 'Gender', 'value': additionalInfo.gender, 'icon': Icons.person},
+      // {'label': 'Gender', 'value': additionalInfo.gender, 'icon': Icons.person},
       {
         'label': 'Syllables',
         'value': additionalInfo.syllables,

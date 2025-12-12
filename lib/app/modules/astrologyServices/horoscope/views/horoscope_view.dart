@@ -1,9 +1,8 @@
-import 'dart:developer';
+
 
 import 'package:astrology/app/core/config/theme/app_colors.dart';
 import 'package:astrology/app/core/config/theme/app_text_styles.dart';
-import 'package:astrology/app/core/utils/date_utils.dart';
-import 'package:astrology/app/modules/astrologyServices/components/date_of_birth_select.dart';
+
 import 'package:astrology/app/modules/astrologyServices/horoscope/views/horoscope_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -108,29 +107,8 @@ class HoroscopeView extends GetView<HoroscopeController> {
   ) {
     return GestureDetector(
       onTap: () {
-        showDialog(
-          context: context,
-          builder:
-              (context) => DateOfBirthSelect(
-                isDarkMode: isDark, // or true for dark mode
-
-                onDateTimeSelected: (iso8601DateTime) {
-                  Get.to(
-                    HoroscopeDetailView(),
-                    arguments: {
-                      "sign": englishName,
-                      "dob": AppDateUtils.extractDate(iso8601DateTime, 12),
-                    },
-                  );
-                  log('Selected DateTime: $iso8601DateTime');
-                  controller.getHoroscope(
-                    sign: englishName.toString(),
-                    dob: iso8601DateTime,
-                  );
-                },
-              ),
-        );
-      
+        Get.to(HoroscopeDetailView(), arguments: {"sign": englishName});
+        controller.getHoroscope(sign: englishName.toString());
       },
       child: Container(
         decoration: BoxDecoration(

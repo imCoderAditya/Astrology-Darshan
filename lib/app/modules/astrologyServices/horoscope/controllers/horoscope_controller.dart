@@ -9,13 +9,17 @@ import 'package:get/get.dart';
 
 class HoroscopeController extends GetxController {
   Rxn<HoroscopeModel> horoscopeModel = Rxn<HoroscopeModel>();
+  String getCurrentIsoDateTime() {
+    final now = DateTime.now();
+    return "${now.toIso8601String()}z";
+  }
 
   Future<void> getHoroscope({String? sign, String? dob}) async {
     horoscopeModel.value = null;
     try {
       final res = await BaseClient.get(
         api:
-            "${EndPoint.prokeralaPredictionHoroscope}?datetime=$dob&sign=$sign&type=general",
+            "${EndPoint.prokeralaPredictionHoroscope}?datetime=${getCurrentIsoDateTime()}&sign=$sign&type=general",
       );
 
       if (res != null && res.statusCode == 200) {
