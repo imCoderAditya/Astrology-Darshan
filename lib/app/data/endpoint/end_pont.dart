@@ -64,4 +64,6 @@ class EndPoint {
   static const liveSessionsendGift = "LiveSession/SendGift";
   static const kundali = "prokerala/kundliDetails";
   static const detailsMatchingKundali = "prokeralaMatching/detailed-matching";
+  static const prokeralaPredictionHoroscope = "prokeralaPrediction/daily/advanced";
+  static const prokeralaNumerology = "prokeralaNumerology/life-path-number";
 }

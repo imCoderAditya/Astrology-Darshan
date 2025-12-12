@@ -372,7 +372,7 @@ class KundaliFormView extends GetView<KundaliController> {
                   Expanded(
                     child: Text(
                       controller.iso?.value != null
-                          ? AppDateUtils.extractDate(controller.iso?.value, 5)
+                          ? AppDateUtils.extractDate(controller.iso?.value, 15)
                           : 'Select date and time',
                       style: AppTextStyles.body().copyWith(
                         color:

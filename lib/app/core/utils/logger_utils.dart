@@ -1,6 +1,8 @@
 /// Logger utility functions for the RoinTech project
 library;
 
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 
 class LoggerUtils {
@@ -8,7 +10,7 @@ class LoggerUtils {
   static void debug(String message, {String? tag}) {
     if (kDebugMode) {
       // ignore: avoid_print
-      print('[DEBUG]${tag != null ? '[$tag]' : ''} $message');
+      log('[DEBUG]${tag != null ? '[$tag]' : ''} $message');
     }
   }
 

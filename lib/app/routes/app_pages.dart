@@ -1,4 +1,3 @@
-import 'package:astrology/app/modules/astrologyServices/kundali/views/kundali_form_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/address/bindings/address_binding.dart';
@@ -11,6 +10,15 @@ import '../modules/astrologerDetails/bindings/astrologer_details_binding.dart';
 import '../modules/astrologerDetails/views/astrologer_details_view.dart';
 import '../modules/astrologers/bindings/astrologers_binding.dart';
 import '../modules/astrologers/views/astrologers_view.dart';
+import '../modules/astrologyServices/horoscope/bindings/horoscope_binding.dart';
+import '../modules/astrologyServices/horoscope/views/horoscope_view.dart';
+import '../modules/astrologyServices/kundali/bindings/kundali_binding.dart';
+import '../modules/astrologyServices/kundali/views/kundali_form_view.dart';
+import '../modules/astrologyServices/kundali/views/kundali_view.dart';
+import '../modules/astrologyServices/kundaliMatching/bindings/kundali_matching_binding.dart';
+import '../modules/astrologyServices/kundaliMatching/views/kundali_matching_view.dart';
+import '../modules/astrologyServices/kundaliMatchingDetails/bindings/kundali_matching_details_binding.dart';
+import '../modules/astrologyServices/kundaliMatchingDetails/views/kundali_matching_details_view.dart';
 import '../modules/auth/login/bindings/login_binding.dart';
 import '../modules/auth/login/views/login_view.dart';
 import '../modules/auth/otpVerify/bindings/otp_verify_binding.dart';
@@ -25,12 +33,6 @@ import '../modules/ecommerce/store/bindings/store_binding.dart';
 import '../modules/ecommerce/store/views/store_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/astrologyServices/kundali/bindings/kundali_binding.dart';
-import '../modules/astrologyServices/kundali/views/kundali_view.dart';
-import '../modules/astrologyServices/kundaliMatching/bindings/kundali_matching_binding.dart';
-import '../modules/astrologyServices/kundaliMatching/views/kundali_matching_view.dart';
-import '../modules/astrologyServices/kundaliMatchingDetails/bindings/kundali_matching_details_binding.dart';
-import '../modules/astrologyServices/kundaliMatchingDetails/views/kundali_matching_details_view.dart';
 import '../modules/liveAstro/bindings/live_astro_binding.dart';
 import '../modules/liveBroadCastAstrology/bindings/live_astrology_binding.dart';
 import '../modules/liveBroadCastAstrology/views/live_astrology_view.dart';
@@ -38,6 +40,8 @@ import '../modules/nav/bindings/nav_binding.dart';
 import '../modules/nav/views/nav_view.dart';
 import '../modules/notification/bindings/notification_binding.dart';
 import '../modules/notification/views/notification_view.dart';
+import '../modules/astrologyServices/numerology/bindings/numerology_binding.dart';
+import '../modules/astrologyServices/numerology/views/numerology_view.dart';
 import '../modules/orderHistory/bindings/order_history_binding.dart';
 import '../modules/orderHistory/views/order_history_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
@@ -66,8 +70,8 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.NAV;
-  // static const INITIAL = Routes.LIVE_ASTRO;
+  static const INITIAL = Routes.SPLASH;
+
 
   static final routes = [
     GetPage(name: _Paths.HOME, page: () => HomeView(), binding: HomeBinding()),
@@ -205,6 +209,16 @@ class AppPages {
       name: _Paths.KUNDALI_MATCHING_DETAILS,
       page: () => const KundaliMatchingDetailsView(),
       binding: KundaliMatchingDetailsBinding(),
+    ),
+    GetPage(
+      name: _Paths.HOROSCOPE,
+      page: () => const HoroscopeView(),
+      binding: HoroscopeBinding(),
+    ),
+    GetPage(
+      name: _Paths.NUMEROLOGY,
+      page: () => const NumerologyView(),
+      binding: NumerologyBinding(),
     ),
   ];
 }

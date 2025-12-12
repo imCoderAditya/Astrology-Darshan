@@ -54,7 +54,10 @@ class KundaliController extends GetxController {
         LoggerUtils.debug("Kundali==>${json.encode(kundaliModel.value)}");
         Get.toNamed(Routes.KUNDALI);
       } else {
-        LoggerUtils.error("Failed ${json.encode(res.data)}");
+        final jsonDecode = json.decode(res.data);
+        SnackBarUiView.showError(message: jsonDecode["errors"][0]["detail"]);
+
+        LoggerUtils.error("Failed $jsonDecode");
       }
     } catch (e) {
       debugPrint("Error:$e");
@@ -100,7 +103,6 @@ class KundaliController extends GetxController {
 
     log("Final ISO DateTime: ${iso?.value}"); // <-- EXACT FORMAT
 
-    fetchKundali();
     update();
   }
 

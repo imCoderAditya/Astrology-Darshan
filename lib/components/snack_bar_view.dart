@@ -97,10 +97,12 @@ class SnackBarUiView {
     final snackBar = SnackBar(
       content: Row(
         children: [
+        
           Container(
-            padding: const EdgeInsets.all(6),
+            padding:  EdgeInsets.symmetric(vertical: 16.h,horizontal: 10.w),
+            margin:  EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha:0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -109,7 +111,7 @@ class SnackBarUiView {
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+           SizedBox(width: 6.w),
           Expanded(
             child: Text(
               message,

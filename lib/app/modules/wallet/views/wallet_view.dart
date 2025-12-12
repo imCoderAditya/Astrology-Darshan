@@ -654,7 +654,7 @@ class WalletView extends GetView<WalletController> {
                       decoration: BoxDecoration(
                         color:
                             isCredit
-                                ? AppColors.sucessPrimary.withOpacity(0.1)
+                                ? _getStatusColor(status).withOpacity(0.1)
                                 : AppColors.red.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -675,7 +675,7 @@ class WalletView extends GetView<WalletController> {
                             style: AppTextStyles.headlineMedium().copyWith(
                               color:
                                   isCredit
-                                      ? AppColors.sucessPrimary
+                                      ? _getStatusColor(status)
                                       : AppColors.red,
                             ),
                           ),
@@ -714,7 +714,7 @@ class WalletView extends GetView<WalletController> {
                           decoration: BoxDecoration(
                             color:
                                 isCredit
-                                    ? AppColors.sucessPrimary.withOpacity(0.1)
+                                    ? _getStatusColor(status).withOpacity(0.1)
                                     : AppColors.red.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -723,7 +723,7 @@ class WalletView extends GetView<WalletController> {
                             style: AppTextStyles.small().copyWith(
                               color:
                                   isCredit
-                                      ? AppColors.sucessPrimary
+                                      ? _getStatusColor(status)
                                       : AppColors.red,
                               fontWeight: FontWeight.w600,
                             ),
@@ -940,11 +940,11 @@ class WalletView extends GetView<WalletController> {
 
   // Helper method to get status color
   Color _getStatusColor(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'completed':
         return AppColors.sucessPrimary;
       case 'pending':
-        return AppColors.secondaryPrimary;
+        return Colors.yellow;
       case 'failed':
         return AppColors.red;
       case 'cancelled':

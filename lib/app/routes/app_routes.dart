@@ -37,6 +37,8 @@ abstract class Routes {
   static const KUNDALIFORM = _Paths.KUNDALIFORM;
   static const KUNDALI_MATCHING = _Paths.KUNDALI_MATCHING;
   static const KUNDALI_MATCHING_DETAILS = _Paths.KUNDALI_MATCHING_DETAILS;
+  static const HOROSCOPE = _Paths.HOROSCOPE;
+  static const NUMEROLOGY = _Paths.NUMEROLOGY;
 }
 
 abstract class _Paths {
@@ -74,4 +76,6 @@ abstract class _Paths {
   static const KUNDALIFORM = '/kundali_form';
   static const KUNDALI_MATCHING = '/kundali-matching';
   static const KUNDALI_MATCHING_DETAILS = '/kundali-matching-details';
+  static const HOROSCOPE = '/horoscope';
+  static const NUMEROLOGY = '/numerology';
 }
