@@ -37,8 +37,20 @@ target 'Runner' do
   end
 end
 
+# post_install do |installer|
+#   installer.pods_project.targets.each do |target|
+#     flutter_additional_ios_build_settings(target)
+#   end
+# end
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
+    # Flutter required settings
     flutter_additional_ios_build_settings(target)
+
+    # Disable Bitcode (required for many Flutter plugins)
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+    end
   end
 end

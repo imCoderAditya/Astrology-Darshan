@@ -1,18 +1,16 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:astrology/app/core/utils/alerts_messages.dart';
 import 'package:astrology/app/core/utils/logger_utils.dart';
 import 'package:astrology/app/data/baseclient/base_client.dart';
 import 'package:astrology/app/data/endpoint/end_pont.dart';
 import 'package:astrology/app/data/models/wallet/wallet_model.dart';
-import 'package:astrology/app/modules/payuPay/payu_model.dart';
-import 'package:astrology/app/modules/payuPay/payu_payment_controller.dart';
 import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
+import 'package:astrology/app/modules/razorPay/razor_pay_controller.dart';
+// import 'package:astrology/app/modules/razorPay/razor_pay_controller.dart';
+// import 'package:astrology/app/modules/razorPay/razor_pay_manager.dart';
 import 'package:astrology/app/services/storage/local_storage_service.dart';
 import 'package:astrology/components/global_loader.dart';
-import 'package:astrology/components/snack_bar_view.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show debugPrint;
 import 'package:get/get.dart';
 
 class WalletController extends GetxController {
@@ -40,7 +38,6 @@ class WalletController extends GetxController {
 
       if (res != null && res.statusCode == 200) {
         _walletModel.value = walletModelFromJson(json.encode(res.data));
-        // Clear expanded cards when data refreshes
         expandedCards.clear();
       } else {
         LoggerUtils.error("Failed Wallet Data", tag: "WalletController");
@@ -121,11 +118,17 @@ class WalletController extends GetxController {
       Get.isRegistered<ProfileController>()
           ? Get.find<ProfileController>()
           : Get.put(ProfileController());
-  final payuController =
-      Get.isRegistered<PayuPaymentController>()
-          ? Get.find<PayuPaymentController>()
-          : Get.put(PayuPaymentController());
+  // final payuController =
+  //     Get.isRegistered<PayuPaymentController>()
+  //         ? Get.find<PayuPaymentController>()
+  //         : Get.put(PayuPaymentController());
 
+  // final rezorPayController =
+  //     Get.isRegistered<RazorPayController>()
+  //         ? Get.find<RazorPayController>()
+  //         : Get.put(RazorPayController());
+  // final rezorPayController = Get.put(RazorPayController());
+  final rezorPayController = Get.put(RazorPayController());
   void addMoney({double? amount, String? paymentMethod}) async {
     GlobalLoader.show();
     try {
@@ -140,29 +143,44 @@ class WalletController extends GetxController {
         },
       );
       final success = res.data["Status"] ?? false;
-      final message = res.data["Message"] ?? "";
-      final transactionID = res.data["TransactionID"] ?? "";
+      // final message = res.data["Message"] ?? "";
+      final transactionID = res.data["TransactionID"].toString();
       if (res != null && success == true) {
         Get.back();
         final profile = profileController.profileModel.value?.data;
-        final payUParam = PayUPaymentParamModel(
-          amount: amount.toString(),
-          productInfo: "Astro Wallet",
-          firstName: "${profile?.firstName ?? ""} ${profile?.lastName ?? ""}",
-          email: profile?.email ?? "",
-          phone: profile?.phoneNumber ?? "",
-          environment: "0",
-          transactionId: transactionID.toString(),
-          userCredential: ":${profile?.userId ?? ""}",
+        // final payUParam = PayUPaymentParamModel(
+        //   amount: amount.toString(),
+        //   productInfo: "Astro Wallet",
+        //   firstName: "${profile?.firstName ?? ""} ${profile?.lastName ?? ""}",
+        //   email: profile?.email ?? "",
+        //   phone: profile?.phoneNumber ?? "",
+        //   environment: "0",
+        //   transactionId: transactionID.toString(),
+        //   userCredential: ":${profile?.userId ?? ""}",
+        // );
+        // payuController
+        //     .openPayUScreen(payUPaymentParamModel: payUParam, type: "Wallet")
+        //     .then((value) async {
+        //       await fetchWallet();
+        //     });
+
+        final amount_ = amount?.toInt();
+        rezorPayController.makePayment(
+          type: "Wallet",
+          PaymentRequest(
+            amount: (amount_ ?? 0), // ₹100
+            name: "${profile?.firstName ?? ""} ${profile?.lastName ?? ""}",
+            description: res.data["Description"] ?? "",
+            customerName:
+                "${profile?.firstName ?? ""} ${profile?.lastName ?? ""}",
+            customerEmail: profile?.email ?? "",
+            customerContact: profile?.phoneNumber ?? "",
+            transactionId: transactionID,
+          ),
         );
-        payuController
-            .openPayUScreen(payUPaymentParamModel: payUParam, type: "Wallet")
-            .then((value) async {
-              await fetchWallet();
-            });
 
         GlobalLoader.hide();
-        SnackBarUiView.showSuccess(message: message);
+        // SnackBarUiView.showSuccess(message: message);
       } else {
         GlobalLoader.hide();
         debugPrint("WalletController,  Failed: ${res.data}");
@@ -170,7 +188,7 @@ class WalletController extends GetxController {
     } catch (e) {
       Get.back();
       GlobalLoader.hide();
-      SnackBarUiView.showWarning(message: AppAlertsMessage.somethingWentWrong);
+      // SnackBarUiView.showWarning(message: AppAlertsMessage.somethingWentWrong);
       debugPrint("Error:$e");
     }
   }
@@ -186,11 +204,13 @@ class WalletController extends GetxController {
       );
       if (res != null && res.statusCode == 200) {
         log("Sucess: ${res.data}");
+        await fetchWallet();
       } else {
         log("Sucess: ${res.data}");
       }
     } catch (e) {
       debugPrint("Error: $e");
+      update();
     }
   }
 

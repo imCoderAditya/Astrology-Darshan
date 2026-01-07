@@ -65,13 +65,16 @@ class WalletView extends GetView<WalletController> {
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildBalanceCard(controller),
-                _buildFilterSection(controller),
-                _buildTransactionHistory(context, controller),
-              ],
+          body: RefreshIndicator(
+            onRefresh: () => controller.fetchWallet(),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildBalanceCard(controller),
+                  _buildFilterSection(controller),
+                  _buildTransactionHistory(context, controller),
+                ],
+              ),
             ),
           ),
         );

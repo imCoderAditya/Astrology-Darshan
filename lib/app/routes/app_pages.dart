@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-
 import '../modules/address/bindings/address_binding.dart';
 import '../modules/address/views/address_view.dart';
 import '../modules/astroPuja/myPuja/bindings/my_puja_binding.dart';

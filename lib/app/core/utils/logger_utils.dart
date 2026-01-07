@@ -18,7 +18,7 @@ class LoggerUtils {
   static void error(String message, {String? tag}) {
     if (kDebugMode) {
       // ignore: avoid_print
-      print('[ERROR]${tag != null ? '[$tag]' : ''} $message');
+      log('[ERROR]${tag != null ? '[$tag]' : ''} $message');
     }
   }
 
@@ -26,7 +26,7 @@ class LoggerUtils {
   static void warning(String message, {String? tag}) {
     if (kDebugMode) {
       // ignore: avoid_print
-      print('[WARNING]${tag != null ? '[$tag]' : ''} $message');
+      log('[WARNING]${tag != null ? '[$tag]' : ''} $message');
     }
   }
 }

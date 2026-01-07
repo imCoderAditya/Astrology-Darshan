@@ -1,5 +1,5 @@
 PODS:
-  - agora_rtc_engine (6.5.2):
+  - agora_rtc_engine (6.5.3):
     - AgoraIrisRTC_iOS (= 4.5.2-build.1)
     - AgoraRtcEngine_iOS (= 4.5.2)
     - Flutter
@@ -114,6 +114,8 @@ PODS:
     - Flutter
   - flutter_media_downloader (0.0.1):
     - Flutter
+  - fluttertoast (0.0.2):
+    - Flutter
   - geocoding_ios (1.0.5):
     - Flutter
   - geolocator_apple (1.2.0):
@@ -170,7 +172,7 @@ PODS:
     - PayUIndia-CheckoutPro (~> 8.11)
   - payu_upi_flutter (1.0.3):
     - Flutter
-    - PayUIndia-UPICore (~> 10.1)
+    - PayUIndia-UPICore (~> 10.6)
   - PayUIndia-Analytics (4.0.2):
     - PayUIndia-NetworkReachability (~> 2.1)
   - PayUIndia-AssetLibrary (4.0.1)
@@ -218,6 +220,12 @@ PODS:
   - permission_handler_apple (9.3.0):
     - Flutter
   - PromisesObjC (2.4.0)
+  - razorpay-core-pod (1.0.3)
+  - razorpay-pod (1.5.2):
+    - razorpay-core-pod (= 1.0.3)
+  - razorpay_flutter (1.1.10):
+    - Flutter
+    - razorpay-pod
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -248,6 +256,7 @@ DEPENDENCIES:
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_media_downloader (from `.symlinks/plugins/flutter_media_downloader/ios`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -259,6 +268,7 @@ DEPENDENCIES:
   - payu_checkoutpro_flutter (from `.symlinks/plugins/payu_checkoutpro_flutter/ios`)
   - payu_upi_flutter (from `.symlinks/plugins/payu_upi_flutter/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - razorpay_flutter (from `.symlinks/plugins/razorpay_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/darwin`)
@@ -300,6 +310,8 @@ SPEC REPOS:
     - PayUIndia-PG-SDK
     - PayUIndia-UPICore
     - PromisesObjC
+    - razorpay-core-pod
+    - razorpay-pod
 
 EXTERNAL SOURCES:
   agora_rtc_engine:
@@ -324,6 +336,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_media_downloader:
     :path: ".symlinks/plugins/flutter_media_downloader/ios"
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
   geocoding_ios:
     :path: ".symlinks/plugins/geocoding_ios/ios"
   geolocator_apple:
@@ -346,6 +360,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/payu_upi_flutter/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  razorpay_flutter:
+    :path: ".symlinks/plugins/razorpay_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -360,7 +376,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
 
 SPEC CHECKSUMS:
-  agora_rtc_engine: 55723c1e997b9f1d423d4a07dd8d9ec437a1eb89
+  agora_rtc_engine: da45ea14c402317c9e22fdb9ffe504d9a1acbe68
   AgoraInfra_iOS: 3691b2b277a1712a35ae96de25af319de0d73d08
   AgoraIrisRTC_iOS: eab58c126439adf5ec99632828a558ea216860da
   AgoraRtcEngine_iOS: 97e2398a2addda9057815a2a583a658e36796ff6
@@ -383,6 +399,7 @@ SPEC CHECKSUMS:
   flutter_inappwebview_ios: 6f63631e2c62a7c350263b13fa5427aedefe81d4
   flutter_local_notifications: ff50f8405aaa0ccdc7dcfb9022ca192e8ad9688f
   flutter_media_downloader: fa9b4779cc9181aed48a0f1dbad5f54c5a5a4517
+  fluttertoast: 21eecd6935e7064cc1fcb733a4c5a428f3f24f0f
   geocoding_ios: eafacae6ad11a1eb56681f7d11df602a5fd49416
   geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
@@ -396,7 +413,7 @@ SPEC CHECKSUMS:
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   payu_checkoutpro_flutter: d8a1dc48cb117eccbbb2f9e1cf66424d0daefb46
-  payu_upi_flutter: c236600988084b73b1ff3252329846445b53f090
+  payu_upi_flutter: 1f4d44d2895837c23ca7403bc5b9c0c9d48c3a97
   PayUIndia-Analytics: 90a4c1a9d3f7a79422a4f4b0c3d9f5a8362b89fb
   PayUIndia-AssetLibrary: e40d7697c37aea55f184e29564e2f8b63a63b472
   PayUIndia-CardScanner: d6d024645e7fab58326e0d00b22ed42ca0ad5dc1
@@ -414,6 +431,9 @@ SPEC CHECKSUMS:
   PayUIndia-UPICore: 2b9e0db5403f7cb96bb7467a1fb551e54efe1c3e
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  razorpay-core-pod: ef0309dbf8e3e5a1330f6cad89dcf9226d8ef758
+  razorpay-pod: a9cb6e158aee8754053b147008eff6b4897789c8
+  razorpay_flutter: 84b3bfd206ae9c9c2a9ba585524a1b3d8102b6c1
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   speech_to_text: 87bf9298952e8d9073be1b6aade6d5758db5170c
@@ -421,6 +441,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
 
-PODFILE CHECKSUM: 261ed656603138b8f9c09a27132bed7918ac1728
+PODFILE CHECKSUM: ce99924d9a4e0b60dd180f868e05aa6c972339af
 
 COCOAPODS: 1.16.2
