@@ -456,9 +456,10 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                     astrologer?.isAvailableForChat == false
                         ? null
                         : CallChatConfirmationDialog.show(
+                          consultationType: astrologer?.consultationType ?? "",
                           context: Get.context!,
                           astrologerPhoto: astrologer?.profilePicture,
-                        
+
                           onConfirm: (value) {
                             Get.back();
                             astrologersController.astrologerBook(
@@ -479,13 +480,11 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
             icon: Icon(
               Icons.chat_bubble_outline,
               size: 20.w,
-              color: isDark ? AppColors.white : AppColors.black,
+              color: AppColors.white,
             ),
             label: Text(
               'Chat Now',
-              style: AppTextStyles.button.copyWith(
-                color: isDark ? AppColors.white : AppColors.black,
-              ),
+              style: AppTextStyles.button.copyWith(color: AppColors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor:
@@ -510,6 +509,7 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                         ? null
                         : CallChatConfirmationDialog.show(
                           context: Get.context!,
+                          consultationType: astrologer?.consultationType ?? "",
                           astrologerPhoto: astrologer?.profilePicture,
                           onConfirm: (value) {
                             Get.back();
@@ -528,16 +528,10 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                           astrologerName:
                               "${astrologer?.firstName ?? ""} ${astrologer?.lastName ?? ""}",
                         ),
-            icon: Icon(
-              Icons.videocam,
-              size: 20.w,
-              color: isDark ? AppColors.white : AppColors.black,
-            ),
+            icon: Icon(Icons.videocam, size: 20.w, color: AppColors.white),
             label: Text(
               'Voice Call',
-              style: AppTextStyles.button.copyWith(
-                color: isDark ? AppColors.white : AppColors.black,
-              ),
+              style: AppTextStyles.button.copyWith(color: AppColors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor:

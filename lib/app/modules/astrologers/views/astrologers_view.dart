@@ -645,6 +645,7 @@ class AstrologersView extends GetView<AstrologersController> {
                                 astrologer.isAvailableForChat == false
                                     ? null
                                     : CallChatConfirmationDialog.show(
+                                      consultationType: astrologer.consultationType??"",
                                       context: context,
                                       astrologerPhoto:
                                           astrologer.profilePicture,
@@ -700,6 +701,7 @@ class AstrologersView extends GetView<AstrologersController> {
                                 astrologer.isAvailableForCall == false
                                     ? null
                                     : CallChatConfirmationDialog.show(
+                                      consultationType: astrologer.consultationType??"",
                                       context: context,
                                       astrologerPhoto:
                                           astrologer.profilePicture,

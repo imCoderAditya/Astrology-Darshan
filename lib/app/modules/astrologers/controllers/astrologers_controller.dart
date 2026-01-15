@@ -49,13 +49,13 @@ class AstrologersController extends GetxController {
 
   Future<void> fetchAstrologerData({String? search}) async {
     isLoading.value = true;
-
+    final customerId = LocalStorageService.getCustomerId();
     try {
       final res = await BaseClient.get(
         api:
             search?.isEmpty ?? true
-                ? "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating"
-                : "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating&search=$search",
+                ? "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating&customer_id=$customerId"
+                : "${EndPoint.astrologers}?page=${currentPage.value}&limit=${limit.value}&isOnline=true&specialization=${selectSpecalization.replaceAll("All", "")}&language=$selectedLanguage&sortBy=$selectedRating&search=$search&customer_id=$customerId",
       );
       if (res != null && res.statusCode == 200) {
         // Process the response here
@@ -71,6 +71,7 @@ class AstrologersController extends GetxController {
                 ),
           ),
         );
+        log("consultationType:${newList.firstOrNull?.consultationType ?? ""}");
       } else {
         LoggerUtils.error("Failed Astrologer List API: $res");
       }
@@ -132,7 +133,9 @@ class AstrologersController extends GetxController {
                 astrologerPhoto: astrologerPhoto,
               ),
             ),
-          );
+          )?.then((value) async {
+            await fetchAstrologerData();
+          });
         } else {
           Get.to(
             () => ChatView(
@@ -142,7 +145,10 @@ class AstrologersController extends GetxController {
                 astrologerPhoto: astrologerPhoto,
               ),
             ),
-          );
+          )?.then((value) async {
+            await fetchAstrologerData();
+          });
+          ;
         }
       } else {
         // LoggerUtils.error(res.data["message"] ?? "");

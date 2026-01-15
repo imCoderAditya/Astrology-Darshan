@@ -57,7 +57,6 @@ class VoiceCallController extends GetxController {
         final minutes = remaining.inMinutes;
         final seconds = remaining.inSeconds % 60;
         timerText.value = "$minutes:${seconds.toString().padLeft(2, '0')}";
-       
       },
       onComplete: () {
         // You can handle end timer event here too
@@ -191,6 +190,19 @@ class VoiceCallController extends GetxController {
         },
         onLeaveChannel: (RtcConnection connection, RtcStats stats) async {
           LoggerUtils.debug("Left channel");
+          await userRequsetController
+              .statusUpdate(
+                "Cancelled",
+                int.tryParse(channelName.value),
+                "call",
+              )
+              .then((_) {
+                WidgetsBinding.instance.addPersistentFrameCallback((
+                  vallue,
+                ) async {
+                  await leaveChannel();
+                });
+              });
           isJoined.value = false;
           remoteUsers.clear();
           localUid.value = 0;
