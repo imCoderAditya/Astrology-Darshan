@@ -657,7 +657,7 @@ class _ConfirmationContentState extends State<_ConfirmationContent>
     );
   }
 }
-// ignore_for_file: deprecated_member_use
+
 
 // import 'package:astrology/app/modules/profile/controllers/profile_controller.dart';
 // import 'package:flutter/material.dart';
