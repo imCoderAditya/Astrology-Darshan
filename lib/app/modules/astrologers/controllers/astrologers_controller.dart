@@ -83,6 +83,22 @@ class AstrologersController extends GetxController {
     }
   }
 
+  /// Clears existing astrologer list + search text,
+  /// resets pagination & filters to default values,
+  /// and re-fetches fresh data from API (new hit).
+  ///
+  /// Use this when user changes filters/category,
+  /// pulls to refresh, or you want to reload the list from start.
+  Future<void> clearAndUpdate() async {
+    _astrologerList.clear();
+    searchController.clear();
+    currentPage.value = 1;
+    selectCategoryId = 1;
+    selectSpecalization = "All";
+    await fetchAstrologerData();
+    update();
+  }
+
   final profileController = Get.put(ProfileController());
   Future<void> astrologerBook({
     int? astrologerId,
@@ -134,7 +150,7 @@ class AstrologersController extends GetxController {
               ),
             ),
           )?.then((value) async {
-            await fetchAstrologerData();
+            await clearAndUpdate();
           });
         } else {
           Get.to(
@@ -146,9 +162,8 @@ class AstrologersController extends GetxController {
               ),
             ),
           )?.then((value) async {
-            await fetchAstrologerData();
+            await clearAndUpdate();
           });
-          ;
         }
       } else {
         // LoggerUtils.error(res.data["message"] ?? "");

@@ -158,7 +158,7 @@ class VoiceCallController extends GetxController {
           LoggerUtils.debug("Remote user joined: $remoteUid");
           remoteUsers.add(remoteUid);
           // SnackBarUiView.showInfo(message: "User $remoteUid joined the call");
-          userRequsetController.statusUpdate(
+          await userRequsetController.statusUpdate(
             "Active",
             int.tryParse(channelName.value),
             "call",
@@ -180,29 +180,49 @@ class VoiceCallController extends GetxController {
                 "call",
               )
               .then((_) {
-                Get.back(); // Pop screen
                 WidgetsBinding.instance.addPersistentFrameCallback((
                   vallue,
                 ) async {
                   await leaveChannel();
                 });
+                Get.back(); // Pop screen
               });
         },
         onLeaveChannel: (RtcConnection connection, RtcStats stats) async {
           LoggerUtils.debug("Left channel");
-          await userRequsetController
-              .statusUpdate(
-                "Cancelled",
-                int.tryParse(channelName.value),
-                "call",
-              )
-              .then((_) {
-                WidgetsBinding.instance.addPersistentFrameCallback((
-                  vallue,
-                ) async {
-                  await leaveChannel();
+          if (getTotalSeconds(timerText.value) > 5) {
+            await userRequsetController
+                .statusUpdate(
+                  "Completed",
+                  int.tryParse(channelName.value),
+                  "call",
+                )
+                .then((_) {
+                  Get.back(); // Pop screen
+                  WidgetsBinding.instance.addPersistentFrameCallback((
+                    vallue,
+                  ) async {
+                    await leaveChannel();
+                  });
+                  Get.back(); // Pop screen
                 });
-              });
+          } else {
+            await userRequsetController
+                .statusUpdate(
+                  "Cancelled",
+                  int.tryParse(channelName.value),
+                  "call",
+                )
+                .then((_) {
+                  WidgetsBinding.instance.addPersistentFrameCallback((
+                    vallue,
+                  ) async {
+                    await leaveChannel();
+                  });
+                  Get.back(); // Pop screen
+                });
+          }
+
           isJoined.value = false;
           remoteUsers.clear();
           localUid.value = 0;
@@ -229,6 +249,13 @@ class VoiceCallController extends GetxController {
         },
       ),
     );
+  }
+
+  int getTotalSeconds(String timerText) {
+    final parts = timerText.split(":");
+    final minutes = int.tryParse(parts[0]) ?? 0;
+    final seconds = int.tryParse(parts[1]) ?? 0;
+    return (minutes * 60) + seconds;
   }
 
   Future<void> generateToken({String? channelName, String? userName}) async {

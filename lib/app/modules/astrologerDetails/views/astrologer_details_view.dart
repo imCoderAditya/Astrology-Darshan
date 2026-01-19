@@ -456,7 +456,7 @@ class AstrologerDetailsView extends GetView<AstrologerDetailsController> {
                     astrologer?.isAvailableForChat == false
                         ? null
                         : CallChatConfirmationDialog.show(
-                          consultationType: astrologer?.consultationType ?? "",
+                          consultationType:  astrologer?.consultationType ??"",
                           context: Get.context!,
                           astrologerPhoto: astrologer?.profilePicture,
 
